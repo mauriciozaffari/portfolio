@@ -1,7 +1,7 @@
 ---
 title: "Curated Content - Spec"
 type: "feature-spec"
-status: "in-progress"
+status: "implemented"
 created: "2026-08-06"
 updated: "2026-08-06"
 origin: "user request (all data in data/ as .md, curated from private source material, no sensitive leaks)"
@@ -9,7 +9,7 @@ origin: "user request (all data in data/ as .md, curated from private source mat
 
 # Curated Content
 
-- Status: in-progress
+- Status: implemented
 - Created: 2026-08-06
 - Updated: 2026-08-06
 - Origin: user request (all data in data/ as .md, curated from private source material, no sensitive leaks)
@@ -176,10 +176,11 @@ pairing is what lets a record be located from a citation alone, which
       wrongly attributed to the refactor. The case study carries the delta and
       a `metric` record carries the current value, so neither number has two
       homes.
+- [x] Build the enforcement half — the loader, the content-safety scanner, the
+      outside-app-root grep gate, and their specs. Done: see
+      [IMPLEMENTATION.md](IMPLEMENTATION.md). `bin/ci` now fails on an invalid
+      record, on unpublishable content in `data/**` or in rendered HTML, and on
+      any application file naming a filesystem path outside the app root. The
+      policy is a failing build rather than human review alone.
 - [ ] Author the `pt-BR` records. The locale fallback makes this incremental,
       not blocking.
-- [ ] Build the enforcement half — the loader, the content-safety scanner, the
-      outside-app-root grep gate, and their specs. These require the Rails
-      application from [app-foundation](../app-foundation/SPEC.md); until they
-      exist, the policy above is enforced by human review only, which is
-      weaker than the SPEC intends.

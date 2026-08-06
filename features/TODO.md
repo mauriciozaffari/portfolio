@@ -61,7 +61,7 @@ feature that adds an external dependency, a running cost, and an abuse surface.
 | Feature | Status | Created | Implemented | Summary |
 | ------- | ------ | ------- | ----------- | ------- |
 | [app-foundation](app-foundation/SPEC.md) | implemented | 2026-08-06 | 2026-08-06 | Rails 8 + Hotwire app that boots with no database, no Node toolchain, and no Solid adapters; RSpec and linters behind one CI entry point |
-| [curated-content](curated-content/SPEC.md) | in-progress | 2026-08-06 | — | Bilingual Markdown content in `data/**` with an enforced front-matter schema, a publication allowlist, and a content-safety scanner that fails the build |
+| [curated-content](curated-content/SPEC.md) | implemented | 2026-08-06 | 2026-08-06 | Bilingual Markdown content in `data/**` with an enforced front-matter schema, a publication allowlist, and a content-safety scanner that fails the build |
 | [landing-page](landing-page/SPEC.md) | spec'd | 2026-08-06 | — | One server-rendered locale-aware page with a recorded design direction; accessibility and performance as acceptance criteria, not a later phase |
 | [deployment](deployment/SPEC.md) | spec'd | 2026-08-06 | — | HTTPS at the canonical origin from a single stateless container, security headers, and CI that blocks deploy on a failing content scan |
 | [site-metadata](site-metadata/SPEC.md) | spec'd | 2026-08-06 | — | Canonical URLs, hreflang, OG/Twitter cards, `Person` JSON-LD, sitemap, and a deliberate AI-crawler policy — all derived from `site_profile` |
@@ -88,15 +88,12 @@ Details and enforcement live in
 Concrete pending TODOs live in each feature's `SPEC.md` under "Pending TODOs".
 Listed here in the order they block progress:
 
-- [Curated content](curated-content/SPEC.md): build the enforcement half — the
-  loader, the content-safety scanner, and the outside-app-root grep gate. Until
-  they exist the publication policy rests on human review alone, which is
-  weaker than the SPEC intends. **Next feature up** — the Rails app it was
-  blocked on now exists.
-- [Curated content](curated-content/SPEC.md): author the `pt-BR` records.
 - [Landing page](landing-page/SPEC.md): write the `## Design direction` token
   values into the spec, then `DESIGN.md`, before any UI code. The visual
-  register and locale URL strategy are decided in the SPEC.
+  register and locale URL strategy are decided in the SPEC. **Next feature
+  up** — the content loader it reads from now exists.
+- [Curated content](curated-content/SPEC.md): author the `pt-BR` records. The
+  locale fallback makes this incremental, so it does not block the page.
 - [Deployment](deployment/SPEC.md): decide the deploy trigger. Host and
   mechanism are decided (Kamal 2 on a VPS); canonical origin is
   `https://zaffari.casa`.

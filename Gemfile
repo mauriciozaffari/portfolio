@@ -15,6 +15,10 @@ gem "importmap-rails"
 gem "turbo-rails"
 # Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
 gem "stimulus-rails"
+# Renders the Markdown bodies under data/ [https://kramdown.gettalong.org].
+# Pure Ruby, so it adds no native extension and no platform-specific rows to the
+# lockfile. Its output is never trusted: see app/models/content/markdown.rb.
+gem "kramdown", "~> 2.5"
 # Use Tailwind CSS [https://github.com/rails/tailwindcss-rails]
 gem "tailwindcss-rails", "~> 4.6"
 # Vendors the Tailwind standalone binary, so no Node toolchain is needed. Pinned

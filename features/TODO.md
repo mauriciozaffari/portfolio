@@ -63,7 +63,7 @@ feature that adds an external dependency, a running cost, and an abuse surface.
 | [app-foundation](app-foundation/SPEC.md) | implemented | 2026-08-06 | 2026-08-06 | Rails 8 + Hotwire app that boots with no database, no Node toolchain, and no Solid adapters; RSpec and linters behind one CI entry point |
 | [curated-content](curated-content/SPEC.md) | implemented | 2026-08-06 | 2026-08-06 | Bilingual Markdown content in `data/**` with an enforced front-matter schema, a publication allowlist, and a content-safety scanner that fails the build |
 | [landing-page](landing-page/SPEC.md) | implemented | 2026-08-06 | 2026-08-06 | One server-rendered locale-aware page at `/` and `/pt-BR`, built entirely from the content records; zero JavaScript, zero web fonts, 18.5 KB gzipped, design language recorded in [DESIGN.md](../DESIGN.md) |
-| [deployment](deployment/SPEC.md) | spec'd | 2026-08-06 | — | HTTPS at the canonical origin from a single stateless container, security headers, and CI that blocks deploy on a failing content scan |
+| [deployment](deployment/SPEC.md) | in-progress | 2026-08-06 | — | HTTPS at the canonical origin from a single stateless container, security headers, and CI that blocks deploy on a failing content scan. Kamal 2 config, production image, and headers are built and verified locally; nothing is deployed, because no server exists yet |
 | [site-metadata](site-metadata/SPEC.md) | spec'd | 2026-08-06 | — | Canonical URLs, hreflang, OG/Twitter cards, `Person` JSON-LD, sitemap, and a deliberate AI-crawler policy — all derived from `site_profile` |
 | [resume-download](resume-download/SPEC.md) | spec'd | 2026-08-06 | — | Publication-safe resume generated from the same records as the page, with no phone, email, address, or compensation in content or PDF metadata |
 | [chatbot](chatbot/SPEC.md) | spec'd | 2026-08-06 | — | Flag-gated grounded assistant over the published corpus only, with citations, explicit refusals, adversarial specs, rate limits, and no vector database |
@@ -88,9 +88,14 @@ Details and enforcement live in
 Concrete pending TODOs live in each feature's `SPEC.md` under "Pending TODOs".
 Listed here in the order they block progress:
 
-- [Deployment](deployment/SPEC.md): decide the deploy trigger. Host and
-  mechanism are decided (Kamal 2 on a VPS); canonical origin is
-  `https://zaffari.casa`. **Next feature up** — there is now a page to deploy.
+- [Deployment](deployment/SPEC.md): **in progress.** The Kamal 2 configuration,
+  the production image, the security headers, and the CI workflow exist and are
+  verified locally — see
+  [its IMPLEMENTATION.md](deployment/IMPLEMENTATION.md). What is left needs a
+  machine: provision the VPS, supply the four environment values, point DNS at
+  it, run `kamal setup`, and **exercise the rollback**, which this SPEC requires
+  and which cannot be proved without a host. The deploy trigger is still
+  undecided.
 - [Curated content](curated-content/SPEC.md): author the `pt-BR` records.
   `/pt-BR` currently serves the English records, each marked and carrying
   `lang="en"`, which is the fallback working as specified rather than a defect.

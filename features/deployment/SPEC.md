@@ -1,7 +1,7 @@
 ---
 title: "Deployment - Spec"
 type: "feature-spec"
-status: "spec'd"
+status: "in-progress"
 created: "2026-08-06"
 updated: "2026-08-06"
 origin: "operational need (site must be publicly reachable before metadata and later features)"
@@ -9,7 +9,7 @@ origin: "operational need (site must be publicly reachable before metadata and l
 
 # Deployment
 
-- Status: spec'd
+- Status: in-progress
 - Created: 2026-08-06
 - Updated: 2026-08-06
 - Origin: operational need (site must be publicly reachable before metadata and later features)
@@ -74,5 +74,27 @@ forwarding alias on the approved contact allowlist, derive from this origin.
   to patch and monitor.
 
 ## Pending TODOs
+
+The configuration exists and the image is built and verified locally; see
+[IMPLEMENTATION.md](IMPLEMENTATION.md). Nothing has been deployed, because no
+server exists yet. What remains:
+
 - [ ] Decide whether deploys are triggered on merge to the default branch or
-      manually.
+      manually. Deliberately still open: the CI workflow runs the gate and
+      stops there.
+- [ ] Provision the VPS and supply the four values the configuration reads from
+      the environment. The full list is in IMPLEMENTATION.md.
+- [ ] Point `zaffari.casa` at the host so kamal-proxy can complete the Let's
+      Encrypt challenge, and decide whether `www.zaffari.casa` is served,
+      redirected, or left unresolved. It is currently unserved.
+- [ ] Run `kamal setup` once, then confirm the desired behavior over HTTPS.
+- [ ] **Exercise the rollback.** This SPEC requires it and it cannot be
+      satisfied without a running host, so it is the one acceptance criterion
+      the local work could not meet. Deploy twice, run `kamal rollback`, and
+      confirm the previous version serves.
+- [ ] Decide whether to enable `config.hosts` for DNS-rebinding protection
+      after the first successful deploy. It is off now on purpose — enabling it
+      blind is the classic way to make a first deploy return 403 on every
+      request.
+- [ ] Revisit HSTS preloading once the site has been live on HTTPS long enough
+      to trust. `preload` is off; the header is otherwise complete.

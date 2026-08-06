@@ -1,0 +1,46 @@
+name: CI
+
+# The same gate humans run locally. `bin/ci` is the single entry point
+# (config/ci.rb owns the step list), so this workflow deliberately does not
+# spell the steps out again — a step added there is picked up here for free.
+#
+# Three of those steps are the reason this workflow blocks a merge at all:
+# `content:validate`, `content:scan`, and `content:paths` are what stand
+# between an unreviewed record and a public repository.
+#
+# There is no deploy job here on purpose. Whether deploys fire on merge to
+# `main` or stay manual is still an open decision in
+# features/deployment/SPEC.md; `kamal deploy` from a workstation is the
+# documented path until it is settled.
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: bin/ci
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v5
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          # Read from .tool-versions so the Ruby version is pinned in exactly
+          # one place. Do not replace this with a literal version.
+          ruby-version-file: .tool-versions
+          bundler-cache: true
+
+      - name: Run the quality gate
+        run: bin/ci

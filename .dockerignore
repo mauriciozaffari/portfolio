@@ -1,0 +1,69 @@
+# What the image is allowed to contain.
+#
+# This file is a security control, not an optimisation. The deployed artifact
+# must have no mount, no credential, and no path to any private source
+# material (features/deployment/SPEC.md). The strongest version of that
+# guarantee is a build context that never held one, so this file excludes by
+# default and the Dockerfile copies only what it needs.
+
+# Version control and its history.
+.git/
+.gitattributes
+.gitignore
+
+# Secrets. `config/master.key` is gitignored, so it exists on the operator's
+# machine and would otherwise be sent to the daemon and baked into a layer.
+# RAILS_MASTER_KEY arrives from the environment at run time instead.
+.env
+.env.*
+/config/master.key
+/config/credentials/*.key
+/.kamal/secrets*
+
+# Curation scratch space. Nothing private is ever staged here, and if it ever
+# were, this line is what keeps it out of a published image.
+/tmp/curation/
+
+# Agent and editor session state.
+/.omo/
+/.opencode/
+/.playwright-mcp/
+/.ruby-lsp/
+.DS_Store
+*.swp
+*~
+
+# Runtime state that belongs to the host, not the image.
+/log/*
+!/log/.keep
+/tmp/*
+!/tmp/.keep
+/tmp/pids/*
+!/tmp/pids/.keep
+/.bundle/
+/vendor/bundle/
+
+# Build artifacts. Both are regenerated inside the image by
+# `rails assets:precompile`, so copying them in would ship whatever happened to
+# be on the operator's machine.
+/app/assets/builds/*
+!/app/assets/builds/.keep
+/public/assets/
+
+# Tests and their fixtures. spec/fixtures/unsafe-record.md exists to trip every
+# content-safety rule; it is deliberately not published.
+/spec/
+
+# Documentation. Read on GitHub, not served by the app.
+/features/
+AGENTS.md
+DESIGN.md
+README.md
+Dockerfile
+.dockerignore
+/.github/
+
+# Kamal configuration is applied from the operator's machine, never from inside
+# the container.
+/config/deploy.yml
+/.kamal/

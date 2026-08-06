@@ -17,6 +17,12 @@
 /config/master.key
 /config/credentials/*.key
 
+# .kamal/secrets is committed on purpose — it holds only $NAME references.
+# These two variants are not, because they are the natural place to paste a
+# literal value, and this repository is public.
+/.kamal/secrets-common
+/.kamal/secrets.*
+
 # Curation scratch space. Private source material is reviewed outside this
 # repository; if anything is ever staged locally, it must not be committable.
 /tmp/curation/

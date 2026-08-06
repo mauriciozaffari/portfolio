@@ -27,8 +27,21 @@ Rails.application.configure do
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   config.force_ssl = true
 
-  # Skip http-to-https redirect for the default health check endpoint.
-  # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
+  # Rails' own defaults, pinned so they are a decision rather than an
+  # inheritance. `subdomains: true` is the part with teeth: it commits every
+  # future *.zaffari.casa to HTTPS for two years from a visitor's last request.
+  #
+  # `preload: false` deliberately. Preloading is a one-way door — removal from
+  # the browser-shipped list takes months — and it should be opted into from
+  # hstspreload.org once the site has been up on HTTPS long enough to trust,
+  # not on the first deploy.
+  #
+  # No `redirect: { exclude: ... }` for /up. It is not needed: `assume_ssl`
+  # above makes every proxied request look like HTTPS, so the health check is
+  # never redirected. Verified against the built image.
+  config.ssl_options = {
+    hsts: { expires: 2.years, subdomains: true, preload: false }
+  }
 
   # Log to STDOUT with the current request id as a default log tag.
   config.log_tags = [ :request_id ]

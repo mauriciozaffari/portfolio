@@ -50,4 +50,9 @@ end
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
+
+  # Deploys the container to the VPS [https://kamal-deploy.org]. Development
+  # only: Kamal runs from a workstation and drives the server over SSH, so it is
+  # never installed into the image it builds — see features/deployment/SPEC.md.
+  gem "kamal", "~> 2.12", require: false
 end

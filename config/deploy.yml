@@ -1,0 +1,79 @@
+# Kamal 2 deployment for https://zaffari.casa
+#
+# One stateless web container on one small VPS. There is no `accessories:`
+# block and there must never be one: this application has no database, no cache
+# server, and no queue, which is the whole reason the topology fits on a single
+# box. See features/deployment/SPEC.md.
+#
+# Nothing here names a server, a registry account, or a credential. The four
+# values only the operator knows arrive from the environment and fail loudly
+# when unset. features/deployment/IMPLEMENTATION.md lists all of them.
+#
+#   kamal deploy     ships the current working tree
+#   kamal rollback    returns to the previous version
+#   kamal config      prints this file fully resolved, without touching a server
+
+service: zaffari-casa
+
+# Repository path within the registry. Kamal prepends `registry.server` to this
+# itself, so naming the server here too would produce it twice.
+image: <%= ENV.fetch("KAMAL_REGISTRY_USERNAME") { raise "KAMAL_REGISTRY_USERNAME is unset - see features/deployment/IMPLEMENTATION.md" } %>/zaffari-casa
+
+servers:
+  web:
+    - <%= ENV.fetch("KAMAL_HOST") { raise "KAMAL_HOST is unset - see features/deployment/IMPLEMENTATION.md" } %>
+
+registry:
+  server: <%= ENV.fetch("KAMAL_REGISTRY_SERVER") %>
+  username: <%= ENV.fetch("KAMAL_REGISTRY_USERNAME") %>
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+builder:
+  # Explicit in Kamal 2. The VPS is x86_64; building on an arm64 workstation
+  # will emulate, which is slow but correct.
+  arch: amd64
+
+proxy:
+  # kamal-proxy obtains and renews a Let's Encrypt certificate for this host and
+  # redirects HTTP to HTTPS automatically. Both require port 80 and port 443 to
+  # be reachable from the internet and this name to already resolve to the host.
+  ssl: true
+  host: zaffari.casa
+
+  # Puma listens on 3000 (config/puma.rb); kamal-proxy defaults to 80.
+  app_port: 3000
+
+  # The Rails health endpoint from config/routes.rb. A new container gets no
+  # traffic until this answers 200, which is what makes a deploy zero-downtime.
+  healthcheck:
+    path: /up
+    interval: 2
+    timeout: 5
+
+  # `forward_headers` is deliberately left at its default of false. With SSL
+  # terminated here and nothing in front of this proxy, an X-Forwarded-For or
+  # X-Forwarded-Proto arriving from outside is forged by definition; the default
+  # overwrites them rather than passing them through. Set this to true only if a
+  # CDN is ever placed in front, and never before.
+
+ssh:
+  # Kamal's own default. Override for a VPS that disables root login.
+  user: <%= ENV.fetch("KAMAL_SSH_USER", "root") %>
+
+env:
+  secret:
+    - RAILS_MASTER_KEY
+
+# Lets the old container's fingerprinted assets keep resolving while the new one
+# takes over, so a page loaded a second before the deploy does not lose its
+# stylesheet. Matches WORKDIR in the Dockerfile.
+asset_path: /rails/public/assets
+
+# The version this configuration was written and validated against.
+minimum_version: 2.12.0
+
+aliases:
+  console: app exec --interactive --reuse "bin/rails console"
+  logs: app logs --follow
+  shell: app exec --interactive --reuse "bash"

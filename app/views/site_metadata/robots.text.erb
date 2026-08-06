@@ -1,0 +1,25 @@
+# robots.txt for <%= SiteMetadata.origin %>
+#
+# AI and LLM crawlers are allowed. That is a decision, not a default that nobody
+# got round to overriding, and it is written here because this file is the only
+# place a reader will think to look for it.
+#
+# This site exists to be found. A large share of its readers arrive through a
+# search result or through an assistant answering someone's question about the
+# person it describes, and an assistant that cannot read this page answers from
+# something worse — a stale profile, a scraped aggregator, a guess. So GPTBot,
+# ClaudeBot, Google-Extended, PerplexityBot, CCBot, Applebot-Extended and
+# whatever succeeds them are covered by the wildcard below deliberately. The
+# absence of a Disallow for any of them is the policy.
+#
+# There is nothing here to protect. Every byte a crawler can reach was curated
+# for publication and passes the scan in features/curated-content/SPEC.md.
+#
+# The one exclusion is the container health check, which renders no content and
+# exists for the proxy.
+
+User-agent: *
+Allow: /
+Disallow: <%= rails_health_check_path %>
+
+Sitemap: <%= SiteMetadata.sitemap_url %>

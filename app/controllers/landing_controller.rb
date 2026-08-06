@@ -1,8 +1,14 @@
 class LandingController < ApplicationController
+  # Only allow modern browsers supporting webp images, web push, badges, import
+  # maps, CSS nesting, and CSS :has. Scoped to the page rather than to every
+  # controller: see app/controllers/application_controller.rb.
+  allow_browser versions: :modern
+
   around_action :with_locale
 
   def show
     @page = LandingPage.new(repository: Content.repository, locale: locale)
+    @metadata = SiteMetadata.new(page: @page)
   end
 
   private

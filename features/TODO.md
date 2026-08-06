@@ -63,8 +63,8 @@ feature that adds an external dependency, a running cost, and an abuse surface.
 | [app-foundation](app-foundation/SPEC.md) | implemented | 2026-08-06 | 2026-08-06 | Rails 8 + Hotwire app that boots with no database, no Node toolchain, and no Solid adapters; RSpec and linters behind one CI entry point |
 | [curated-content](curated-content/SPEC.md) | implemented | 2026-08-06 | 2026-08-06 | Bilingual Markdown content in `data/**` with an enforced front-matter schema, a publication allowlist, and a content-safety scanner that fails the build |
 | [landing-page](landing-page/SPEC.md) | implemented | 2026-08-06 | 2026-08-06 | One server-rendered locale-aware page at `/` and `/pt-BR`, built entirely from the content records; zero JavaScript, zero web fonts, 18.5 KB gzipped, design language recorded in [DESIGN.md](../DESIGN.md) |
+| [site-metadata](site-metadata/SPEC.md) | implemented | 2026-08-06 | 2026-08-06 | Canonical URLs, hreflang, OG/Twitter cards, `Person` JSON-LD asserted to carry no contact field, an app-served sitemap dated from record `updated` values, a robots policy that allows AI crawlers on purpose, and a share card and favicon built from `site_profile` by `bin/rails site:images` |
 | [deployment](deployment/SPEC.md) | in-progress | 2026-08-06 | — | HTTPS at the canonical origin from a single stateless container, security headers, and CI that blocks deploy on a failing content scan. Kamal 2 config, production image, and headers are built and verified locally; nothing is deployed, because no server exists yet |
-| [site-metadata](site-metadata/SPEC.md) | spec'd | 2026-08-06 | — | Canonical URLs, hreflang, OG/Twitter cards, `Person` JSON-LD, sitemap, and a deliberate AI-crawler policy — all derived from `site_profile` |
 | [resume-download](resume-download/SPEC.md) | spec'd | 2026-08-06 | — | Publication-safe resume generated from the same records as the page, with no phone, email, address, or compensation in content or PDF metadata |
 | [chatbot](chatbot/SPEC.md) | spec'd | 2026-08-06 | — | Flag-gated grounded assistant over the published corpus only, with citations, explicit refusals, adversarial specs, rate limits, and no vector database |
 
@@ -102,8 +102,13 @@ Listed here in the order they block progress:
 - [Landing page](landing-page/SPEC.md): decide whether `source_url` becomes a
   visible citation, and whether `metric` and `skill_group` get an ordering key.
   Neither blocks anything; both are recorded so they are not improvised.
-- [Site metadata](site-metadata/SPEC.md): decide the AI/LLM crawler policy and
-  whether the share image is static or generated.
+- [Site metadata](site-metadata/SPEC.md): **implemented** — both open decisions
+  are made and recorded (AI crawlers allowed on purpose; the share card is a
+  static PNG built from the record by `bin/rails site:images`). What is left
+  needs the live origin: validate the unfurl through LinkedIn's and Slack's own
+  debuggers, which cannot reach a local server. A second open item is whether a
+  share card left stale by a profile edit should fail the build; CI cannot run
+  the image task, so nothing detects it today.
 - [Resume download](resume-download/SPEC.md): none blocking — Prawn and the
   distinct-layout trade are decided in the SPEC.
 - [Chatbot](chatbot/SPEC.md): decide conversation logging and retention, and

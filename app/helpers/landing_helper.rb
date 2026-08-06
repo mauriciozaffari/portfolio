@@ -44,7 +44,7 @@ module LandingHelper
   end
 
   def locale_path(locale)
-    locale.to_s == "pt-BR" ? portuguese_root_path : root_path
+    SiteMetadata.path_for(locale)
   end
 
   def calendar_month(value)

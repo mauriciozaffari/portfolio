@@ -1,7 +1,7 @@
 ---
 title: "Site Metadata - Spec"
 type: "feature-spec"
-status: "spec'd"
+status: "implemented"
 created: "2026-08-06"
 updated: "2026-08-06"
 origin: "operational need (the site is a professional showcase; how it appears when shared is part of the product)"
@@ -9,7 +9,7 @@ origin: "operational need (the site is a professional showcase; how it appears w
 
 # Site Metadata
 
-- Status: spec'd
+- Status: implemented — see [IMPLEMENTATION.md](IMPLEMENTATION.md)
 - Created: 2026-08-06
 - Updated: 2026-08-06
 - Origin: operational need (the site is a professional showcase; how it appears when shared is part of the product)
@@ -60,8 +60,26 @@ produces is an absolute URL.
 
 ## Pending TODOs
 
-- [ ] Decide the AI/LLM crawler policy — allow, disallow, or selective. The
-      site's purpose argues for being found, including by assistants doing
-      candidate research.
-- [ ] Decide whether the share image is a static asset or generated from
-      content.
+- [x] Decide the AI/LLM crawler policy — allow, disallow, or selective.
+      Resolved: **allow, without exception.** The site exists to be found, and a
+      growing share of its readers meet it through an assistant answering
+      someone else's question rather than through a browser; an assistant that
+      cannot read this page answers from something worse. `robots.txt` states
+      the decision in prose so it cannot later be mistaken for a default nobody
+      overrode, and a spec asserts the statement is still there. The only
+      `Disallow` is the container health check.
+- [x] Decide whether the share image is a static asset or generated from
+      content. Resolved: **static, generated from content at authoring time.**
+      `bin/rails site:images` builds it from the `site_profile` record with
+      ImageMagick and the PNG is committed; the runtime image has neither
+      ImageMagick nor a headless browser, and a scraper fetches the file once
+      and caches it. Verified byte-identical across runs.
+- [ ] Validate the card through each platform's own unfurl debugger after the
+      first deploy. The image was rendered and inspected, but LinkedIn's and
+      Slack's scrapers cannot reach a local server, so the end-to-end unfurl is
+      the one acceptance criterion that needs a live origin.
+- [ ] Decide whether a stale share card should fail the build. `site:images` is
+      an authoring tool that CI cannot run — it needs ImageMagick and two fonts
+      the container does not have — so editing the profile's `name` or
+      `headline` leaves the committed PNG showing the old one until someone
+      reruns the task, and nothing detects that.

@@ -94,10 +94,10 @@ Everything below was run against the real image, not reasoned about.
 | `spec/`, `features/`, `.git/` in image | Absent |
 | `data/` in image | Present, all eight record types |
 | Stylesheet | Precompiled at build time, served with `max-age=31556952` |
-| Script tags in served HTML | 0 |
+| Script tags in served HTML | 0 at the time of this measurement. [site-metadata](../site-metadata/IMPLEMENTATION.md) later added one `type="application/ld+json"` data block, which is never executed and raises no CSP violation — verified in Chromium |
 | Inline style attributes in served HTML | 0 |
 | `kamal config` | Resolves; writes nothing to the working tree |
-| `bin/ci` | Exit 0, **174 examples, 0 failures** |
+| `bin/ci` | Exit 0, **174 examples, 0 failures** (229 as of [site-metadata](../site-metadata/IMPLEMENTATION.md)) |
 
 Headers observed on `GET /` from the production container:
 

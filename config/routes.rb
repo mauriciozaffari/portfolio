@@ -14,4 +14,14 @@ Rails.application.routes.draw do
   # Portuguese from the English URL.
   root "landing#show", defaults: { locale: "en" }
   get "pt-BR" => "landing#show", as: :portuguese_root, defaults: { locale: "pt-BR" }
+
+  # Served by the application rather than dropped into public/: both documents
+  # restate values that live in the content records, and a static copy is a
+  # second source that drifts silently.
+  #
+  # `format: false` drops the `(.:format)` segment, so the dot in each name is a
+  # literal — `/robots.txt.json` is a 404, and the path helper cannot generate
+  # `/sitemap.xml.xml`.
+  get "robots.txt" => "site_metadata#robots", as: :robots, format: false
+  get "sitemap.xml" => "site_metadata#sitemap", as: :sitemap, format: false
 end

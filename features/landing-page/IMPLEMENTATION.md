@@ -143,9 +143,19 @@ implemented, measured, and removed: 105,579 bytes uncompressed, 61% of the page'
 entire transfer, in exchange for avoiding one full page load on the locale
 switch — the only navigation this site has, and one most visitors never use.
 Stimulus was removed first and more easily: zero controllers, and an eager-loading
-pin ships the framework plus its loader to register nothing. The page now emits
-**no `<script>` tag at all**, which also makes the JavaScript-disabled acceptance
-criterion true by construction rather than by care. The gems stay in the Gemfile
+pin ships the framework plus its loader to register nothing. The page emits
+**no executable JavaScript at all**, which also makes the JavaScript-disabled
+acceptance criterion true by construction rather than by care.
+
+> Amended by [site-metadata](../site-metadata/IMPLEMENTATION.md): the page now
+> carries exactly one `<script>` *element*, a `type="application/ld+json"` data
+> block. HTML's prepare-the-script-element algorithm returns before the CSP
+> check when the type is not a JavaScript MIME type, so nothing is executed —
+> confirmed in Chromium under `script-src 'none'` with zero
+> `securitypolicyviolation` events. The security spec now asserts script *type*
+> rather than counting elements.
+
+The gems stay in the Gemfile
 because app-foundation owns the dependency set, and `bin/importmap audit` stays in
 `bin/ci` so a future pin cannot arrive unaudited. The rationale is repeated at the
 point of enforcement, in [config/importmap.rb](../../config/importmap.rb).
@@ -188,6 +198,12 @@ what the proxy will serve, that is **18.5 KB**: HTML 9,811, CSS 4,811, icons
 gzipped; the difference is the 35 substitution markers and their
 visually-hidden sentences. Zero third-party origins, zero scripts, zero fonts.
 
+> Amended by [site-metadata](../site-metadata/IMPLEMENTATION.md), which moved
+> the total **down**. The head grew by 2,496 bytes uncompressed and 396 gzipped;
+> the icons it replaced shrank by more, from 4,288 bytes to 2,218, because the
+> Rails generator's `icon.png` gave way to a four-shape SVG. Still 4 requests,
+> still zero third-party origins and zero fonts.
+
 **Layout shift.** Cumulative layout shift measured **0** via
 `PerformanceObserver`. There is nothing to shift: no images, no web font, no
 JavaScript.
@@ -225,7 +241,7 @@ gitignored, and this repository is public.
 
 | Spec | What it proves |
 |---|---|
-| [spec/requests/landing_spec.rb](../../spec/requests/landing_spec.rb) | Shared examples run against both locales: 200, every section id present, the four landmarks, exactly one `h1`, no heading-level skip, name and headline sourced from `site_profile`, every in-page anchor resolving, the footer publishing exactly the approved links and nothing else, both canonical URLs offered with one marked `aria-current`, no unresolved translation, and no non-relative asset URL or `@font-face`. Then per locale: `html lang`, that `/` substitutes nothing, that `?locale=pt-BR` cannot serve Portuguese from `/`, and that `/pt-BR` translates the frame, shows the notice once, marks every substituted container with `lang="en"`, and hides the marker from assistive technology while explaining it in text. |
+| [spec/requests/landing_spec.rb](../../spec/requests/landing_spec.rb) | Shared examples run against both locales: 200, every section id present, the four landmarks, exactly one `h1`, no heading-level skip, name and headline sourced from `site_profile`, every in-page anchor resolving, the footer publishing exactly the approved links and nothing else, both canonical URLs offered with one marked `aria-current`, no unresolved translation, and no non-relative asset URL or `@font-face` — narrowed by [site-metadata](../site-metadata/IMPLEMENTATION.md) to the `rel` values that actually fetch, since `canonical` and `alternate` must be absolute; the origins those point at are asserted in `spec/requests/site_metadata_spec.rb`. Then per locale: `html lang`, that `/` substitutes nothing, that `?locale=pt-BR` cannot serve Portuguese from `/`, and that `/pt-BR` translates the frame, shows the notice once, marks every substituted container with `lang="en"`, and hides the marker from assistive technology while explaining it in text. |
 | `spec/requests/landing_spec.rb`, "the section index across both locales" | The chrome-versus-content boundary above, locked down: the index covers every section but the masthead; **no Portuguese label equals its English string**; the leadership entry is the I18n key and specifically *not* the record's `title`; and the leadership `<h2>` is still the record's title, still `lang="en"`, still marked. Verified to fail — reintroducing the record-derived label fails two of the four with `expected ["How I work"].empty? to be truthy`. |
 | [spec/models/landing_page_spec.rb](../../spec/models/landing_page_spec.rb) | The prominence split foregrounds without discarding; every derived ordering, including a dated month sorting after a bare year; drafts and restricted records unreachable; and the fallback serving the whole page from the locale that does exist. |
 | [spec/models/heading_levels_spec.rb](../../spec/models/heading_levels_spec.rb) | The offset applies to headings and nothing else, stops at `h6`, returns renderable markup, matches a real case study, and — the guard that matters — fails if the sanitizer's heading allowlist ever widens past `h4`. |
@@ -233,7 +249,8 @@ gitignored, and this repository is public.
 
 `bin/ci` is green: RuboCop (45 files), `herb analyze` (13 files),
 `content:validate`, `content:scan`, `content:paths`, `importmap audit`, and 123
-RSpec examples.
+RSpec examples. (229 as of
+[site-metadata](../site-metadata/IMPLEMENTATION.md).)
 
 ## Known limitations / pitfalls
 
@@ -270,10 +287,10 @@ RSpec examples.
   of a table of contents on an 18,500px document, and the name still lands above
   the fold. Hiding the index below `md` would remove in-page navigation exactly
   where the page is longest.
-- **Both favicon links fire on every load.** `icon.png` is 4,166 bytes and is now
-  the single largest asset after the HTML and the CSS. It is generator output
-  that [site-metadata](../site-metadata/SPEC.md) owns, so it was measured and
-  left alone rather than optimised across a feature boundary.
+- **Both favicon links fire on every load.** ~~`icon.png` is 4,166 bytes~~ —
+  resolved by [site-metadata](../site-metadata/IMPLEMENTATION.md), which
+  replaced the generator's artwork with a two-ink mark and brought `icon.png`
+  down to 1,902 bytes. Both links still fire; the pair now costs 2,218 bytes.
 - **`tailwind.css` must be rebuilt after a class changes.** `bin/dev` watches,
   `bin/ci` does not — it lints and tests the Ruby and reads the committed-in-name
   build artifact. A stale build shows up as a class that silently does nothing,

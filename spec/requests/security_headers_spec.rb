@@ -73,8 +73,15 @@ RSpec.describe "Security headers", type: :request do
   shared_examples "a page the policy does not break" do
     let(:document) { Nokogiri::HTML5(response.body) }
 
+    # The page still ships no executable JavaScript. What it now carries is one
+    # `application/ld+json` data block: HTML's prepare-the-script-element
+    # algorithm returns before the CSP check when the type is not a JavaScript
+    # MIME type, so nothing is executed and `script-src 'none'` has nothing to
+    # block. Asserted by type rather than by counting elements, so an
+    # executable script — inline or sourced — still fails here.
     it "loads no script the policy would block" do
-      expect(document.css("script")).to be_empty
+      expect(document.css("script[src]")).to be_empty
+      expect(document.css("script").map { |node| node["type"] }).to all(eq("application/ld+json"))
     end
 
     it "carries no inline style attribute or style block" do
@@ -82,8 +89,12 @@ RSpec.describe "Security headers", type: :request do
       expect(document.css("[style]")).to be_empty
     end
 
+    # `rel="canonical"` and `rel="alternate"` are excluded because they fetch
+    # nothing and must be absolute to mean anything. Every rel that does cause a
+    # request is still required to be first-party.
     it "loads every subresource from this origin" do
-      sources = document.css("link[href], img[src]").map { |node| node["href"] || node["src"] }
+      sources = document.css("link[rel~='stylesheet'], link[rel~='icon'], link[rel~='apple-touch-icon'], img[src]")
+                        .map { |node| node["href"] || node["src"] }
 
       expect(sources).not_to be_empty
       expect(sources).to all(start_with("/"))

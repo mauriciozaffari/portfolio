@@ -1,0 +1,36 @@
+<meta name="description" content="<%= metadata.description %>">
+
+<link rel="canonical" href="<%= metadata.canonical_url %>">
+<% metadata.alternates.each do |alternate| %>
+  <link rel="alternate" hreflang="<%= alternate[:hreflang] %>" href="<%= alternate[:href] %>">
+<% end %>
+
+<meta property="og:type" content="profile">
+<meta property="og:site_name" content="<%= SiteMetadata.host %>">
+<meta property="og:title" content="<%= metadata.title %>">
+<meta property="og:description" content="<%= metadata.description %>">
+<meta property="og:url" content="<%= metadata.canonical_url %>">
+<meta property="og:locale" content="<%= metadata.open_graph_locale %>">
+<% metadata.alternate_open_graph_locales.each do |code| %>
+  <meta property="og:locale:alternate" content="<%= code %>">
+<% end %>
+<meta property="og:image" content="<%= SiteMetadata.image_url %>">
+<meta property="og:image:type" content="<%= SiteMetadata::IMAGE_TYPE %>">
+<meta property="og:image:width" content="<%= SiteMetadata::IMAGE_WIDTH %>">
+<meta property="og:image:height" content="<%= SiteMetadata::IMAGE_HEIGHT %>">
+<meta property="og:image:alt" content="<%= metadata.image_alt %>">
+
+<%# No twitter:site or twitter:creator: both take an @handle, and no handle is %>
+<%# on the four-entry contact allowlist in features/curated-content/SPEC.md. %>
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="<%= metadata.title %>">
+<meta name="twitter:description" content="<%= metadata.description %>">
+<meta name="twitter:image" content="<%= SiteMetadata.image_url %>">
+<meta name="twitter:image:alt" content="<%= metadata.image_alt %>">
+
+<%# A data block, not a program: the type is not a JavaScript MIME type, so %>
+<%# HTML's prepare-the-script-element algorithm returns before the CSP check %>
+<%# and `script-src 'none'` has nothing to execute. Marked safe because %>
+<%# SiteMetadata#person_json escapes `<`, `>` and `&`, which is what makes a %>
+<%# `</script>` inside a record value unwritable. %>
+<script type="application/ld+json"><%= metadata.person_json.html_safe %></script>

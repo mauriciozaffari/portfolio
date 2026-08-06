@@ -12,6 +12,11 @@ en:
       day_month_year: "%-d %B %Y"
       month_year: "%B %Y"
 
+  # Wording the share card needs and the page does not. The values inside it are
+  # still the record's; only the sentence around them is chrome.
+  metadata:
+    image_alt: "A typographic card reading %{name}, %{headline}."
+
   landing:
     skip_to_content: "Skip to content"
     document_title: "%{name} — %{headline}"

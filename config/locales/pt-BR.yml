@@ -64,6 +64,9 @@ pt-BR:
       separator: ","
       precision: 2
 
+  metadata:
+    image_alt: "Um cartão tipográfico com %{name}, %{headline}."
+
   landing:
     skip_to_content: "Ir para o conteúdo"
     document_title: "%{name} — %{headline}"

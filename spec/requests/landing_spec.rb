@@ -74,9 +74,16 @@ RSpec.describe "Landing page", type: :request do
       expect(response.body).not_to include("translation missing")
     end
 
+    # Scoped to the rels that actually fetch something. `canonical` and
+    # `alternate` are absolute by definition — an origin-relative canonical URL
+    # is not one — and they cost no request, so including them here would have
+    # forced site-metadata to choose between a correct canonical and a green
+    # spec. What they point at is asserted in spec/requests/site_metadata_spec.rb.
     it "loads no third-party origin and no web font" do
-      urls = page_document.css("link[href], script[src]").map { |node| node["href"] || node["src"] }
+      urls = page_document.css("link[rel~='stylesheet'], link[rel~='icon'], link[rel~='apple-touch-icon'], script[src]")
+                          .map { |node| node["href"] || node["src"] }
 
+      expect(urls).not_to be_empty
       expect(urls).to all(start_with("/"))
       expect(response.body).not_to include("@font-face")
     end

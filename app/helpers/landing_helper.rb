@@ -47,6 +47,12 @@ module LandingHelper
     SiteMetadata.path_for(locale)
   end
 
+  # Not `resume_path`, which is the routing table's own helper for the English
+  # document. This one picks the locale, the way `locale_path` does above.
+  def resume_path_for(locale)
+    Resume.path_for(locale)
+  end
+
   def calendar_month(value)
     match = MONTH.match(value.to_s)
     return value.to_s if match.nil?

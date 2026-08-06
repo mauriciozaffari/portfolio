@@ -19,6 +19,11 @@ gem "stimulus-rails"
 # Pure Ruby, so it adds no native extension and no platform-specific rows to the
 # lockfile. Its output is never trusted: see app/models/content/markdown.rb.
 gem "kramdown", "~> 2.5"
+# Builds the downloadable resume [https://prawnpdf.org]. Pure Ruby, so the
+# production image needs no headless browser and no Node — see
+# features/resume-download/SPEC.md. Only the fourteen PDF base fonts are used,
+# so nothing is embedded and no font file is vendored.
+gem "prawn", "~> 2.5"
 # Use Tailwind CSS [https://github.com/rails/tailwindcss-rails]
 gem "tailwindcss-rails", "~> 4.6"
 # Vendors the Tailwind standalone binary, so no Node toolchain is needed. Pinned
@@ -45,6 +50,12 @@ group :development, :test do
 
   # Test framework [https://github.com/rspec/rspec-rails]
   gem "rspec-rails", "~> 8.0"
+
+  # Reads the generated resume back out [https://github.com/yob/pdf-reader].
+  # Test-only on purpose: the application writes PDFs and never parses one, and
+  # the scan has to run over the bytes a reader downloads rather than over the
+  # source that produced them.
+  gem "pdf-reader", "~> 2.15"
 end
 
 group :development do

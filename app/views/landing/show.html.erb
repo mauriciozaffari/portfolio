@@ -103,6 +103,10 @@
 
         <%= render "substitution", entry: @page.profile %>
 
+        <p class="mt-6 text-xl text-ink-body">
+          <a class="link" href="<%= resume_path_for(@page.locale) %>"><%= t("landing.contact.resume") %></a>
+        </p>
+
         <p class="mt-8 font-mono text-sm text-ink-faint">
           <%= t("landing.contact.reviewed", date: content_date(@page.profile.record[:updated])) %>
         </p>

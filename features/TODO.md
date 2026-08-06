@@ -64,8 +64,8 @@ feature that adds an external dependency, a running cost, and an abuse surface.
 | [curated-content](curated-content/SPEC.md) | implemented | 2026-08-06 | 2026-08-06 | Bilingual Markdown content in `data/**` with an enforced front-matter schema, a publication allowlist, and a content-safety scanner that fails the build |
 | [landing-page](landing-page/SPEC.md) | implemented | 2026-08-06 | 2026-08-06 | One server-rendered locale-aware page at `/` and `/pt-BR`, built entirely from the content records; zero JavaScript, zero web fonts, 18.5 KB gzipped, design language recorded in [DESIGN.md](../DESIGN.md) |
 | [site-metadata](site-metadata/SPEC.md) | implemented | 2026-08-06 | 2026-08-06 | Canonical URLs, hreflang, OG/Twitter cards, `Person` JSON-LD asserted to carry no contact field, an app-served sitemap dated from record `updated` values, a robots policy that allows AI crawlers on purpose, and a share card and favicon built from `site_profile` by `bin/rails site:images` |
+| [resume-download](resume-download/SPEC.md) | implemented | 2026-08-06 | 2026-08-06 | A PDF per locale built with Prawn on request from the same records as the page — no phone, email, address or compensation in the text or in the document metadata, proven by scanning the extracted bytes and the information dictionary, with a failing fixture proving the scan fires |
 | [deployment](deployment/SPEC.md) | in-progress | 2026-08-06 | — | HTTPS at the canonical origin from a single stateless container, security headers, and CI that blocks deploy on a failing content scan. Kamal 2 config, production image, and headers are built and verified locally; nothing is deployed, because no server exists yet |
-| [resume-download](resume-download/SPEC.md) | spec'd | 2026-08-06 | — | Publication-safe resume generated from the same records as the page, with no phone, email, address, or compensation in content or PDF metadata |
 | [chatbot](chatbot/SPEC.md) | spec'd | 2026-08-06 | — | Flag-gated grounded assistant over the published corpus only, with citations, explicit refusals, adversarial specs, rate limits, and no vector database |
 
 ## Publication policy
@@ -109,8 +109,12 @@ Listed here in the order they block progress:
   debuggers, which cannot reach a local server. A second open item is whether a
   share card left stale by a profile edit should fail the build; CI cannot run
   the image task, so nothing detects it today.
-- [Resume download](resume-download/SPEC.md): none blocking — Prawn and the
-  distinct-layout trade are decided in the SPEC.
+- [Resume download](resume-download/SPEC.md): **implemented** — see
+  [its IMPLEMENTATION.md](resume-download/IMPLEMENTATION.md). Two open items,
+  neither blocking: whether a one-page variant is worth having (the honest build
+  is a key on the records, not a selection rule inside the feature), and the
+  untagged-PDF accessibility gap Prawn leaves, whose mitigation today is that
+  drawing order is reading order and the colophon links back to the HTML page.
 - [Chatbot](chatbot/SPEC.md): decide conversation logging and retention, and
   record the corpus-size threshold that would justify a vector database.
   Provider (Gemini) and the USD 20/month hard cap are decided.

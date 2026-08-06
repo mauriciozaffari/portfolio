@@ -1,7 +1,7 @@
 ---
 title: "Resume Download - Spec"
 type: "feature-spec"
-status: "spec'd"
+status: "implemented"
 created: "2026-08-06"
 updated: "2026-08-06"
 origin: "user request (downloadable resume, publication-safe build)"
@@ -9,10 +9,11 @@ origin: "user request (downloadable resume, publication-safe build)"
 
 # Resume Download
 
-- Status: spec'd
+- Status: implemented
 - Created: 2026-08-06
 - Updated: 2026-08-06
 - Origin: user request (downloadable resume, publication-safe build)
+- Built: see [IMPLEMENTATION.md](IMPLEMENTATION.md)
 
 ## Problem / motivation
 
@@ -69,5 +70,23 @@ titles, and numbers.
   diverge: both surfaces read the same `published` + `public` records, so the
   facts, dates, and figures cannot drift apart. A spec asserts the PDF's
   content is derived from those records rather than restated.
+- **The document is the whole corpus, not a shortlist.** Falls straight out of
+  the rule above: choosing which records belong on a resume would be a second
+  editorial rule, and a second editorial rule is what drifts. The consequence is
+  a multi-page dossier rather than a one-page CV, recorded in
+  [IMPLEMENTATION.md](IMPLEMENTATION.md).
 
 ## Pending TODOs
+
+- [x] Build it. Done: two locale routes generating from `Content::Repository`
+      through `LandingPage`, with both the extracted PDF text and the document
+      information dictionary scanned by `Content::SafetyScanner`, and a failing
+      fixture proving that scan fires. See
+      [IMPLEMENTATION.md](IMPLEMENTATION.md).
+- [ ] Decide whether a one-page variant is worth having. Nothing blocks on it,
+      and the honest way to build one is a key on the records rather than a
+      selection rule inside this feature.
+- [ ] Revisit the untagged-PDF accessibility gap if a reader reports it. Prawn
+      emits no structure tree and no `/Lang`; the accessible surface is the HTML
+      page, which the document's colophon links back to.
+

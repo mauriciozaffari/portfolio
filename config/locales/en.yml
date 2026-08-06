@@ -17,6 +17,15 @@ en:
   metadata:
     image_alt: "A typographic card reading %{name}, %{headline}."
 
+  # The downloadable resume. Every heading, label and entry inside the document
+  # is borrowed from `landing` below, because the PDF and the page are the same
+  # content in two layouts. What is here is the wording only a file needs.
+  resume:
+    # The noun in the saved filename. The stem is the record's `name`.
+    filename: "resume"
+    page: "Page %{number} of %{total}"
+    current_version: "The current version of this document is at %{url}"
+
   landing:
     skip_to_content: "Skip to content"
     document_title: "%{name} — %{headline}"
@@ -71,3 +80,4 @@ en:
       heading: "Contact"
       top: "Back to top"
       reviewed: "Content last reviewed %{date}"
+      resume: "Download this page as a PDF"

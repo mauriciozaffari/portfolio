@@ -67,6 +67,11 @@ pt-BR:
   metadata:
     image_alt: "Um cartão tipográfico com %{name}, %{headline}."
 
+  resume:
+    filename: "curriculo"
+    page: "Página %{number} de %{total}"
+    current_version: "A versão atual deste documento está em %{url}"
+
   landing:
     skip_to_content: "Ir para o conteúdo"
     document_title: "%{name} — %{headline}"
@@ -117,3 +122,4 @@ pt-BR:
       heading: "Contato"
       top: "Voltar ao topo"
       reviewed: "Conteúdo revisado em %{date}"
+      resume: "Baixar esta página em PDF"

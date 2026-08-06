@@ -67,6 +67,14 @@ class LandingPage
     entries.any?(&:substituted?)
   end
 
+  # When the content behind this locale last changed, from the records rather
+  # than from the clock. nil when no record carries a readable date, which the
+  # two callers — the sitemap's `lastmod` and the resume's `CreationDate` — both
+  # answer by omitting the field rather than by inventing one.
+  def updated
+    @updated ||= entries.filter_map { |entry| date(entry.record.updated) }.max
+  end
+
   def entries
     @entries ||= [ profile, leadership, *metrics, *roles, *case_studies, *projects, *skill_groups, *education ].compact
   end
@@ -82,6 +90,14 @@ class LandingPage
 
     def prominent?(entry)
       entry.record[:prominence] == PROMINENT
+    end
+
+    # `updated` is a required key, so a nil here means a record was hand-edited
+    # into a shape the loader admits and a reader cannot use.
+    def date(value)
+      Date.parse(value.to_s)
+    rescue Date::Error
+      nil
     end
 
     # A single integer for a date that may or may not name a month, so that

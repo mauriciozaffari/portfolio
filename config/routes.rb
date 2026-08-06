@@ -24,4 +24,13 @@ Rails.application.routes.draw do
   # `/sitemap.xml.xml`.
   get "robots.txt" => "site_metadata#robots", as: :robots, format: false
   get "sitemap.xml" => "site_metadata#sitemap", as: :sitemap, format: false
+
+  # One resume per locale, alongside the page it is built from. Generated on
+  # request from the same records — nothing is written to disk, because the
+  # container is stateless and has no writable persistence.
+  #
+  # The `.pdf` is a literal, as above: `format: false` means `/resume.pdf.json`
+  # is a 404 rather than a second URL for the same document.
+  get "resume.pdf" => "resume#show", as: :resume, format: false, defaults: { locale: "en" }
+  get "pt-BR/resume.pdf" => "resume#show", as: :portuguese_resume, format: false, defaults: { locale: "pt-BR" }
 end

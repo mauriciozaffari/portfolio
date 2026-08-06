@@ -1,0 +1,74 @@
+---
+title: "Deployment - Spec"
+type: "feature-spec"
+status: "spec'd"
+created: "2026-08-06"
+updated: "2026-08-06"
+origin: "operational need (site must be publicly reachable before metadata and later features)"
+---
+
+# Deployment
+
+- Status: spec'd
+- Created: 2026-08-06
+- Updated: 2026-08-06
+- Origin: operational need (site must be publicly reachable before metadata and later features)
+
+## Problem / motivation
+
+Deployment sits early, not last, for two reasons.
+
+[site-metadata](../site-metadata/SPEC.md) needs a real origin: canonical URLs,
+absolute share-image URLs, and sitemap entries. Producing those before the site
+is reachable means writing placeholders and revisiting them.
+
+Deploying as soon as the page renders real content also means every later
+feature ships continuously instead of arriving as one big-bang release.
+
+The domain is already owned, which removes the highest-variance item.
+
+## Desired behavior
+
+- The site is reachable over HTTPS at the canonical origin. HTTP redirects to
+  HTTPS; HSTS is set.
+- **No database service exists in the production topology.** The deployed
+  artifact is a single stateless container.
+- One documented deploy command, repeatable. A rollback path is documented
+  **and exercised once** — an untested rollback is not a rollback.
+- Secrets come from the environment. None are committed.
+- Security headers: a CSP that actually blocks inline script (or a documented,
+  justified exception), `X-Content-Type-Options`, `Referrer-Policy`,
+  `Permissions-Policy`.
+- CI runs the full gate from [app-foundation](../app-foundation/SPEC.md) —
+  specs, linters, and the content-safety scanner from
+  [curated-content](../curated-content/SPEC.md) — and **blocks deploy on
+  failure**.
+- The deployed artifact has no mount, no credential, and no network path to any
+  private source material. This is enforced structurally by what the artifact
+  does not include, not by convention.
+
+## Constraints
+
+- The repository is public; the deploy pipeline configuration is public with
+  it. It must be readable without disclosing anything.
+- Single production environment. No staging.
+- Deployment must not become the reason a database gets added back.
+
+## Out of scope
+
+- Error monitoring and APM — revisit when [chatbot](../chatbot/SPEC.md)
+  introduces an external dependency worth monitoring.
+- CDN and multi-region topology. One page, one origin.
+- Zero-downtime orchestration beyond what the chosen host provides for free.
+
+## Canonical origin
+
+`https://zaffari.casa` — owned. Every absolute URL in
+[site-metadata](../site-metadata/SPEC.md), and the `mauricio@zaffari.casa`
+forwarding alias on the approved contact allowlist, derive from this origin.
+
+## Pending TODOs
+- [ ] Choose the host and deploy mechanism (Kamal to a single box vs a managed
+      container platform), and state why.
+- [ ] Decide whether deploys are triggered on merge to the default branch or
+      manually.

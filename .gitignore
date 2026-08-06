@@ -27,7 +27,13 @@
 /public/assets
 /.bundle
 
-# Tailwind standalone binary — downloaded, not vendored.
+# Compiled assets are build artifacts, rebuilt by `rails tailwindcss:build`.
+# Committing them means reviewing a generated diff and shipping a stale one.
+/app/assets/builds/*
+!/app/assets/builds/.keep
+
+# Tailwind CLI binary. Vendored by the tailwindcss-ruby gem, so this only
+# catches a stray manual download.
 /bin/tailwindcss
 
 # OS and editor noise

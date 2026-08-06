@@ -66,9 +66,13 @@ The domain is already owned, which removes the highest-variance item.
 `https://zaffari.casa` — owned. Every absolute URL in
 [site-metadata](../site-metadata/SPEC.md), and the `mauricio@zaffari.casa`
 forwarding alias on the approved contact allowlist, derive from this origin.
+## Decisions
+
+- **Kamal 2 to a single small VPS.** Rails 8's own deployment path, no vendor
+  lock, and it matches the one-stateless-container topology this project's
+  no-database rule was chosen to produce. The trade accepted: the box is ours
+  to patch and monitor.
 
 ## Pending TODOs
-- [ ] Choose the host and deploy mechanism (Kamal to a single box vs a managed
-      container platform), and state why.
 - [ ] Decide whether deploys are triggered on merge to the default branch or
       manually.

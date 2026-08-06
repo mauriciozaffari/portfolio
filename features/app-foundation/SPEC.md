@@ -1,7 +1,7 @@
 ---
 title: "App Foundation - Spec"
 type: "feature-spec"
-status: "spec'd"
+status: "implemented"
 created: "2026-08-06"
 updated: "2026-08-06"
 origin: "user request (Rails 8 + Hotwire showcase of my work)"
@@ -9,10 +9,11 @@ origin: "user request (Rails 8 + Hotwire showcase of my work)"
 
 # App Foundation
 
-- Status: spec'd
+- Status: implemented
 - Created: 2026-08-06
 - Updated: 2026-08-06
 - Origin: user request (Rails 8 + Hotwire showcase of my work)
+- Implementation: [IMPLEMENTATION.md](IMPLEMENTATION.md)
 
 ## Problem / motivation
 
@@ -65,8 +66,31 @@ topology to one stateless container.
   [chatbot](../chatbot/SPEC.md) introduces an external dependency.
 - Staging environments. One page, one owner, one production environment.
 
+## Known consequence
+
+The `rails` metagem installs `activerecord`, `activestorage`, `actionmailer`
+and `actioncable` as transitive dependencies even though none is required and
+all four are undefined at runtime. No database adapter is installed, so an
+accidental `require "active_record"` fails immediately rather than silently
+working. Unbundling the metagem into individual framework gems would remove
+them from the lockfile at the cost of hand-maintaining that list through every
+Rails upgrade — not worth it at this size, but recorded so the lockfile entries
+are not mistaken for a violation of hard rule 5.
+
 ## Pending TODOs
 
-- [ ] Decide the linter set (RuboCop configuration, ERB lint, and whether a
-      Markdown linter is worth it for `data/**`).
-- [ ] Confirm Tailwind standalone binary versioning and how it is pinned.
+- [x] Decide the linter set (RuboCop configuration, ERB lint, and whether a
+      Markdown linter is worth it for `data/**`). Resolved: `rubocop-rails-omakase`
+      unmodified, `herb analyze` for ERB and HTML, no Markdown linter —
+      `data/**` is gated by the content-safety scanner in
+      [curated-content](../curated-content/SPEC.md) instead. Reasoning in
+      [IMPLEMENTATION.md](IMPLEMENTATION.md).
+- [x] Confirm Tailwind standalone binary versioning and how it is pinned.
+      Resolved: the binary ships inside the `tailwindcss-ruby` gem, whose
+      version is the Tailwind CLI version. Pinned in the `Gemfile` and locked
+      at CLI v4.3.3. Nothing is downloaded at install time.
+- [x] Add `/app/assets/builds/*` and `!/app/assets/builds/.keep` to
+      `.gitignore`. Done — the compiled Tailwind stylesheet is a build artifact
+      and is no longer committable. Reviewing the rest of `.gitignore` against
+      the disclosure surface found nothing unsafe: secrets, keys, and agent
+      artifacts are all excluded.

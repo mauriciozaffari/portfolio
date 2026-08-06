@@ -72,9 +72,15 @@ ends up disclosing what the page correctly withholds.
 - Voice, file upload, or any non-text modality.
 - Lead capture or routing conversations to an inbox.
 
-## Pending TODOs
+## Decisions
 
-- [ ] Choose the model provider and record the cost ceiling.
+- **Provider: Google Gemini.** Already in production use in Inscripto, so one
+  fewer vendor and a familiar SDK.
+- **Cost ceiling: USD 20 per month, enforced as a hard cap with a kill
+  switch**, not an alert. An alert on a public endpoint tells you after the
+  money is gone.
+
+## Pending TODOs
 - [ ] Decide whether conversations are logged at all, and if so under what
       retention and what disclosure to the visitor.
 - [ ] Record the corpus-size threshold that would justify revisiting the

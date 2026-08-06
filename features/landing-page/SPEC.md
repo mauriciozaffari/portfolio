@@ -97,11 +97,23 @@ phase. They are acceptance criteria here, executable where possible:
 - Chat UI — see [chatbot](../chatbot/SPEC.md).
 - A blog, an analytics integration, and a contact form. None are requested.
 
+## Decisions
+
+- **Visual register: minimal editorial.** Type-led, restrained, tonal depth
+  rather than ornament, one accent used only for interaction. Reference
+  influences are the Linear and Notion register. Chosen because the content is
+  the argument here — a portfolio that looks overdesigned undercuts a claim of
+  engineering judgement, and this register ages better than a gradient-heavy
+  one. The concrete token values still have to be written into
+  `## Design direction` before any UI code exists.
+- **Locale URLs: `/` serves `en`, `/pt-BR` serves Portuguese.** A path prefix,
+  not a subdomain and not content negotiation, so every locale has one stable
+  canonical URL that [site-metadata](../site-metadata/SPEC.md) can point
+  `hreflang` at.
+
 ## Pending TODOs
 
-- [ ] Write the `## Design direction` values into this spec before any UI code
-      is written.
-- [ ] Decide the locale URL strategy (`/pt-BR` path prefix vs alternatives) —
-      the choice constrains [site-metadata](../site-metadata/SPEC.md) hreflang.
+- [ ] Write the `## Design direction` token values into this spec, then
+      `DESIGN.md`, before any UI code is written.
 - [ ] Decide whether the impact section leads with metrics or with named
       clients.

@@ -60,7 +60,7 @@ feature that adds an external dependency, a running cost, and an abuse surface.
 
 | Feature | Status | Created | Implemented | Summary |
 | ------- | ------ | ------- | ----------- | ------- |
-| [app-foundation](app-foundation/SPEC.md) | spec'd | 2026-08-06 | — | Rails 8 + Hotwire app that boots with no database, no Node toolchain, and no Solid adapters; RSpec and linters behind one CI entry point |
+| [app-foundation](app-foundation/SPEC.md) | implemented | 2026-08-06 | 2026-08-06 | Rails 8 + Hotwire app that boots with no database, no Node toolchain, and no Solid adapters; RSpec and linters behind one CI entry point |
 | [curated-content](curated-content/SPEC.md) | in-progress | 2026-08-06 | — | Bilingual Markdown content in `data/**` with an enforced front-matter schema, a publication allowlist, and a content-safety scanner that fails the build |
 | [landing-page](landing-page/SPEC.md) | spec'd | 2026-08-06 | — | One server-rendered locale-aware page with a recorded design direction; accessibility and performance as acceptance criteria, not a later phase |
 | [deployment](deployment/SPEC.md) | spec'd | 2026-08-06 | — | HTTPS at the canonical origin from a single stateless container, security headers, and CI that blocks deploy on a failing content scan |
@@ -91,21 +91,19 @@ Listed here in the order they block progress:
 - [Curated content](curated-content/SPEC.md): build the enforcement half — the
   loader, the content-safety scanner, and the outside-app-root grep gate. Until
   they exist the publication policy rests on human review alone, which is
-  weaker than the SPEC intends. Blocked on the Rails app.
-- [App foundation](app-foundation/SPEC.md): decide the linter set and pin the
-  Tailwind standalone binary. **Next feature up** — it unblocks the enforcement
-  half above.
+  weaker than the SPEC intends. **Next feature up** — the Rails app it was
+  blocked on now exists.
 - [Curated content](curated-content/SPEC.md): author the `pt-BR` records.
-- [Landing page](landing-page/SPEC.md): write the `## Design direction` values
-  into the spec before any UI code; decide the locale URL strategy, which
-  constrains hreflang.
-- [Deployment](deployment/SPEC.md): choose the host and deploy mechanism;
-  decide the deploy trigger. Canonical origin is recorded: `https://zaffari.casa`.
+- [Landing page](landing-page/SPEC.md): write the `## Design direction` token
+  values into the spec, then `DESIGN.md`, before any UI code. The visual
+  register and locale URL strategy are decided in the SPEC.
+- [Deployment](deployment/SPEC.md): decide the deploy trigger. Host and
+  mechanism are decided (Kamal 2 on a VPS); canonical origin is
+  `https://zaffari.casa`.
 - [Site metadata](site-metadata/SPEC.md): decide the AI/LLM crawler policy and
   whether the share image is static or generated.
-- [Resume download](resume-download/SPEC.md): choose the generation approach
-  given the stateless container; decide whether the PDF shares the page's
-  design direction.
-- [Chatbot](chatbot/SPEC.md): choose the provider and cost ceiling; decide
-  conversation logging and retention; record the corpus-size threshold that
-  would justify a vector database; decide the UI surface.
+- [Resume download](resume-download/SPEC.md): none blocking — Prawn and the
+  distinct-layout trade are decided in the SPEC.
+- [Chatbot](chatbot/SPEC.md): decide conversation logging and retention, and
+  record the corpus-size threshold that would justify a vector database.
+  Provider (Gemini) and the USD 20/month hard cap are decided.

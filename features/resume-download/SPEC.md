@@ -59,9 +59,15 @@ titles, and numbers.
   planned.
 - Preserving the exact visual design of the existing resume documents.
 
-## Pending TODOs
+## Decisions
 
-- [ ] Decide the generation approach (rendered HTML to PDF at build time vs on
-      request) and where the artifact is stored given the stateless container.
-- [ ] Decide whether the PDF layout is shared with, or deliberately distinct
-      from, the landing page design direction.
+- **Prawn, pure Ruby.** No headless Chrome in the production image and no Node,
+  so the container stays slim and no live request depends on a browser
+  rendering.
+- **The layout is deliberately distinct from the page**, which is the cost of
+  the Prawn choice. The mitigation is that layout is the *only* thing that can
+  diverge: both surfaces read the same `published` + `public` records, so the
+  facts, dates, and figures cannot drift apart. A spec asserts the PDF's
+  content is derived from those records rather than restated.
+
+## Pending TODOs

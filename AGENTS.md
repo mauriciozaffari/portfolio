@@ -12,7 +12,9 @@ answers questions about his background is the final planned feature.
 
 ## Current state (2026-08-06)
 
-**There is no Rails application yet.** The repository contains:
+**The Rails application exists and boots.** `bin/ci` is green and `GET /`
+returns 200 with a deliberate placeholder — the real page belongs to
+[landing-page](features/landing-page/SPEC.md). The repository contains:
 
 ```
 .tool-versions   ruby 4.0.6, nodejs 26.7.0 (both installed and working)

@@ -1,0 +1,16 @@
+<%= tag.article class: "border-t border-rule pt-6 first:border-t-0 first:pt-0", **substitution_attributes(entry) do %>
+  <h3 class="font-mono text-xl font-bold text-ink">
+    <%= link_to entry.record[:name], entry.record[:url], class: "link" %>
+  </h3>
+
+  <ul class="middot-list mt-2 font-mono text-sm text-ink-faint">
+    <li><%= entry.record[:role] %></li>
+    <% if entry.record[:downloads].present? %>
+      <li><%= t("landing.projects.downloads", total: number_with_delimiter(entry.record[:downloads])) %></li>
+    <% end %>
+  </ul>
+
+  <div class="prose mt-4 max-w-measure"><%= entry.record.html %></div>
+
+  <%= render "substitution", entry: entry %>
+<% end %>

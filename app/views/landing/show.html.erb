@@ -1,0 +1,111 @@
+<% content_for :title, t("landing.document_title", name: @page.profile.record[:name], headline: @page.profile.record[:headline]) %>
+
+<a class="label sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:z-10 focus:m-4 focus:border focus:border-ink focus:bg-paper focus:px-4 focus:py-3 focus:text-ink" href="#content">
+  <%= t("landing.skip_to_content") %>
+</a>
+
+<header class="border-b border-rule">
+  <div class="mx-auto flex max-w-page flex-wrap items-baseline justify-between gap-x-10 gap-y-3 px-5 py-4 md:px-10 lg:px-16">
+    <nav aria-label="<%= t("landing.navigation.label") %>">
+      <ul class="flex flex-wrap gap-x-6 gap-y-2">
+        <% landing_sections.each do |id, label| %>
+          <li><a class="label link-quiet" href="#<%= id %>"><%= label %></a></li>
+        <% end %>
+      </ul>
+    </nav>
+
+    <%= render "locale_switcher", page: @page %>
+  </div>
+</header>
+
+<main id="content" tabindex="-1" class="mx-auto max-w-page px-5 pb-20 md:px-10 md:pb-28 lg:px-16">
+  <% if @page.substituted? %>
+    <p class="mt-8 max-w-measure border border-rule-strong p-4 font-mono text-sm text-ink-muted">
+      <%= t("landing.substitution.notice") %>
+    </p>
+  <% end %>
+
+  <div class="mt-12 md:mt-16">
+    <%= render "masthead", page: @page %>
+  </div>
+
+  <div class="mt-12 space-y-12 md:mt-20 md:space-y-20">
+    <%= render layout: "section", locals: { id: "impact", label: t("landing.impact.heading") } do %>
+      <ul class="border-b border-rule">
+        <%= render partial: "metric", collection: @page.metrics, as: :entry %>
+      </ul>
+    <% end %>
+
+    <%= render layout: "section", locals: { id: "experience", label: t("landing.experience.heading") } do %>
+      <div class="space-y-8">
+        <%= render partial: "role", collection: @page.current_roles, as: :entry %>
+      </div>
+
+      <div class="mt-14">
+        <h3 class="label"><%= t("landing.experience.earlier") %></h3>
+
+        <div class="mt-5 space-y-6">
+          <%= render partial: "earlier_role", collection: @page.earlier_roles, as: :entry %>
+        </div>
+      </div>
+    <% end %>
+
+    <%= render layout: "section", locals: { id: "work", label: t("landing.work.heading") } do %>
+      <div class="space-y-10">
+        <%= render partial: "case_study", collection: @page.case_studies, as: :entry %>
+      </div>
+    <% end %>
+
+    <%= render layout: "section", locals: { id: "leadership", label: @page.leadership.record[:title], entry: @page.leadership } do %>
+      <div class="prose max-w-measure"><%= @page.leadership.record.html %></div>
+
+      <%= render "substitution", entry: @page.leadership %>
+    <% end %>
+
+    <%= render layout: "section", locals: { id: "projects", label: t("landing.projects.heading") } do %>
+      <div class="space-y-8">
+        <%= render partial: "project", collection: @page.projects, as: :entry %>
+      </div>
+    <% end %>
+
+    <%= render layout: "section", locals: { id: "skills", label: t("landing.skills.heading") } do %>
+      <div class="space-y-6">
+        <%= render partial: "skill_group", collection: @page.skill_groups, as: :entry %>
+      </div>
+
+      <div class="mt-14">
+        <h3 class="label"><%= t("landing.skills.education") %></h3>
+
+        <ul class="mt-5 border-b border-rule">
+          <%= render partial: "education_entry", collection: @page.education, as: :entry %>
+        </ul>
+      </div>
+    <% end %>
+  </div>
+</main>
+
+<footer id="contact" aria-labelledby="contact-heading" class="border-t border-rule-strong">
+  <div class="mx-auto max-w-page px-5 py-12 md:px-10 md:py-16 lg:px-16">
+    <div class="lg:grid lg:grid-cols-12 lg:gap-8">
+      <div class="lg:col-span-3">
+        <h2 id="contact-heading" class="label section-label"><%= t("landing.contact.heading") %></h2>
+      </div>
+
+      <%= tag.div class: "mt-8 lg:col-span-9 lg:mt-0", **substitution_attributes(@page.profile) do %>
+        <ul class="middot-list text-xl text-ink-body">
+          <% Array(@page.profile.record[:links]).each do |link| %>
+            <li><%= link_to link[:label], link[:url], class: "link" %></li>
+          <% end %>
+        </ul>
+
+        <%= render "substitution", entry: @page.profile %>
+
+        <p class="mt-8 font-mono text-sm text-ink-faint">
+          <%= t("landing.contact.reviewed", date: content_date(@page.profile.record[:updated])) %>
+        </p>
+
+        <p class="mt-3"><a class="label link-quiet" href="#content"><%= t("landing.contact.top") %></a></p>
+      <% end %>
+    </div>
+  </div>
+</footer>

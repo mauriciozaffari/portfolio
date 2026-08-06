@@ -1,0 +1,10 @@
+<%= tag.li class: "border-t border-rule py-4 md:flex md:items-baseline md:justify-between md:gap-6", **substitution_attributes(entry) do %>
+  <div>
+    <p class="text-lg text-ink-body"><%= entry.record[:credential] %></p>
+    <p class="mt-1 font-mono text-sm text-ink-faint"><%= entry.record[:institution] %></p>
+
+    <%= render "substitution", entry: entry %>
+  </div>
+
+  <p class="figure mt-2 text-sm md:mt-0"><%= entry.record[:year] %></p>
+<% end %>

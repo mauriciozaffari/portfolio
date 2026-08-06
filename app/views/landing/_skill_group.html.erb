@@ -1,0 +1,11 @@
+<%= tag.div class: "border-t border-rule pt-5 first:border-t-0 first:pt-0", **substitution_attributes(entry) do %>
+  <h3 class="label"><%= entry.record[:label] %></h3>
+
+  <ul class="middot-list mt-3 text-lg text-ink-body">
+    <% Array(entry.record[:items]).each do |item| %>
+      <li><%= item %></li>
+    <% end %>
+  </ul>
+
+  <%= render "substitution", entry: entry %>
+<% end %>

@@ -1,7 +1,7 @@
 ---
 title: "Landing Page - Spec"
 type: "feature-spec"
-status: "spec'd"
+status: "implemented"
 created: "2026-08-06"
 updated: "2026-08-06"
 origin: "user request (single landing page, visually appealing, clean and simple)"
@@ -9,10 +9,11 @@ origin: "user request (single landing page, visually appealing, clean and simple
 
 # Landing Page
 
-- Status: spec'd
+- Status: implemented
 - Created: 2026-08-06
 - Updated: 2026-08-06
 - Origin: user request (single landing page, visually appealing, clean and simple)
+- Implementation: [IMPLEMENTATION.md](IMPLEMENTATION.md)
 
 ## Problem / motivation
 
@@ -53,16 +54,73 @@ extracted into a reusable system only if a second surface ever appears.
 
 ### Design direction
 
-Recorded here before implementation, and binding on it:
+Recorded before implementation and binding on it. The full seven-section
+treatment — component states, measured ratios for every pair, and the reasoning
+behind each choice — is [DESIGN.md](../../DESIGN.md). What follows is the token
+contract itself, restated here so this spec stands alone.
 
-- Type scale, with the display/body/mono families named explicitly.
-- Palette expressed as a ramp with stated contrast ratios, not a single accent
-  reused at varied opacity.
-- Spacing rhythm from one base unit.
-- Depth strategy chosen and committed to (borders, shadows, or tonal shift).
-- Motion budget, including what does *not* animate.
-- Reference influences named, so the result is a deliberate position rather
-  than an average of defaults.
+**Atmosphere.** A two-ink letterpress specimen: warm paper, one black ink for
+everything that is said, one red ink reserved for everything you can touch. The
+memorable element is the mono gutter of letter-spaced, numbered section labels
+against hairline rules. Reference influences: the Linear and Notion register for
+type-led restraint, two-colour print for the stock, the gutter, and the rules.
+
+**Palette**, as a ramp with measured WCAG 2.1 ratios on `--color-paper`:
+
+| Token | Hex | Ratio | Role |
+| ----- | --- | ----- | ---- |
+| `--color-paper` | `#FBF9F5` | — | the only surface in the stylesheet |
+| `--color-paper-select` | `#F3DED5` | 1.23:1 | `::selection` background, nothing else |
+| `--color-rule` | `#E5DFD3` | 1.26:1 | row hairlines; never holds type |
+| `--color-rule-strong` | `#C7BFB0` | 1.74:1 | section hairlines; never holds type |
+| `--color-ink-faint` | `#736B61` | 4.99:1 | mono labels, ordinals, meta |
+| `--color-ink-muted` | `#5C554A` | 7.00:1 | secondary prose, contexts |
+| `--color-ink-body` | `#2E2A25` | 13.55:1 | body prose |
+| `--color-ink` | `#141210` | 17.77:1 | headings, metric figures |
+| `--color-accent` | `#B03A1A` | 5.76:1 | hover, focus ring, current locale |
+| `--color-accent-deep` | `#8A2C12` | 8.15:1 | active |
+
+Every stop that carries text clears 4.5:1, including on `paper-select`. The
+accent is rationed to four states and never used as decoration; the one at-rest
+instance is the current-locale underline. `color-scheme: light`, declared. No
+dark scheme — a second contrast matrix for a page with one job.
+
+**Type.** No web font: the declared budget is zero bytes and zero requests, so
+there is no `font-display` swap reflow to design around. Families are named
+explicitly, and the voice comes from the pairing — sans for what is said, mono
+for what is measured, with `tabular-nums` on every figure:
+
+- `--font-sans`: `-apple-system, BlinkMacSystemFont, "Segoe UI Variable Text",
+  "Segoe UI", Roboto, "Noto Sans", "Helvetica Neue", Arial, system-ui,
+  sans-serif`
+- `--font-mono`: `ui-monospace, "SF Mono", "Cascadia Mono", "Segoe UI Mono",
+  "Roboto Mono", "Liberation Mono", "DejaVu Sans Mono", monospace`
+
+Scale on a 16px base, discrete steps only — no `clamp()`, because a fluid step
+has no single value to state or verify at a breakpoint: `--text-2xs` 11px,
+`--text-xs` 12px, `--text-sm` 13px, `--text-base` 16px, `--text-lg` 17px,
+`--text-xl` 19px, `--text-2xl` 24px, `--text-3xl` 32px, `--text-4xl` 44px,
+`--text-5xl` 64px. Each step carries its own line height and tracking, with
+tracking growing negative as size grows. Three weights: 400, 500, 700.
+
+**Spacing.** One base unit, `--spacing: 0.25rem`. Every gap, margin and padding
+is an integer multiple of it; there are no arbitrary values. Vertical rhythm
+uses four multiples: 8px label-to-thing, 16px paragraph, 32px entry, 80px
+mobile / 112px desktop between sections. Prose measure `--container-measure`
+58ch, which measured 67-72 characters per line at desktop widths; page cap
+`--container-page` 72rem.
+
+**Depth: hairline rules, and nothing else.** One background colour for the whole
+document, structure from 1px rules plus vertical rhythm. No shadows, no
+elevation, no filled panels, no `border-radius` — those tokens do not exist.
+Tonal shift applies to ink, not to surfaces: importance is darkness.
+
+**Motion budget.** Colour-only transitions at 120ms on interactive elements,
+plus smooth scrolling for anchors. Deliberately not animated: page entrance,
+scroll-triggered reveals, metric count-ups, any `transform`, any opacity fade,
+the locale switch, and the sticky section label. There is no `@keyframes` rule
+in the stylesheet. `prefers-reduced-motion: reduce` drops scrolling to `auto`
+and transitions to `0.01ms`.
 
 ### Verified non-functionals
 
@@ -113,7 +171,29 @@ phase. They are acceptance criteria here, executable where possible:
 
 ## Pending TODOs
 
-- [ ] Write the `## Design direction` token values into this spec, then
-      `DESIGN.md`, before any UI code is written.
-- [ ] Decide whether the impact section leads with metrics or with named
-      clients.
+- [x] Write the `## Design direction` token values into this spec, then
+      `DESIGN.md`, before any UI code is written. Done: the token contract is in
+      `## Design direction` above and the full treatment is
+      [DESIGN.md](../../DESIGN.md), both written before the first line of CSS.
+- [x] Decide whether the impact section leads with metrics or with named
+      clients. Resolved: **metrics**, and the constraint decided it. A
+      client-led opening would be a list of studio names, and those names exist
+      only inside `site_profile` prose and `metric` contexts — assembling them
+      into a logo-wall equivalent means writing them into a view, which the
+      no-hardcoded-content rule forbids. Leading with metrics costs nothing,
+      because the studio names arrive one section earlier in the positioning
+      prose and each `metric` context names its own client. The reader meets
+      Disney, Warner Bros, Sony and NBCUniversal in the first paragraph and the
+      numbers immediately after.
+- [ ] Decide whether `source_url` becomes a visible citation. Four records carry
+      public evidence for a claim and the page currently loads it and renders
+      nothing. The two options both cost something: an accent link inside a
+      metric figure breaks the rule that the accent is reserved for interaction
+      at rest, and a separate "source" line needs a new chrome label. Parked
+      rather than improvised, because a half-cited page is worse than an
+      uncited one.
+- [ ] Give `metric` and `skill_group` an ordering key, or accept id order for
+      good. They are the only two types the page cannot order meaningfully, so
+      they render alphabetically. This is a
+      [curated-content](../curated-content/SPEC.md) schema change, not a page
+      change.

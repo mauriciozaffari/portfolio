@@ -62,7 +62,7 @@ feature that adds an external dependency, a running cost, and an abuse surface.
 | ------- | ------ | ------- | ----------- | ------- |
 | [app-foundation](app-foundation/SPEC.md) | implemented | 2026-08-06 | 2026-08-06 | Rails 8 + Hotwire app that boots with no database, no Node toolchain, and no Solid adapters; RSpec and linters behind one CI entry point |
 | [curated-content](curated-content/SPEC.md) | implemented | 2026-08-06 | 2026-08-06 | Bilingual Markdown content in `data/**` with an enforced front-matter schema, a publication allowlist, and a content-safety scanner that fails the build |
-| [landing-page](landing-page/SPEC.md) | spec'd | 2026-08-06 | — | One server-rendered locale-aware page with a recorded design direction; accessibility and performance as acceptance criteria, not a later phase |
+| [landing-page](landing-page/SPEC.md) | implemented | 2026-08-06 | 2026-08-06 | One server-rendered locale-aware page at `/` and `/pt-BR`, built entirely from the content records; zero JavaScript, zero web fonts, 18.5 KB gzipped, design language recorded in [DESIGN.md](../DESIGN.md) |
 | [deployment](deployment/SPEC.md) | spec'd | 2026-08-06 | — | HTTPS at the canonical origin from a single stateless container, security headers, and CI that blocks deploy on a failing content scan |
 | [site-metadata](site-metadata/SPEC.md) | spec'd | 2026-08-06 | — | Canonical URLs, hreflang, OG/Twitter cards, `Person` JSON-LD, sitemap, and a deliberate AI-crawler policy — all derived from `site_profile` |
 | [resume-download](resume-download/SPEC.md) | spec'd | 2026-08-06 | — | Publication-safe resume generated from the same records as the page, with no phone, email, address, or compensation in content or PDF metadata |
@@ -88,15 +88,15 @@ Details and enforcement live in
 Concrete pending TODOs live in each feature's `SPEC.md` under "Pending TODOs".
 Listed here in the order they block progress:
 
-- [Landing page](landing-page/SPEC.md): write the `## Design direction` token
-  values into the spec, then `DESIGN.md`, before any UI code. The visual
-  register and locale URL strategy are decided in the SPEC. **Next feature
-  up** — the content loader it reads from now exists.
-- [Curated content](curated-content/SPEC.md): author the `pt-BR` records. The
-  locale fallback makes this incremental, so it does not block the page.
 - [Deployment](deployment/SPEC.md): decide the deploy trigger. Host and
   mechanism are decided (Kamal 2 on a VPS); canonical origin is
-  `https://zaffari.casa`.
+  `https://zaffari.casa`. **Next feature up** — there is now a page to deploy.
+- [Curated content](curated-content/SPEC.md): author the `pt-BR` records.
+  `/pt-BR` currently serves the English records, each marked and carrying
+  `lang="en"`, which is the fallback working as specified rather than a defect.
+- [Landing page](landing-page/SPEC.md): decide whether `source_url` becomes a
+  visible citation, and whether `metric` and `skill_group` get an ordering key.
+  Neither blocks anything; both are recorded so they are not improvised.
 - [Site metadata](site-metadata/SPEC.md): decide the AI/LLM crawler policy and
   whether the share image is static or generated.
 - [Resume download](resume-download/SPEC.md): none blocking — Prawn and the

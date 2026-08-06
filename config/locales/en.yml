@@ -1,31 +1,68 @@
-# Files in the config/locales directory are used for internationalization and
-# are automatically loaded by Rails. If you want to use locales other than
-# English, add the necessary files in this directory.
+# Interface chrome only.
 #
-# To use the locales, use `I18n.t`:
-#
-#     I18n.t "hello"
-#
-# In views, this is aliased to just `t`:
-#
-#     <%= t("hello") %>
-#
-# To use a different locale, set it with `I18n.locale`:
-#
-#     I18n.locale = :es
-#
-# This would use the information in config/locales/es.yml.
-#
-# To learn more about the API, please read the Rails Internationalization guide
-# at https://guides.rubyonrails.org/i18n.html.
-#
-# Be aware that YAML interprets the following case-insensitive strings as
-# booleans: `true`, `false`, `on`, `off`, `yes`, `no`. Therefore, these strings
-# must be quoted to be interpreted as strings. For example:
-#
-#     en:
-#       "yes": yup
-#       enabled: "ON"
-
+# The division of labour is strict and load-bearing: everything a reader would
+# call *content* — the name, the headline, every figure, date, role, client and
+# sentence — comes out of data/**/*.md through Content::Repository and is never
+# written here or in a view. What lives here is the wording the page needs in
+# order to be a page at all: section labels, the skip link, the language
+# switcher, and the date formats. See features/landing-page/SPEC.md.
 en:
-  hello: "Hello world"
+  date:
+    formats:
+      day_month_year: "%-d %B %Y"
+      month_year: "%B %Y"
+
+  landing:
+    skip_to_content: "Skip to content"
+    document_title: "%{name} — %{headline}"
+
+    navigation:
+      label: "Page sections"
+
+    languages:
+      label: "Language"
+      # Endonyms. A switcher names its target language in that language.
+      switch:
+        en: "English"
+        pt-BR: "Português"
+      # Exonyms, for prose written in this locale.
+      name:
+        en: "English"
+        pt-BR: "Portuguese"
+      code:
+        en: "EN"
+        pt-BR: "PT"
+
+    substitution:
+      notice: "Some entries below have no version in this language yet, so the version that exists is shown instead. Each one is marked."
+      record: "This entry is shown in %{language}."
+
+    impact:
+      heading: "Impact"
+
+    experience:
+      heading: "Experience"
+      earlier: "Earlier roles"
+      present: "present"
+
+    work:
+      heading: "Selected work"
+      technologies: "Technologies"
+
+    # The section index only. The leadership section's own heading is the
+    # record's `title` and is deliberately not this string.
+    leadership:
+      heading: "How I work"
+
+    projects:
+      heading: "Open source"
+      downloads: "%{total} downloads"
+
+    skills:
+      heading: "Skills"
+      education: "Education"
+
+    contact:
+      heading: "Contact"
+      top: "Back to top"
+      reviewed: "Content last reviewed %{date}"

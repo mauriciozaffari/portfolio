@@ -1,0 +1,26 @@
+<%= tag.article class: "border-t border-rule-strong pt-6 first:border-t-0 first:pt-0", **substitution_attributes(entry) do %>
+  <h3 class="text-2xl font-bold text-ink"><%= entry.record[:title] %></h3>
+
+  <ul class="middot-list mt-3 font-mono text-sm text-ink-faint">
+    <li><%= entry.record[:organization] %></li>
+    <li><%= entry.record[:period] %></li>
+  </ul>
+
+  <%# Shifted two levels: a case study body opens with `## Problem`, and this %>
+  <%# article's own title is already an h3. See app/models/heading_levels.rb. %>
+  <div class="prose mt-5 max-w-measure"><%= HeadingLevels.shift(entry.record.html, by: 2) %></div>
+
+  <% technologies = Array(entry.record[:technologies]) %>
+  <% if technologies.any? %>
+    <div class="mt-6 border-t border-rule pt-4">
+      <p class="label"><%= t("landing.work.technologies") %></p>
+      <ul class="middot-list mt-2 font-mono text-sm text-ink-muted">
+        <% technologies.each do |technology| %>
+          <li><%= technology %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= render "substitution", entry: entry %>
+<% end %>

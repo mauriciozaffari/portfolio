@@ -1,0 +1,12 @@
+<nav aria-label="<%= t("landing.languages.label") %>">
+  <ul class="flex gap-x-5">
+    <% locale_switcher(page.locale).each do |option| %>
+      <li>
+        <%= link_to option[:label], option[:path],
+              class: "label link-quiet",
+              lang: option[:locale],
+              "aria-current": ("page" if option[:current]) %>
+      </li>
+    <% end %>
+  </ul>
+</nav>

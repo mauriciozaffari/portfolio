@@ -1,1 +1,392 @@
 @import "tailwindcss";
+
+/*
+ * Tokens. Every value in this file is declared in DESIGN.md, and nothing in the
+ * markup may reach for a value that is not here.
+ *
+ * Each namespace is reset with `*: initial` before its own stops are declared,
+ * which is what makes that claim enforceable rather than aspirational: with
+ * Tailwind's defaults removed, `text-blue-500`, `rounded-2xl` and `shadow-lg`
+ * are not classes that exist. An undeclared value fails as a missing utility
+ * instead of slipping in as an orphan.
+ */
+@theme {
+  /* Colour — DESIGN.md 2. Ratios are measured against --color-paper. */
+  --color-*: initial;
+  --color-paper: #fbf9f5;        /* the only surface in this stylesheet    */
+  --color-paper-select: #f3ded5; /*  1.23:1  ::selection background only   */
+  --color-rule: #e5dfd3;         /*  1.26:1  hairline; never holds type    */
+  --color-rule-strong: #c7bfb0;  /*  1.74:1  hairline; never holds type    */
+  --color-ink-faint: #736b61;    /*  4.99:1  AA   mono labels and meta     */
+  --color-ink-muted: #5c554a;    /*  7.00:1  AAA  secondary prose          */
+  --color-ink-body: #2e2a25;     /* 13.55:1  AAA  body prose               */
+  --color-ink: #141210;          /* 17.77:1  AAA  headings and figures     */
+  --color-accent: #b03a1a;       /*  5.76:1  AA   hover, focus, current    */
+  --color-accent-deep: #8a2c12;  /*  8.15:1  AAA  active                   */
+
+  /* Type — DESIGN.md 3. No web font: the declared budget is zero bytes and
+     zero requests, so there is no swap reflow to design around. */
+  --font-*: initial;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI Variable Text", "Segoe UI", Roboto, "Noto Sans", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", "Liberation Mono", "DejaVu Sans Mono", monospace;
+
+  --font-weight-*: initial;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+
+  /* Discrete steps only. A clamp() has no single value to state or verify at a
+     breakpoint, so larger sizes are reached with responsive utilities. */
+  --text-*: initial;
+  --leading-*: initial;
+  --tracking-*: initial;
+
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1.45;
+  --text-2xs--letter-spacing: 0.12em;
+
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1.5;
+  --text-xs--letter-spacing: 0.09em;
+
+  --text-sm: 0.8125rem;
+  --text-sm--line-height: 1.6;
+  --text-sm--letter-spacing: 0.01em;
+
+  --text-base: 1rem;
+  --text-base--line-height: 1.6;
+
+  --text-lg: 1.0625rem;
+  --text-lg--line-height: 1.7;
+  --text-lg--letter-spacing: -0.003em;
+
+  --text-xl: 1.1875rem;
+  --text-xl--line-height: 1.6;
+  --text-xl--letter-spacing: -0.006em;
+
+  --text-2xl: 1.5rem;
+  --text-2xl--line-height: 1.3;
+  --text-2xl--letter-spacing: -0.014em;
+
+  --text-3xl: 2rem;
+  --text-3xl--line-height: 1.2;
+  --text-3xl--letter-spacing: -0.018em;
+
+  --text-4xl: 2.75rem;
+  --text-4xl--line-height: 1.1;
+  --text-4xl--letter-spacing: -0.022em;
+
+  --text-5xl: 4rem;
+  --text-5xl--line-height: 1.02;
+  --text-5xl--letter-spacing: -0.028em;
+
+  /* Inline code, relative so it tracks whichever step surrounds it. */
+  --text-code: 0.9375em;
+
+  /* Spacing — DESIGN.md 4. One base unit; every gap is an integer multiple. */
+  --spacing: 0.25rem;
+
+  --container-*: initial;
+  --container-measure: 58ch;
+  --container-narrow: 44rem;
+  --container-page: 72rem;
+
+  /* Depth — DESIGN.md 7. Hairline rules and nothing else, so none of these
+     namespaces has a single stop. */
+  --radius-*: initial;
+  --shadow-*: initial;
+  --inset-shadow-*: initial;
+  --drop-shadow-*: initial;
+  --text-shadow-*: initial;
+  --blur-*: initial;
+
+  /* Motion — DESIGN.md 6. Colour only. */
+  --ease-*: initial;
+  --ease-tap: cubic-bezier(0.2, 0, 0.13, 1);
+}
+
+@layer base {
+  /* Tokens that drive no utility, so they are declared here rather than in
+     @theme where they would invent a namespace. All three are in DESIGN.md. */
+  :root {
+    --duration-tap: 120ms;
+    --stroke-hairline: 1px;
+    --stroke-focus: 2px;
+    --underline-offset: 0.15em;
+    --scroll-offset: calc(var(--spacing) * 8);
+
+    color-scheme: light;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink-body);
+    font-size: var(--text-lg);
+    line-height: var(--text-lg--line-height);
+    letter-spacing: var(--text-lg--letter-spacing);
+    /* The section ordinals are a counter, so no markup carries a number that
+       could drift from the order the sections are actually in. */
+    counter-reset: section;
+  }
+
+  ::selection {
+    background-color: var(--color-paper-select);
+    color: var(--color-ink);
+  }
+
+  /* One focus treatment for the whole page, and never a border: a border would
+     change the box and shift the layout on focus. An outline is drawn outside
+     the box and costs no reflow. */
+  :focus-visible {
+    outline: var(--stroke-focus) solid var(--color-accent);
+    outline-offset: var(--stroke-focus);
+  }
+
+  a {
+    transition-property: color, text-decoration-color, text-decoration-thickness, border-color, outline-color;
+    transition-duration: var(--duration-tap);
+    transition-timing-function: var(--ease-tap);
+  }
+
+  /* An anchor landing should not be welded to the viewport edge. */
+  [id] {
+    scroll-margin-top: var(--scroll-offset);
+  }
+
+  h1, h2, h3 {
+    text-wrap: balance;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :root {
+      scroll-behavior: auto;
+    }
+
+    *, *::before, *::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* The mono voice: every label, figure, date and technology name on the page.
+     DESIGN.md 3 — sans for what is said, mono for what is measured. */
+  .label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: var(--text-xs--line-height);
+    letter-spacing: var(--text-xs--letter-spacing);
+    font-weight: var(--font-weight-medium);
+    text-transform: uppercase;
+    color: var(--color-ink-faint);
+  }
+
+  .section-label {
+    color: var(--color-ink-muted);
+  }
+
+  .section-label::before {
+    counter-increment: section;
+    content: counter(section, decimal-leading-zero);
+    display: block;
+    margin-block-end: calc(var(--spacing) * 2);
+    color: var(--color-ink-faint);
+  }
+
+  /* Figures align in a column and do not shift between locales. */
+  .figure {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    color: var(--color-ink);
+  }
+
+  /* A link keeps the ink of the text around it and is underlined in the second
+     ink, so the accent is a hint at rest and takes over only once you reach for
+     it. `.prose a` shares the rule because Markdown output cannot carry a
+     class — the sanitizer allowlist has no `class` attribute. */
+  .link, .prose a {
+    color: inherit;
+    text-decoration-line: underline;
+    text-decoration-color: var(--color-accent);
+    text-decoration-thickness: var(--stroke-hairline);
+    text-underline-offset: var(--underline-offset);
+  }
+
+  .link:hover, .prose a:hover {
+    color: var(--color-accent-deep);
+    text-decoration-color: var(--color-accent-deep);
+    text-decoration-thickness: var(--stroke-focus);
+  }
+
+  .link:active, .prose a:active {
+    color: var(--color-accent-deep);
+  }
+
+  /* The locale a substituted record actually arrived in. Bracketed rather than
+     boxed: rules divide on this page, they do not enclose. */
+  .marker {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    line-height: var(--text-2xs--line-height);
+    letter-spacing: var(--text-2xs--letter-spacing);
+    font-weight: var(--font-weight-medium);
+    text-transform: uppercase;
+    color: var(--color-ink-faint);
+  }
+
+  .marker::before {
+    content: "[";
+  }
+
+  .marker::after {
+    content: "]";
+  }
+
+  /* Navigation and the language switcher: black ink at rest, the second ink
+     only once you reach for it. */
+  .link-quiet {
+    color: var(--color-ink-faint);
+    text-decoration-line: none;
+  }
+
+  .link-quiet:hover {
+    color: var(--color-accent);
+    text-decoration-line: underline;
+    text-decoration-thickness: var(--stroke-hairline);
+    text-underline-offset: var(--underline-offset);
+  }
+
+  .link-quiet:active {
+    color: var(--color-accent-deep);
+  }
+
+  /* The one at-rest instance of the accent: where the reader already is. */
+  .link-quiet[aria-current] {
+    color: var(--color-ink);
+    text-decoration-line: underline;
+    text-decoration-color: var(--color-accent);
+    text-decoration-thickness: var(--stroke-focus);
+    text-underline-offset: var(--underline-offset);
+  }
+
+  /* A wrapped run of terms, separated by a middot rather than boxed into chips.
+     Used by the availability line, the skill groups, the technology lists and
+     the contact links.
+     *
+     * The items are inline rather than flex items, and the separator is an
+     * `::after` glued to the item it follows by a non-breaking space, then a
+     * normal space. That combination is the whole point: a flex layout, or a
+     * `::before` on the following item, puts an orphaned middot at the start of
+     * every wrapped line. Here the dot can only ever end a line, which is what
+     * print does. */
+  .middot-list > * {
+    display: inline;
+  }
+
+  .middot-list > *:not(:last-child)::after {
+    content: "\00a0· ";
+    color: var(--color-ink-faint);
+  }
+
+  /*
+   * Record bodies, rendered from Markdown. Every tag on
+   * Content::Markdown::TAGS is styled: the allowlist is the contract, and an
+   * unstyled construct appearing in a later record would be a visual bug rather
+   * than a missing feature.
+   */
+  .prose {
+    color: var(--color-ink-body);
+    text-wrap: pretty;
+  }
+
+  .prose > * + * {
+    margin-block-start: calc(var(--spacing) * 4);
+  }
+
+  .prose strong {
+    font-weight: var(--font-weight-bold);
+    color: var(--color-ink);
+  }
+
+  .prose em {
+    font-style: italic;
+  }
+
+  .prose a {
+    color: var(--color-accent);
+    text-decoration-line: underline;
+    text-decoration-thickness: var(--stroke-hairline);
+    text-underline-offset: var(--underline-offset);
+  }
+
+  .prose a:hover {
+    color: var(--color-accent-deep);
+    text-decoration-thickness: var(--stroke-focus);
+  }
+
+  .prose code {
+    font-family: var(--font-mono);
+    font-size: var(--text-code);
+    color: var(--color-ink);
+  }
+
+  .prose pre {
+    overflow-x: auto;
+    padding-inline-start: calc(var(--spacing) * 4);
+    border-inline-start: var(--stroke-hairline) solid var(--color-rule-strong);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+  }
+
+  .prose pre code {
+    font-size: inherit;
+  }
+
+  .prose ul, .prose ol {
+    padding-inline-start: calc(var(--spacing) * 5);
+  }
+
+  .prose ul {
+    list-style-type: disc;
+  }
+
+  .prose ol {
+    list-style-type: decimal;
+  }
+
+  .prose li::marker {
+    color: var(--color-ink-faint);
+  }
+
+  .prose li + li {
+    margin-block-start: calc(var(--spacing) * 2);
+  }
+
+  .prose blockquote {
+    padding-inline-start: calc(var(--spacing) * 4);
+    border-inline-start: var(--stroke-hairline) solid var(--color-rule-strong);
+    color: var(--color-ink-muted);
+  }
+
+  .prose hr {
+    margin-block: calc(var(--spacing) * 8);
+    border-color: var(--color-rule);
+  }
+
+  /* Where a case study's own `## Problem` lands after HeadingLevels shifts it.
+     It takes the mono label, so a record's internal structure reads as part of
+     the page's system rather than as a second one. */
+  .prose h4, .prose h5, .prose h6 {
+    margin-block-start: calc(var(--spacing) * 6);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: var(--text-xs--line-height);
+    letter-spacing: var(--text-xs--letter-spacing);
+    font-weight: var(--font-weight-medium);
+    text-transform: uppercase;
+    color: var(--color-ink-faint);
+  }
+}

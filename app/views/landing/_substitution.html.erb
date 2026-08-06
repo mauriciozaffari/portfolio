@@ -1,0 +1,6 @@
+<% if entry.substituted? %>
+  <p class="mt-4">
+    <span class="marker" aria-hidden="true"><%= t("landing.languages.code.#{entry.language}") %></span>
+    <span class="sr-only"><%= t("landing.substitution.record", language: t("landing.languages.name.#{entry.language}")) %></span>
+  </p>
+<% end %>

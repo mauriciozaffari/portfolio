@@ -2,10 +2,13 @@
 
 Personal portfolio and professional showcase site for Mauricio Zaffari.
 
-Rails 8 + Hotwire, server-rendered, with all content authored as Markdown in
+Rails 8, server-rendered, with all content authored as Markdown in
 [`data/`](data/). There is no database: the app reads content from the
 repository and stores nothing, which keeps deployment to one stateless
-container. See [AGENTS.md](AGENTS.md) for the rules that follow from that, and
+container. The page ships no JavaScript either — the Hotwire gems are installed
+and nothing is pinned, for the reason measured in
+[features/landing-page/IMPLEMENTATION.md](features/landing-page/IMPLEMENTATION.md).
+See [AGENTS.md](AGENTS.md) for the rules that follow from all of that, and
 [features/TODO.md](features/TODO.md) for what is built and what is planned.
 
 ## Requirements

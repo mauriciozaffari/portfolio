@@ -1,0 +1,16 @@
+<%= tag.article class: "border-t border-rule-strong pt-6 first:border-t-0 first:pt-0", **substitution_attributes(entry) do %>
+  <h3 class="text-2xl font-bold text-ink"><%= entry.record[:organization] %></h3>
+
+  <p class="mt-1 text-xl text-ink-body"><%= entry.record[:role] %></p>
+
+  <ul class="middot-list mt-3 font-mono text-sm text-ink-faint">
+    <li><%= role_period(entry.record) %></li>
+    <% if entry.record[:location].present? %>
+      <li><%= entry.record[:location] %></li>
+    <% end %>
+  </ul>
+
+  <div class="prose mt-5 max-w-measure"><%= entry.record.html %></div>
+
+  <%= render "substitution", entry: entry %>
+<% end %>

@@ -1,0 +1,18 @@
+<%= tag.section id: "positioning", aria: { labelledby: "name" }, **substitution_attributes(page.profile) do %>
+  <h1 id="name" class="text-4xl font-bold text-ink md:text-5xl"><%= page.profile.record[:name] %></h1>
+
+  <p class="mt-4 max-w-narrow text-xl text-ink-body md:text-2xl"><%= page.profile.record[:headline] %></p>
+
+  <% availability = [ page.profile.record[:region], page.profile.record[:timezone], page.profile.record[:work_mode] ].compact_blank %>
+  <% if availability.any? %>
+    <ul class="middot-list mt-6 font-mono text-sm text-ink-muted">
+      <% availability.each do |item| %>
+        <li><%= item %></li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <div class="prose mt-10 max-w-measure"><%= page.profile.record.html %></div>
+
+  <%= render "substitution", entry: page.profile %>
+<% end %>

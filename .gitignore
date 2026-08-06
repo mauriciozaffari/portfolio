@@ -1,5 +1,7 @@
 # Agent session artifacts — local run state, not project content.
 /.omo/
+/.playwright-mcp/
+/tmp/qa/
 
 # The global ~/.gitignore excludes .opencode entirely. Re-include only the
 # project skills, which AGENTS.md and features/TODO.md link to; everything else

@@ -1,0 +1,116 @@
+# Interface chrome only — the Portuguese counterpart of en.yml. See that file
+# for why content never appears here.
+#
+# The chrome is translated even though the records are not: a reader on /pt-BR
+# gets a Portuguese page frame around English entries, each marked, rather than
+# a page that is half-translated in an unpredictable way. Authoring the pt-BR
+# records is tracked in features/curated-content/SPEC.md.
+pt-BR:
+  date:
+    formats:
+      default: "%d/%m/%Y"
+      day_month_year: "%-d de %B de %Y"
+      month_year: "%B de %Y"
+      long: "%-d de %B de %Y"
+      short: "%d de %B"
+    day_names:
+      - domingo
+      - segunda-feira
+      - terça-feira
+      - quarta-feira
+      - quinta-feira
+      - sexta-feira
+      - sábado
+    abbr_day_names:
+      - dom
+      - seg
+      - ter
+      - qua
+      - qui
+      - sex
+      - sáb
+    month_names:
+      -
+      - janeiro
+      - fevereiro
+      - março
+      - abril
+      - maio
+      - junho
+      - julho
+      - agosto
+      - setembro
+      - outubro
+      - novembro
+      - dezembro
+    abbr_month_names:
+      -
+      - jan
+      - fev
+      - mar
+      - abr
+      - mai
+      - jun
+      - jul
+      - ago
+      - set
+      - out
+      - nov
+      - dez
+
+  number:
+    format:
+      delimiter: "."
+      separator: ","
+      precision: 2
+
+  landing:
+    skip_to_content: "Ir para o conteúdo"
+    document_title: "%{name} — %{headline}"
+
+    navigation:
+      label: "Seções da página"
+
+    languages:
+      label: "Idioma"
+      switch:
+        en: "English"
+        pt-BR: "Português"
+      name:
+        en: "inglês"
+        pt-BR: "português"
+      code:
+        en: "EN"
+        pt-BR: "PT"
+
+    substitution:
+      notice: "Alguns registros abaixo ainda não têm versão neste idioma, então aparecem no idioma em que existem. Cada um deles está marcado."
+      record: "Este registro é exibido em %{language}."
+
+    impact:
+      heading: "Resultados"
+
+    experience:
+      heading: "Experiência"
+      earlier: "Atuações anteriores"
+      present: "atual"
+
+    work:
+      heading: "Trabalhos selecionados"
+      technologies: "Tecnologias"
+
+    leadership:
+      heading: "Como eu trabalho"
+
+    projects:
+      heading: "Código aberto"
+      downloads: "%{total} downloads"
+
+    skills:
+      heading: "Competências"
+      education: "Formação"
+
+    contact:
+      heading: "Contato"
+      top: "Voltar ao topo"
+      reviewed: "Conteúdo revisado em %{date}"

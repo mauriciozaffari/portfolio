@@ -2,7 +2,7 @@
 id: frontend-engineering
 type: skill_group
 locale: pt-BR
-status: draft
+status: published
 confidentiality: public
 updated: "2026-08-06"
 label: Engenharia de frontend

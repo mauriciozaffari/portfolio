@@ -1,10 +1,11 @@
 # Interface chrome only — the Portuguese counterpart of en.yml. See that file
 # for why content never appears here.
 #
-# The chrome is translated even though the records are not: a reader on /pt-BR
-# gets a Portuguese page frame around English entries, each marked, rather than
-# a page that is half-translated in an unpredictable way. Authoring the pt-BR
-# records is tracked in features/curated-content/SPEC.md.
+# Chrome and records are both Portuguese now, so /pt-BR substitutes nothing.
+# The split still matters: chrome lives here because it has no counterpart in
+# data/, and a label sourced from a record cannot carry the marker that makes a
+# substitution legible. If an English record is ever authored ahead of its
+# translation, the fallback marks that entry and this frame stays Portuguese.
 pt-BR:
   date:
     formats:

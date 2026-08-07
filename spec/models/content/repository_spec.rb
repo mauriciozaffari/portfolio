@@ -119,12 +119,9 @@ RSpec.describe Content::Repository do
 
   describe "Content.repository" do
     before do
-      Content.remove_instance_variable(:@repository) if Content.instance_variable_defined?(:@repository)
-      allow(Content).to receive(:root).and_return(content_root)
+      serve_fixture_corpus
       write_locale_singletons
     end
-
-    after { Content.remove_instance_variable(:@repository) if Content.instance_variable_defined?(:@repository) }
 
     it "reads from disk once when reloading is off" do
       allow(Rails.application.config).to receive(:enable_reloading).and_return(false)

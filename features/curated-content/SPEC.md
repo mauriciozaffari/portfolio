@@ -182,5 +182,16 @@ pairing is what lets a record be located from a citation alone, which
       record, on unpublishable content in `data/**` or in rendered HTML, and on
       any application file naming a filesystem path outside the app root. The
       policy is a failing build rather than human review alone.
-- [ ] Author the `pt-BR` records. The locale fallback makes this incremental,
-      not blocking.
+- [x] Author the `pt-BR` records. Done: 34 records, machine-drafted in one pass
+      and reviewed before publication. Three judgement calls, all reversible:
+      job titles keep *Tech Lead* untranslated because that is what the Brazilian
+      industry says rather than *Engenheiro de Software Líder*; Looper's domain
+      noun *scan* stays English because it reads as the product's own term; and
+      city names are localised only where a common Portuguese exonym exists, so
+      *Londres* and *São Francisco* but not *Alpharetta*.
+
+      Figures carry Brazilian notation — `R$ 482.800`, `81,7%`, `244.000` — so
+      the two locales are deliberately **not** byte-comparable on numbers. The
+      value is identical and only the separators differ; a Portuguese page
+      showing `R$ 482,800` claims four hundred and eighty-two reais, and `81.7%`
+      reads as a typo.

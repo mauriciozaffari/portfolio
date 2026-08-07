@@ -131,8 +131,23 @@ RSpec.describe "Resume download", type: :request do
 
     include_examples "a publication-safe download"
 
-    it "sets the chrome in Portuguese around the records it could not translate" do
+    it "sets the chrome in Portuguese, not only the records" do
       expect(pdf_text(bytes)).to include(I18n.t("landing.impact.heading", locale: "pt-BR").upcase)
+    end
+  end
+
+  # The page's substitution notice and per-entry marks, in the surface that cannot
+  # be corrected once it has been fetched. Both locales in data/ are complete now,
+  # so the document substitutes nothing and this is driven from a fixture rather
+  # than from the accident of a corpus that was still being translated. See the
+  # same move in spec/requests/landing_spec.rb.
+  describe "GET /pt-BR/resume.pdf when a record has no counterpart in that locale" do
+    before do
+      serve_fixture_corpus
+      write_locale_singletons(locale: "en")
+      write_record("rails-years", type: "metric", locale: "en")
+
+      get portuguese_resume_path
     end
 
     # The page marks a borrowed record in two places and so does the document:

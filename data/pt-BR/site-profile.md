@@ -2,7 +2,7 @@
 id: site-profile
 type: site_profile
 locale: pt-BR
-status: draft
+status: published
 confidentiality: public
 updated: "2026-08-06"
 name: Mauricio Zaffari

@@ -107,8 +107,7 @@ RSpec.describe Resume do
 
   describe "the records it draws from" do
     before do
-      Content.remove_instance_variable(:@repository) if Content.instance_variable_defined?(:@repository)
-      allow(Content).to receive(:root).and_return(content_root)
+      serve_fixture_corpus
 
       write_record("site-profile", type: "site_profile", name: "Example Person", headline: "Example headline",
         links: [ { "label" => "GitHub", "url" => "https://example.com/profile" } ])
@@ -120,8 +119,6 @@ RSpec.describe Resume do
       write_record("restricted-metric", type: "metric", label: "Restricted label", value: "2", context: "Restricted context",
         status: "draft", confidentiality: "restricted")
     end
-
-    after { Content.remove_instance_variable(:@repository) if Content.instance_variable_defined?(:@repository) }
 
     let(:text) { with_resume("en", repository: Content.repository, &:pdf).then { |bytes| pdf_text(bytes) } }
 

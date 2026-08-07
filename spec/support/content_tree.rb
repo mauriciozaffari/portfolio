@@ -6,7 +6,8 @@ require "tmpdir"
 # never a test fixture.
 module ContentTree
   MINIMUM = {
-    "site_profile" => { "name" => "Example Person", "headline" => "Example headline", "links" => [ "https://example.com" ] },
+    "site_profile" => { "name" => "Example Person", "headline" => "Example headline",
+                        "links" => [ { "label" => "Example", "url" => "https://example.com" } ] },
     "leadership" => { "title" => "Example title" },
     "experience" => { "organization" => "Example Org", "role" => "Example Role", "start_date" => "2020", "prominence" => "primary" },
     "case_study" => { "title" => "Example", "organization" => "Example Org", "period" => "2020", "technologies" => [ "Ruby" ] },
@@ -55,6 +56,23 @@ module ContentTree
     Content::Repository.load(content_root)
   end
 
+  # Points the application's own loader at the throwaway tree, for a spec that
+  # needs a rendered page or a built PDF rather than a repository object.
+  #
+  # The memoized repository has to be dropped on both sides of the example.
+  # Reloading is off in the test environment, so the first corpus a process loads
+  # is otherwise the only one it ever sees: either the real one answers a
+  # fixture's example, or a fixture answers the next spec's.
+  def serve_fixture_corpus
+    @fixture_corpus = true
+    reset_repository
+    allow(Content).to receive(:root).and_return(content_root)
+  end
+
+  def reset_repository
+    Content.remove_instance_variable(:@repository) if Content.instance_variable_defined?(:@repository)
+  end
+
   private
     def document(attributes, body)
       front_matter = attributes.to_yaml.delete_prefix("---\n")
@@ -71,5 +89,9 @@ end
 
 RSpec.configure do |config|
   config.include ContentTree
-  config.after { remove_content_root }
+
+  config.after do
+    reset_repository if @fixture_corpus
+    remove_content_root
+  end
 end

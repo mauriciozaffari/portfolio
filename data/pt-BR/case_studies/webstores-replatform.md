@@ -2,7 +2,7 @@
 id: webstores-replatform
 type: case_study
 locale: pt-BR
-status: draft
+status: published
 confidentiality: public
 updated: "2026-08-06"
 title: Trocando a plataforma do produto principal sem pará-lo

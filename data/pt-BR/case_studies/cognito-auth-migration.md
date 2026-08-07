@@ -2,7 +2,7 @@
 id: cognito-auth-migration
 type: case_study
 locale: pt-BR
-status: draft
+status: published
 confidentiality: public
 updated: "2026-08-06"
 title: Levando todos os usuários para uma autenticação gerenciada

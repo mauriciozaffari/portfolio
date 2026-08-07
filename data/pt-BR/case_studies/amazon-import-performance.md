@@ -2,7 +2,7 @@
 id: amazon-import-performance
 type: case_study
 locale: pt-BR
-status: draft
+status: published
 confidentiality: public
 updated: "2026-08-06"
 title: Reduzindo uma importação de 46 minutos para 16 minutos

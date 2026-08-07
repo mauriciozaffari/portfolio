@@ -96,9 +96,10 @@ Listed here in the order they block progress:
   it, run `kamal setup`, and **exercise the rollback**, which this SPEC requires
   and which cannot be proved without a host. The deploy trigger is still
   undecided.
-- [Curated content](curated-content/SPEC.md): author the `pt-BR` records.
-  `/pt-BR` currently serves the English records, each marked and carrying
-  `lang="en"`, which is the fallback working as specified rather than a defect.
+- None. Both locales are authored and published — 68 records across `en` and
+  `pt-BR`. The fallback still covers the case of an English record authored
+  ahead of its translation, and is now proven by fixtures rather than by the
+  corpus happening to be incomplete.
 - [Landing page](landing-page/SPEC.md): decide whether `source_url` becomes a
   visible citation, and whether `metric` and `skill_group` get an ordering key.
   Neither blocks anything; both are recorded so they are not improvised.

@@ -21,7 +21,7 @@ RSpec.describe "Site metadata", type: :request do
 
   let(:document) { Nokogiri::HTML5(response.body) }
 
-  def profile = Content.repository.site_profile(locale: "en").record
+  def profile(locale) = Content.repository.site_profile(locale: locale).record
 
   def property(name) = document.css("meta[property='#{name}']").map { |node| node["content"] }
 
@@ -88,11 +88,11 @@ RSpec.describe "Site metadata", type: :request do
     it "describes the person entirely from the record" do
       expect(json_ld).to include(
         "@type" => "Person",
-        "name" => profile[:name],
-        "jobTitle" => profile[:headline],
+        "name" => profile(locale)[:name],
+        "jobTitle" => profile(locale)[:headline],
         "url" => SiteMetadata.url_for(locale)
       )
-      expect(json_ld["sameAs"]).to eq(profile[:links].map { |link| link[:url] }.grep(%r{\Ahttps?://}))
+      expect(json_ld["sameAs"]).to eq(profile(locale)[:links].map { |link| link[:url] }.grep(%r{\Ahttps?://}))
     end
 
     it "carries no contact field outside the four-entry allowlist" do

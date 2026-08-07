@@ -121,10 +121,14 @@ Recorded so they are not relitigated every session.
   it. On a public site with no login it is not strictly necessary, which is
   precisely the category that carries a consent obligation in the EU and UK.
   Worth removing before launch.
-- **`pt-BR` records do not exist.** English ships first; the locale fallback in
-  [curated-content](features/curated-content/SPEC.md) makes the second locale
-  incremental rather than a cutover. `/pt-BR` currently serves English records
-  marked as substituted.
+- **The Portuguese records are machine-drafted and human-approved**, not
+  human-authored. They were translated in one pass and reviewed before
+  publication. Figures carry Brazilian notation (`R$ 482.800`, `81,7%`) while
+  the English keeps English notation, so the two locales are deliberately not
+  byte-comparable on numbers. Three judgement calls are recorded in
+  [curated-content](features/curated-content/SPEC.md): job titles keep *Tech
+  Lead* untranslated, Looper's domain noun *scan* stays English, and city names
+  are localised only where a common Portuguese exonym exists.
 - **The resume PDF is eight pages.** It is faithful to its SPEC — the same
   records as the page, so the two cannot drift — but that is a dossier rather
   than a resume, and most readers expect one or two pages. An open product

@@ -17,7 +17,7 @@ module Content
     # prevent, and the loader would otherwise ignore it all the way to
     # production.
     def self.paths(root)
-      files = root.glob("**/*").select(&:file?).sort
+      files = Content.files_under(root)
       strays = files.reject { |file| file.extname == ".md" }
       return files if strays.empty?
 

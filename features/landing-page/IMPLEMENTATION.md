@@ -1,15 +1,14 @@
 ---
 title: "Landing Page - Implementation"
 type: "feature-implementation"
-updated: "2026-08-06"
-commit: "539541b"
+updated: "2026-08-08"
+commit: "03e139a"
 ---
 
 # Landing Page — implementation
 
-- Updated: 2026-08-06
-- Code as of: repository commit `539541b` (this feature is the working tree on
-  top of it)
+- Updated: 2026-08-08
+- Code as of: repository commit `03e139a`, the commit this feature landed in
 - Spec: [SPEC.md](SPEC.md) · Visual language: [DESIGN.md](../../DESIGN.md)
 
 One page, two canonical URLs, no database, no JavaScript. Everything a reader
@@ -92,11 +91,12 @@ siblings, and it cannot be marked — so on `/pt-BR` an unexplained "How I work"
 sat between "Trabalhos selecionados" and "Código aberto". The label is now
 `landing.leadership.heading` in both locale files.
 
-The section's own `<h2>` still renders `leadership.title`, unchanged, and on
-`/pt-BR` it correctly shows the English title inside a container carrying
-`lang="en"` and an `[EN]` marker. The two are *supposed* to differ: one is an
-index label, the other is the record's own title. Once a pt-BR `leadership`
-record exists they may still differ in wording, and that is fine.
+The section's own `<h2>` still renders `leadership.title`, unchanged. The two
+are *supposed* to be able to differ: one is an index label, the other is the
+record's own title. While no pt-BR `leadership` record existed, `/pt-BR` showed
+the English title inside a container carrying `lang="en"` and an `[EN]` marker;
+since `589ec86` the record exists and both read "Como eu trabalho". They may
+diverge again in wording, and that is fine.
 
 Applying the same test to the rest of the frame found one near-miss and one
 hybrid, both already correct:
@@ -105,8 +105,11 @@ hybrid, both already correct:
   `site_profile.links`, and moving them into a locale file would create a second
   source for the one surface the publication policy is strictest about — the
   four-entry contact allowlist that `content:scan` enforces. Unlike a navigation
-  item, that footer block *can* be marked and is: `lang="en"` plus the `[EN]`
-  marker, so an English "Email" on `/pt-BR` reads as declared fallback.
+  item, that footer block *can* be marked, and it was while `/pt-BR` borrowed
+  the English profile: `lang="en"` plus the `[EN]` marker, so an English "Email"
+  read as declared fallback rather than as a bug. The pt-BR profile exists now,
+  so nothing is borrowed there today and the mechanism is what would carry the
+  next record authored ahead of its translation.
 - **"Content last reviewed …" is a hybrid, split correctly.** The sentence is
   `landing.contact.reviewed`; the date is `site_profile.updated` rendered through
   the requested locale's `date.formats.day_month_year`, so `/pt-BR` reads
@@ -194,9 +197,13 @@ Measured in Chromium against the running application, not asserted from theory.
 **Transfer.** `/` is **4 requests and 66,531 bytes uncompressed** — document
 41,241, stylesheet 21,002, `icon.svg` 122, `icon.png` 4,166. Gzipped, which is
 what the proxy will serve, that is **18.5 KB**: HTML 9,811, CSS 4,811, icons
-4,288 (already compressed). `/pt-BR` is 73,324 bytes uncompressed and 18.9 KB
-gzipped; the difference is the 35 substitution markers and their
-visually-hidden sentences. Zero third-party origins, zero scripts, zero fonts.
+4,288 (already compressed). Zero third-party origins, zero scripts, zero fonts.
+
+`/pt-BR` measured 73,324 bytes uncompressed and 18.9 KB gzipped when the page
+carried 35 substitution markers and their visually-hidden sentences. The
+Portuguese records landed in `dfdab9f` and `589ec86`, so the page now
+substitutes nothing; that figure is stale and the page has not been
+re-measured.
 
 > Amended by [site-metadata](../site-metadata/IMPLEMENTATION.md), which moved
 > the total **down**. The head grew by 2,496 bytes uncompressed and 396 gzipped;
@@ -212,8 +219,9 @@ JavaScript.
 context, not reasoned about. All 7 `<section>` elements and all 45 prose
 paragraphs render; clicking the `#skills` anchor lands the section 32px from the
 viewport top, exactly the `--scroll-offset`; "Back to top" returns to the
-document head; the locale switcher navigates to `/pt-BR` and the substituted
-records still carry their markers.
+document head; and the locale switcher navigates to `/pt-BR`. The last clause of
+that check — that the substituted records still carried their markers — no
+longer applies, because `/pt-BR` substitutes nothing since `589ec86`.
 
 **Accessibility.** Exactly one `<h1>`; the heading sequence over the whole
 document is `1,2,2,3,3,3,3,4×9,2,3,4,4,4,…,2,2,3,3,3,2,3×7,2` with no level
@@ -234,23 +242,23 @@ no-JavaScript states. Two real defects were found by looking at them and fixed:
 the section boundary rule doubled with the first row's rule (now
 `first:border-t-0`), and the middot separators wrapped to the *start* of the next
 line (the separator is now an `::after` glued to the item it follows). The
-screenshots were deliberately not committed — `.playwright-mcp/` is not
-gitignored, and this repository is public.
+screenshots were deliberately not committed; `.playwright-mcp/` is gitignored so
+that a later capture cannot be committed by accident either.
 
 ## Testing
 
 | Spec | What it proves |
 |---|---|
-| [spec/requests/landing_spec.rb](../../spec/requests/landing_spec.rb) | Shared examples run against both locales: 200, every section id present, the four landmarks, exactly one `h1`, no heading-level skip, name and headline sourced from `site_profile`, every in-page anchor resolving, the footer publishing exactly the approved links and nothing else, both canonical URLs offered with one marked `aria-current`, no unresolved translation, and no non-relative asset URL or `@font-face` — narrowed by [site-metadata](../site-metadata/IMPLEMENTATION.md) to the `rel` values that actually fetch, since `canonical` and `alternate` must be absolute; the origins those point at are asserted in `spec/requests/site_metadata_spec.rb`. Then per locale: `html lang`, that `/` substitutes nothing, that `?locale=pt-BR` cannot serve Portuguese from `/`, and that `/pt-BR` translates the frame, shows the notice once, marks every substituted container with `lang="en"`, and hides the marker from assistive technology while explaining it in text. |
-| `spec/requests/landing_spec.rb`, "the section index across both locales" | The chrome-versus-content boundary above, locked down: the index covers every section but the masthead; **no Portuguese label equals its English string**; the leadership entry is the I18n key and specifically *not* the record's `title`; and the leadership `<h2>` is still the record's title, still `lang="en"`, still marked. Verified to fail — reintroducing the record-derived label fails two of the four with `expected ["How I work"].empty? to be truthy`. |
+| [spec/requests/landing_spec.rb](../../spec/requests/landing_spec.rb) | Shared examples run against both locales: 200, every section id present, the four landmarks, exactly one `h1`, no heading-level skip, name and headline sourced from `site_profile`, every in-page anchor resolving, the footer publishing exactly the approved links and nothing else, both canonical URLs offered with one marked `aria-current`, no unresolved translation, and no non-relative asset URL or `@font-face` — narrowed by [site-metadata](../site-metadata/IMPLEMENTATION.md) to the `rel` values that actually fetch, since `canonical` and `alternate` must be absolute; the origins those point at are asserted in `spec/requests/site_metadata_spec.rb`. Then per locale: `html lang`, that `/` substitutes nothing, that `?locale=pt-BR` cannot serve Portuguese from `/`, and that `/pt-BR` translates the frame. The substitution examples — the notice shown once, every substituted container marked with `lang="en"`, and the marker hidden from assistive technology while explained in text — moved onto a fixture corpus in `589ec86`, because both locales in `data/` are complete and coverage of a fallback must not depend on the corpus staying incomplete. |
+| `spec/requests/landing_spec.rb`, "the section index across both locales" | The chrome-versus-content boundary above, locked down: the index covers every section but the masthead; **no Portuguese label equals its English string**; every index entry is the I18n value for the section it points at; and the leadership `<h2>` is still the record's own title. The leadership assertion was rewritten in `589ec86`: it read "the nav does not include the record's `title`", which distinguished anything only while that title differed from the chrome label — in Portuguese both read "Como eu trabalho", so it failed whichever source the label came from. It now compares the whole index against the chrome values on a fixture whose leadership title collides with no chrome string, and it was proven to still bite. The `lang="en"` and marker assertions on that heading moved to the fallback block above. |
 | [spec/models/landing_page_spec.rb](../../spec/models/landing_page_spec.rb) | The prominence split foregrounds without discarding; every derived ordering, including a dated month sorting after a bare year; drafts and restricted records unreachable; and the fallback serving the whole page from the locale that does exist. |
 | [spec/models/heading_levels_spec.rb](../../spec/models/heading_levels_spec.rb) | The offset applies to headings and nothing else, stops at `h6`, returns renderable markup, matches a real case study, and — the guard that matters — fails if the sanitizer's heading allowlist ever widens past `h4`. |
 | [spec/requests/rendered_html_safety_spec.rb](../../spec/requests/rendered_html_safety_spec.rb) | Unchanged from `539541b` and now covering both new routes, because it is driven by the routing table. The content-safety scanner finds nothing unpublishable in either rendered page. |
 
 `bin/ci` is green: RuboCop (45 files), `herb analyze` (13 files),
-`content:validate`, `content:scan`, `content:paths`, `importmap audit`, and 123
-RSpec examples. (229 as of
-[site-metadata](../site-metadata/IMPLEMENTATION.md).)
+`content:validate`, `content:scan`, `content:paths`, `importmap audit`, and the
+RSpec suite. The example count is deliberately not recorded here — it moves with
+every commit, and `bin/rspec` reports the current one.
 
 ## Known limitations / pitfalls
 

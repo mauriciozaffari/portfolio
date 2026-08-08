@@ -23,6 +23,10 @@ Maintained by the [feature-spec](../.opencode/skills/feature-spec/SKILL.md) and
 [implement-feature](../.opencode/skills/implement-feature/SKILL.md) skills. Keep
 this table in sync whenever a feature folder is added or a status changes.
 
+The `commit` field in each `IMPLEMENTATION.md` names the commit the feature
+landed in — the one carrying both its code and that document — not the commit
+before it, while `updated` tracks the document's own last revision.
+
 ## Blocking preconditions
 
 Not features. Preconditions that gate the first commit.
@@ -96,10 +100,11 @@ Listed here in the order they block progress:
   it, run `kamal setup`, and **exercise the rollback**, which this SPEC requires
   and which cannot be proved without a host. The deploy trigger is still
   undecided.
-- None. Both locales are authored and published — 68 records across `en` and
-  `pt-BR`. The fallback still covers the case of an English record authored
-  ahead of its translation, and is now proven by fixtures rather than by the
-  corpus happening to be incomplete.
+- [Curated content](curated-content/SPEC.md): **nothing pending.** Both locales
+  are authored and published — 68 records, 34 in `en` and 34 in `pt-BR`. The
+  fallback still covers the case of an English record authored ahead of its
+  translation, and is now proven by fixtures rather than by the corpus happening
+  to be incomplete.
 - [Landing page](landing-page/SPEC.md): decide whether `source_url` becomes a
   visible citation, and whether `metric` and `skill_group` get an ordering key.
   Neither blocks anything; both are recorded so they are not improvised.
@@ -119,3 +124,7 @@ Listed here in the order they block progress:
 - [Chatbot](chatbot/SPEC.md): decide conversation logging and retention, and
   record the corpus-size threshold that would justify a vector database.
   Provider (Gemini) and the USD 20/month hard cap are decided.
+- [App foundation](app-foundation/SPEC.md): drop the `nodejs` pin from
+  `.tool-versions`. Nothing in the build reads it — there is no `package.json`
+  and Tailwind runs from the binary the `tailwindcss-ruby` gem vendors — so the
+  pin only suggests a toolchain the project has ruled out. Blocks nothing.

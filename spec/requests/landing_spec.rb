@@ -93,6 +93,19 @@ RSpec.describe "Landing page", type: :request do
     # is not one — and they cost no request, so including them here would have
     # forced site-metadata to choose between a correct canonical and a green
     # spec. What they point at is asserted in spec/requests/site_metadata_spec.rb.
+    # `stylesheet_link_tag :app` is a glob over app/assets/**/*.css, and an
+    # empty glob renders an empty string rather than an error. The compiled
+    # Tailwind file is gitignored, so without this every other assertion about
+    # what the page loads — the web-font check below, style-src in
+    # spec/requests/security_headers_spec.rb — passes on a page with no CSS at
+    # all. bin/setup builds it; this is what notices when it did not.
+    it "links exactly one first-party stylesheet" do
+      hrefs = page_document.css("link[rel~='stylesheet']").map { |node| node["href"] }
+
+      expect(hrefs.size).to eq(1)
+      expect(hrefs.first).to start_with("/assets/")
+    end
+
     it "loads no third-party origin and no web font" do
       urls = page_document.css("link[rel~='stylesheet'], link[rel~='icon'], link[rel~='apple-touch-icon'], script[src]")
                           .map { |node| node["href"] || node["src"] }

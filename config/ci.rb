@@ -19,5 +19,11 @@ CI.run do
 
   step "Security: Importmap vulnerability audit", "bin/importmap audit"
 
+  # The Gemfile side of the same question. `bin/importmap audit` covers pinned
+  # JavaScript, of which there is none; this covers the gems that are actually
+  # in the image. Promised in features/app-foundation/IMPLEMENTATION.md and
+  # never delivered. See the Gemfile for why it does not pass --update.
+  step "Security: Dependency vulnerability audit", "bin/bundle-audit check"
+
   step "Tests", "bin/rspec"
 end

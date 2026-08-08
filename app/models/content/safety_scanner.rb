@@ -71,7 +71,7 @@ module Content
     def scan_tree(root)
       root = Pathname(root)
 
-      root.glob("**/*").select(&:file?).sort.flat_map do |path|
+      Content.files_under(root).flat_map do |path|
         scan_file(path, source: root.basename.join(path.relative_path_from(root)).to_s)
       end
     end

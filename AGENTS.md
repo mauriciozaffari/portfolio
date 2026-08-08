@@ -10,18 +10,20 @@ Ruby on Rails tech lead / staff software engineer. One landing page, Rails 8 +
 Hotwire, all content authored as Markdown in `data/`. A grounded chatbot that
 answers questions about his background is the final planned feature.
 
-## Current state (2026-08-06)
+## Current state (2026-08-08)
 
 **Six features are built on `main`.** Five are `implemented`; `deployment` is
 `in-progress` because nothing has been deployed yet. `bin/ci` is green.
 
 ```
-.tool-versions   ruby 4.0.6, nodejs 26.7.0 (both installed and working)
+.tool-versions   ruby 4.0.6, nodejs 26.7.0 — nothing in the build reads the Node pin
 .gitignore       session artifacts, secrets, Rails runtime; admits .opencode/skills only
+.env.example     PORT, and the note that this file may never hold a real value
 AGENTS.md        this file
 DESIGN.md        the binding design contract — read before any UI change
 app/             Rails 8: no database, no Node, zero JavaScript shipped
 data/en/         34 curated English records across eight types
+data/pt-BR/      the same 34 records in Portuguese; machine-drafted, human-reviewed
 features/        the backlog: TODO.md index + seven SPEC.md files
 config/deploy.yml, Dockerfile, .kamal/   Kamal 2 config; never yet run against a host
 .opencode/       project skills (feature-spec, implement-feature)
@@ -137,6 +139,17 @@ Recorded so they are not relitigated every session.
   the profile name leaves a stale `og-image.png` and nothing detects it. The
   unfurl is also unproven end to end, because LinkedIn and Slack cannot reach a
   local origin.
+- **The `chatbot` branch is three commits behind `main`** — it forked at
+  `cbc7e62`, before the Portuguese records landed. Merging it as it stands would
+  reassert that those records do not exist, in both the code it touches and the
+  docs it carries. Rebase onto `main` first, and re-read its
+  `IMPLEMENTATION.md` for claims the translation invalidated.
+- **The licence is split and is not committed yet.** `LICENSE` exists in the
+  working tree and puts the application under MIT while the `data/` records and
+  the prose in `DESIGN.md`, `README.md`, this file and `features/` stay all
+  rights reserved. Until it is committed, a public repository with no licence
+  file is all rights reserved by default for the software too — so confirm the
+  file lands with, or before, the first push.
 
 ## Style
 

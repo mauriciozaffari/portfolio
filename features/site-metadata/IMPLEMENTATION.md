@@ -1,16 +1,14 @@
 ---
 title: "Site Metadata - Implementation"
 type: "feature-implementation"
-updated: "2026-08-06"
-commit: "74e613d"
+updated: "2026-08-08"
+commit: "8d20fce"
 ---
 
 # Site Metadata — implementation
 
-- Updated: 2026-08-06
-- Code as of: the working tree. **The `commit` field above is a placeholder** —
-  this session was not permitted to run git, so it could not read `HEAD`. Fill
-  it in with the SHA this doc is committed alongside.
+- Updated: 2026-08-08
+- Code as of: repository commit `8d20fce`, the commit this feature landed in
 - Spec: [SPEC.md](SPEC.md) · Visual language: [DESIGN.md](../../DESIGN.md)
 
 Two `<head>` blocks, two crawler documents, and three PNGs. None of it is
@@ -173,8 +171,10 @@ the strongest thing the paragraph says. The profile currently lands at 246.
 which would mark both URLs as modified on every deploy and teach a crawler to
 ignore the field. Going through `LandingPage` rather than the repository means
 "the content behind this URL" is the same set of records here as in the browser,
-including the locale fallback — which is why `/pt-BR` reports the English
-records' dates rather than nothing at all.
+including the locale fallback — so a page rendered partly from borrowed records
+is dated from what it actually shows rather than from nothing at all. Since
+`589ec86` neither locale borrows anything, and the fallback is proved by
+fixtures instead.
 
 **`format: false` on both routes.** It drops the `(.:format)` segment, so the
 dot in each name is a literal. `/robots.txt.json` is a 404, and `sitemap_path`
@@ -217,7 +217,8 @@ all three URLs.
 
 **Quality gate.** `bin/ci` exits 0: RuboCop (53 files), `herb analyze` (14
 files), `content:validate`, `content:scan`, `content:paths`, `importmap audit`,
-and **229 RSpec examples** — up from 174.
+and the RSpec suite. The example count is deliberately not recorded here — it
+moves with every commit, and `bin/rspec` reports the current one.
 
 ## Testing
 
@@ -251,11 +252,13 @@ and **229 RSpec examples** — up from 174.
   are system stacks; the card is baked with Noto Sans and DejaVu Sans Mono, so a
   reader on macOS sees a card in slightly different faces from the page they
   click through to. Freezing one pair is the price of not shipping a web font.
-- **The description is English on `/pt-BR`.** It comes from the `site_profile`
-  record, and the Portuguese one does not exist yet — the same fallback the page
-  shows, but the card has nowhere to put a substitution marker. Authoring the
-  pt-BR records fixes it; tracked in
-  [curated-content](../curated-content/SPEC.md).
+- **The share card is English on both locales.** The description and the
+  `Person` graph became Portuguese on `/pt-BR` when the pt-BR `site_profile`
+  landed in `dfdab9f`, but `bin/rails site:images` renders `og-image.png` from
+  `Content::Schema::DEFAULT_LOCALE` — one baked PNG serving both pages. A
+  Portuguese card means a second file, a second `og:image` per locale, and a
+  second thing to keep from going stale, which is not obviously worth it for an
+  unfurl.
 - **`lastmod` is a whole day.** `updated` is a date in the front matter, so two
   edits on one day are indistinguishable. That is the record schema's
   granularity, not this feature's, and a finer one would be invented precision.

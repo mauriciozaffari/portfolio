@@ -1,15 +1,14 @@
 ---
 title: "Deployment - Implementation"
 type: "feature-implementation"
-updated: "2026-08-06"
-commit: "03e139a"
+updated: "2026-08-08"
+commit: "74e613d"
 ---
 
 # Deployment — implementation
 
-- Updated: 2026-08-06
-- Code as of: repository commit `03e139a` (this feature is the working tree on
-  top of it)
+- Updated: 2026-08-08
+- Code as of: repository commit `74e613d`, the commit this feature landed in
 - Spec: [SPEC.md](SPEC.md)
 - Status: **in-progress, and the status is the point.** The image, the Kamal
   configuration, the security headers, and the CI workflow all exist and are
@@ -97,7 +96,7 @@ Everything below was run against the real image, not reasoned about.
 | Script tags in served HTML | 0 at the time of this measurement. [site-metadata](../site-metadata/IMPLEMENTATION.md) later added one `type="application/ld+json"` data block, which is never executed and raises no CSP violation — verified in Chromium |
 | Inline style attributes in served HTML | 0 |
 | `kamal config` | Resolves; writes nothing to the working tree |
-| `bin/ci` | Exit 0, **174 examples, 0 failures** (229 as of [site-metadata](../site-metadata/IMPLEMENTATION.md)) |
+| `bin/ci` | Exit 0, **174 examples, 0 failures** at this commit. Later features add examples; `bin/rspec` reports the current count |
 
 Headers observed on `GET /` from the production container:
 

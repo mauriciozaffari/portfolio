@@ -1,0 +1,51 @@
+This repository contains two different things under two different terms.
+
+================================================================================
+1. THE SOFTWARE — MIT License
+================================================================================
+
+Applies to the application: everything under app/, config/, lib/, spec/, bin/,
+public/, the Dockerfile, .kamal/, .github/, and the project skills under
+.opencode/.
+
+Copyright (c) 2026 Mauricio Zaffari
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+================================================================================
+2. THE CONTENT — All rights reserved
+================================================================================
+
+Applies to everything under data/, and to the prose in DESIGN.md, AGENTS.md,
+README.md and features/.
+
+Copyright (c) 2026 Mauricio Zaffari. All rights reserved.
+
+This is one person's professional biography: employment history, project
+descriptions, measured results and the written record of how they were built.
+It is published so it can be read, not so it can be reused. No permission is
+granted to copy, adapt, republish or redistribute it, in whole or in part, and
+that includes reproducing it as though it described someone else.
+
+Reading it, quoting it with attribution, and linking to it are all fine.
+
+robots.txt in this repository deliberately allows AI and LLM crawlers, because
+the site exists to be found and an assistant that cannot read it will answer
+from something worse. That permission is to read and to answer questions about
+the person described. It is not a grant of any right above.

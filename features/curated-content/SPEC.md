@@ -158,7 +158,12 @@ pairing is what lets a record be located from a citation alone, which
   [landing-page](../landing-page/SPEC.md).
 - A CMS, an admin UI, or a database-backed content store. Markdown in the
   repository is the store.
-- Automated translation. Both locales are authored and reviewed by a human.
+- Translation as a build step. Nothing in the application translates anything at
+  runtime or in CI, and no record is published unreviewed. The English records
+  are human-authored; the Portuguese ones were machine-drafted in one pass and
+  reviewed by a human before publication, as recorded under Pending TODOs. What
+  stays excluded is an automated pipeline that puts a record in `data/` without
+  a human approving it.
 
 ## Pending TODOs
 

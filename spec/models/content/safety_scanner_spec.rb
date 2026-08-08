@@ -87,5 +87,20 @@ RSpec.describe Content::SafetyScanner do
 
       expect(scanner.scan_tree(content_root).map(&:reason)).to include("is not UTF-8 text")
     end
+
+    # Ruby's glob skips a leading dot unless asked not to, so the scan used to
+    # walk straight past a file named to be inconspicuous. Both gates over data/
+    # shared that blind spot; see Content.files_under.
+    it "reads a file hidden behind a leading dot" do
+      write_file("en/.private-source.md", "CPF 123.456.789-00\n")
+
+      expect(scanner.scan_tree(content_root).map(&:reason)).to include("CPF")
+    end
+
+    it "reads a file inside a hidden directory" do
+      write_file("en/.sources/notes.md", "Write to nobody@example.invalid.\n")
+
+      expect(scanner.scan_tree(content_root).map(&:reason)).to include("email address")
+    end
   end
 end

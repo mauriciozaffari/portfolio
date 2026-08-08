@@ -18,6 +18,18 @@ FileUtils.chdir APP_ROOT do
   puts "\n== Removing old logs and tempfiles =="
   system! "bin/rails log:clear tmp:clear"
 
+  # app/assets/builds/tailwind.css is a build artifact and is gitignored, so a
+  # fresh clone has no stylesheet at all. `stylesheet_link_tag :app` globs
+  # app/assets/**/*.css and quietly renders nothing when that glob is empty, so
+  # the whole suite — byte budgets, web-font checks, the CSP style-src
+  # assertions — used to pass vacuously on CI against a page with no CSS.
+  #
+  # Built here rather than as a separate step in config/ci.rb because this
+  # script is already both the documented bootstrap and the gate's first step:
+  # one change covers CI and a developer who clones and runs bin/rspec.
+  puts "\n== Building the stylesheet =="
+  system! "bin/rails tailwindcss:build"
+
   unless ARGV.include?("--skip-server")
     puts "\n== Starting development server =="
     STDOUT.flush # flush the output before exec(2) so that it displays

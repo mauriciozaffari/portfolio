@@ -10,6 +10,31 @@
 .opencode/*
 !.opencode/skills/
 
+# Document and key formats, ignored everywhere by shape rather than by path.
+#
+# This is the near-miss that already happened once: a resume carrying a phone
+# number and a personal email sat in the working tree before the first commit.
+# `data/` is protected structurally — the loader rejects any non-Markdown file
+# and `content:scan` sweeps it — but the repository root and every other
+# directory had no such guard, and the scanner does not walk them. Anything
+# genuinely needed in one of these formats must be force-added deliberately.
+*.pdf
+*.doc
+*.docx
+*.odt
+*.pem
+*.p12
+*.pfx
+*.ppk
+id_rsa*
+
+# Screenshots and QA captures. Browser tooling writes to the workspace root by
+# default, so an artifact can land here between a review and a commit.
+/*.png
+/*.jpg
+/*.jpeg
+!/public/*.png
+
 # Secrets. Nothing in this repository is private, so nothing here may be.
 .env
 .env.*

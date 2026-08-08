@@ -1,21 +1,22 @@
 ---
 title: "Curated Content - Implementation"
 type: "feature-implementation"
-updated: "2026-08-06"
-commit: "e35b4a7"
+updated: "2026-08-08"
+commit: "539541b"
 ---
 
 # Curated Content — implementation
 
-- Updated: 2026-08-06
-- Code as of: repository commit `e35b4a7` (this feature is the working tree on
-  top of it)
+- Updated: 2026-08-08
+- Code as of: repository commit `539541b`, the commit this feature landed in
 - Spec: [SPEC.md](SPEC.md)
 
-This is the enforcement half of the feature. The 34 records themselves landed in
-`e661f2f`; what lands here is the loader that refuses an invalid one, the
-scanner that fails the build on content that must never be published, and the
-gate that proves the application never reaches outside its own root.
+This is the enforcement half of the feature. The records themselves landed
+separately — the 34 English ones in `e661f2f`, the 34 Portuguese ones in
+`dfdab9f` and `589ec86`, 68 in all. What lands here is the loader that refuses
+an invalid one, the scanner that fails the build on content that must never be
+published, and the gate that proves the application never reaches outside its
+own root.
 
 ## Entry points / flow
 
@@ -41,8 +42,8 @@ shows up without restarting the server. Every locale-aware query is built on
 page at all — the filter lives in the loader rather than in a controller or a
 view, where it could be forgotten once.
 
-Nothing renders content yet: the root route is still the placeholder that
-[landing-page](../landing-page/SPEC.md) owns.
+Nothing renders content yet: at this commit the root route is still the
+placeholder that [landing-page](../landing-page/SPEC.md) owns.
 
 ## Key files
 
@@ -134,7 +135,7 @@ cannot quietly outlive its reason.
 | `spec/models/content/record_spec.rb` | Every rejection the SPEC names, one example each: missing keys, unknown type, id/filename mismatch, non-kebab id, every enumeration, locale/directory disagreement, a record outside a locale directory, `summary` in front matter, a body where the type forbids one and none where it requires one, and `published` + `restricted`. |
 | `spec/models/content/repository_spec.rb` | The real `data/` tree loads; a non-Markdown file is rejected; cardinality per locale; a draft and a restricted record are unreachable from every query; locale fallback pairs by id and reports the substitution; `Content.repository` memoizes when reloading is off and picks up an edit when it is on. |
 | `spec/models/content/markdown_spec.rb` | The constructs the corpus uses render, and a script tag, a `javascript:` URL, an event handler and an iframe all fail to survive. |
-| `spec/models/content/safety_scanner_spec.rb` | Every declared rule fires against the unsafe fixture — the assertion is set equality, so adding a rule without a fixture case fails the suite. Also: the 34 real records are clean, the allowlisted address passes while any other address fails, and figures, currency and authentication prose are not false positives. |
+| `spec/models/content/safety_scanner_spec.rb` | Every declared rule fires against the unsafe fixture — the assertion is set equality, so adding a rule without a fixture case fails the suite. Also: all 68 real records are clean, the allowlisted address passes while any other address fails, and figures, currency and authentication prose are not false positives. |
 | `spec/models/content/path_gate_spec.rb` | This application is clean; a home path, a tilde path and a mounted volume each fire; a URL that merely contains `/home/` does not; and nothing outside `app/`, `lib/` and `config/` is read. |
 | `spec/requests/rendered_html_safety_spec.rb` | Every static GET route in the routing table renders HTML with no findings. Driven by the routing table, so a page a later feature adds is covered without editing the spec. |
 

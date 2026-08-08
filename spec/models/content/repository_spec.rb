@@ -17,6 +17,24 @@ RSpec.describe Content::Repository do
 
       expect { load_repository }.to raise_error(Content::InvalidRecord, /Markdown records and nothing else.+en\/resume\.pdf/m)
     end
+
+    # The stray-file gate walked the tree with a plain `glob("**/*")`, which
+    # skips anything whose name begins with a dot. A private source document
+    # dropped in as a dotfile was therefore invisible to the one check that
+    # exists to catch it — on a repository that is public.
+    it "rejects a stray file hidden behind a leading dot" do
+      write_locale_singletons
+      write_file("en/.private-source.pdf", "not really a PDF")
+
+      expect { load_repository }.to raise_error(Content::InvalidRecord, %r{en/\.private-source\.pdf})
+    end
+
+    it "rejects a stray file inside a hidden directory" do
+      write_locale_singletons
+      write_file("en/.sources/resume.pdf", "not really a PDF")
+
+      expect { load_repository }.to raise_error(Content::InvalidRecord, %r{en/\.sources/resume\.pdf})
+    end
   end
 
   describe "cardinality" do

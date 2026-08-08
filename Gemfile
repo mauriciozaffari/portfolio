@@ -48,6 +48,25 @@ group :development, :test do
   # `herb lint` shells out to npx and would drag in a Node toolchain.
   gem "herb", "~> 0.10", require: false
 
+  # Checks Gemfile.lock against the Ruby advisory database
+  # [https://github.com/rubysec/bundler-audit]. Promised by
+  # features/app-foundation/IMPLEMENTATION.md and deferred to deployment, which
+  # never picked it up.
+  #
+  # config/ci.rb runs `bundle-audit check` without `--update`. The advisory
+  # database is not vendored in the gem: it is cloned into the user's data
+  # directory the first time the command runs, and reused untouched after that.
+  # So the gate downloads once on a machine and never again, while a GitHub
+  # Actions runner is new every time and therefore always reads a current
+  # database — CI is the authority on freshness, and a workstation stays fast
+  # and works offline.
+  #
+  # The tradeoff is that a local copy goes stale silently. `bundle-audit check
+  # --update` is the command to run by hand when that matters; it is not the one
+  # in the gate, because a gate that clones from GitHub on every run fails for
+  # reasons that have nothing to do with the code being gated.
+  gem "bundler-audit", "~> 0.9", require: false
+
   # Test framework [https://github.com/rspec/rspec-rails]
   gem "rspec-rails", "~> 8.0"
 

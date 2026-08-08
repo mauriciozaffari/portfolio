@@ -1,15 +1,15 @@
 ---
 title: "App Foundation - Implementation"
 type: "feature-implementation"
-updated: "2026-08-06"
-commit: "e661f2f"
+updated: "2026-08-08"
+commit: "e35b4a7"
 ---
 
 # App Foundation — implementation
 
-- Updated: 2026-08-06
-- Code as of: repository commit `e661f2f` (this feature is the working tree on
-  top of it; it is the first commit to contain application code)
+- Updated: 2026-08-08
+- Code as of: repository commit `e35b4a7`, the commit this feature landed in and
+  the first to contain application code
 - Spec: [SPEC.md](SPEC.md)
 
 ## Entry points / flow
@@ -45,7 +45,8 @@ rails new portfolio \
 ```
 
 `.gitignore` was not copied; the repository's own file already covered every
-Rails runtime path except one (see Known limitations). `README.md` and
+Rails runtime path except `app/assets/builds/`, which it now excludes too.
+`README.md` and
 `.ruby-version` were also not copied — the former was boilerplate, the latter
 would duplicate the version pin that `.tool-versions` already owns.
 
@@ -128,12 +129,6 @@ deliberately rather than inherited.
 
 ## Known limitations / pitfalls
 
-- **`.gitignore` does not exclude `app/assets/builds/`.** The compiled
-  `app/assets/builds/tailwind.css` is therefore committable, and it is a build
-  artifact that will go stale. Rails' generated `.gitignore` excludes
-  `/app/assets/builds/*` while keeping `.keep`; this repository's hand-written
-  file predates the app and does not. Adding those two lines is the one
-  outstanding change, and it is recorded as a pending TODO on the SPEC.
 - **Active Record and friends are still in `Gemfile.lock`.** They arrive as
   dependencies of the `rails` metagem. They are never required, so they are
   never loaded — verified at runtime — but do not read their presence in the

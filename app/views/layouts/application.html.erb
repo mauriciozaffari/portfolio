@@ -3,8 +3,15 @@
   <head>
     <title><%= content_for(:title) %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
+
+    <%# No csrf_meta_tags and no csp_meta_tag, deliberately. csrf_meta_tags %>
+    <%# writes session[:_csrf_token] on every render, which made CookieStore %>
+    <%# set _portfolio_session on every HTML response — an unnecessary cookie, %>
+    <%# and that is the category carrying a consent obligation in the EU and %>
+    <%# the UK. It protected nothing: this page has no form, ships no script %>
+    <%# to read the token with, and sends `form-action 'none'`. csp_meta_tag %>
+    <%# went with it, having emitted an empty tag since no nonce generator is %>
+    <%# configured. Reinstate csrf_meta_tags the moment a form is added here. %>
 
     <%= yield :head %>
 

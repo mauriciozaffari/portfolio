@@ -1,16 +1,14 @@
 ---
 title: "Resume Download - Implementation"
 type: "feature-implementation"
-updated: "2026-08-06"
-commit: "0000000"
+updated: "2026-08-08"
+commit: "e37eb26"
 ---
 
 # Resume Download — implementation
 
-- Updated: 2026-08-06
-- Code as of: the working tree. **The `commit` field above is a placeholder** —
-  this session was not permitted to run git, so it could not read `HEAD`. Fill
-  it in with the SHA this doc is committed alongside.
+- Updated: 2026-08-08
+- Code as of: repository commit `e37eb26`, the commit this feature landed in
 - Spec: [SPEC.md](SPEC.md) · Visual language: [DESIGN.md](../../DESIGN.md)
 
 Two PDFs, built on request from the records that render the page, and the gates
@@ -166,11 +164,13 @@ both PDFs are identical before and after it.
 
 Measured, not asserted from theory.
 
-**The documents.** English: **8 pages, 70,635 bytes**. Portuguese: **9 pages,
-75,316 bytes** — the extra page is 34 substitution markers. Zero empty pages in
-either. Every page was rendered to PNG and looked at: no overlapping text, no
-clipped line, no stranded heading, the running footer present on all 17 pages,
-and the gutter ordinals running 01 to 06.
+**The documents.** English: **8 pages, 70,637 bytes**. Portuguese: **9 pages,
+76,286 bytes**, carrying **zero substitution markers** since the pt-BR records
+landed in `589ec86`. Zero empty pages in either. Every page was rendered to PNG
+and looked at: no overlapping text, no clipped line, no stranded heading, the
+running footer present on all 17 pages, and the gutter ordinals running 01 to
+06 — done against the pre-translation Portuguese document, and nothing records a
+re-review of the translated one.
 
 **Fonts and annotations.** Four base fonts (`Helvetica`, `Helvetica-Bold`,
 `Courier`, `Courier-Bold`), zero embedded font files, 8 link annotations.
@@ -182,8 +182,9 @@ and the gutter ordinals running 01 to 06.
 `default-src 'none'`.
 
 **Quality gate.** `bin/ci` exits 0: RuboCop (63 files), `herb analyze`,
-`content:validate`, `content:scan`, `content:paths`, `importmap audit`, and
-**278 RSpec examples** — up from 229.
+`content:validate`, `content:scan`, `content:paths`, `importmap audit`, and the
+RSpec suite. The example count is deliberately not recorded here — it moves with
+every commit, and `bin/rspec` reports the current one.
 
 **Both gates verified to fail.** Drawing a synthetic phone number into the
 footer fails the text scan on both locales; putting an address into `Subject`
@@ -196,7 +197,7 @@ each.
 |---|---|
 | [spec/requests/resume_spec.rb](../../spec/requests/resume_spec.rb) | Shared examples over both locales: 200 `application/pdf` starting `%PDF`; an `attachment` disposition carrying the stable filename; **the real bytes extracted and run through `Content::SafetyScanner` with zero findings**; the four allowlisted addresses present and no `tel:`; the information dictionary holding exactly seven keys, none of them a contact field, its readable values scanner-clean, its date fields matching a PDF date literal and nothing else, and naming no tool or version; no filesystem path, no `.afm`/`.ttf`, no `FontFile` in the raw bytes; the hardened headers; and a legacy User-Agent still getting the document. |
 | `spec/requests/resume_spec.rb`, "the scan that guards it" | The failing fixture. `spec/fixtures/unsafe-record.md` — the same synthetic file that proves the scanner's rules still fire over `data/**` — is drawn into a PDF and read back, and **every one of the scanner's rules fires on the extracted text**. A scan that cannot fail is decoration; this is what makes the clean result above mean anything. |
-| `spec/requests/resume_spec.rb`, "GET /pt-BR/resume.pdf" | The chrome is Portuguese, the notice appears once, and a `[EN]` marker appears on the borrowed entries — so a reader is told, rather than left to conclude the translation is broken. |
+| `spec/requests/resume_spec.rb`, "GET /pt-BR/resume.pdf" | The chrome is Portuguese and, since `589ec86`, so are the records. The substitution behaviour it used to cover — the notice appearing once and an `[EN]` marker on each borrowed entry, so a reader is told rather than left to conclude the translation is broken — moved to a fixture corpus whose English record has no counterpart, because coverage of a fallback must not depend on the real corpus staying incomplete. |
 | [spec/models/resume_spec.rb](../../spec/models/resume_spec.rb) | Both paths come from the routing table; the filename is the record's `name` plus the locale's own noun; the dictionary's exact key set and record-derived values, with the generator's signature replaced and the dates taken from the corpus rather than the clock; both locales render; **every renderable record can be set in the fonts the document uses**; and the same corpus produces the same bytes. |
 | `spec/models/resume_spec.rb`, "the records it draws from" | Against a throwaway corpus: every published record reaches the document, **a `draft` and a `restricted` record cannot**, and an approved link is shown as its own address. This is the SPEC's mitigation asserted directly — the facts are selected from records, not restated in a template. |
 | [spec/support/pdf_text.rb](../../spec/support/pdf_text.rb) | Not a spec, but load-bearing. The scan runs over **two** extractions concatenated: `PDF::Reader::Page#text`, which rebuilds a character grid and silently merges lines set closer than the page's median font size, and the positioned drawing runs, which never merge but split at formatting boundaries. Each hides what the other shows, so a gate over one alone has a blind spot. |
@@ -219,9 +220,11 @@ each.
   counterpart here. Drawing order *is* reading order, top to bottom, which is
   the mitigation rather than a fix. The accessible surface is the HTML page,
   which the download links back to in its colophon.
-- **`/pt-BR/resume.pdf` is mostly English.** The Portuguese records do not exist
-  yet, so the chrome is translated and the entries are borrowed and marked. Same
-  fallback as the page; tracked in
+- **`/pt-BR/resume.pdf` is a machine-drafted translation.** The Portuguese
+  records landed in `dfdab9f` and `589ec86`, so the document is Portuguese
+  throughout and borrows nothing — but those records were drafted in one pass
+  and reviewed rather than authored, and this is the copy that circulates
+  uncorrected. See the judgement calls recorded in
   [curated-content](../curated-content/SPEC.md).
 - **`bigdecimal` is pinned below 4.x.** Prawn depends on ttfunk, which requires
   `bigdecimal ~> 3.1`, so adding Prawn downgraded the lockfile's `bigdecimal`

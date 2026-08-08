@@ -41,8 +41,10 @@ proxy:
   ssl: true
   host: zaffari.casa
 
-  # Puma listens on 3000 (config/puma.rb); kamal-proxy defaults to 80.
-  app_port: 3000
+  # Where Puma is listening inside the container; kamal-proxy defaults to 80 on
+  # the outside. Read from the same PORT variable the image is built with, so
+  # the two cannot drift — see the PORT build argument in the Dockerfile.
+  app_port: <%= ENV.fetch("PORT", 3000) %>
 
   # The Rails health endpoint from config/routes.rb. A new container gets no
   # traffic until this answers 200, which is what makes a deploy zero-downtime.

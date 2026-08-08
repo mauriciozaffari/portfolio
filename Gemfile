@@ -56,6 +56,13 @@ group :development, :test do
   # the scan has to run over the bytes a reader downloads rather than over the
   # source that produced them.
   gem "pdf-reader", "~> 2.15"
+
+  # Loads .env [https://github.com/bkeepers/dotenv]. Deliberately not available
+  # in production: the deployed container receives real environment variables
+  # from Kamal, and a .env quietly overriding them would be a debugging trap.
+  # BUNDLE_WITHOUT excludes this group from the image, so the gem is not merely
+  # unused there — it is absent.
+  gem "dotenv-rails", "~> 3.1"
 end
 
 group :development do

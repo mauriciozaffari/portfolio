@@ -76,7 +76,16 @@ RUN groupadd --system --gid 1000 rails && \
     chown -R rails:rails log tmp
 USER 1000:1000
 
-EXPOSE 3000
+# The port Puma binds and the port this image publishes, from one value. It is
+# baked in as ENV rather than left to the run command so that `docker run` and
+# Kamal cannot disagree with what EXPOSE advertises.
+#
+# `app_port` in config/deploy.yml reads the same variable, so kamal-proxy always
+# forwards where Puma is actually listening. Overriding one without the other
+# produces a healthcheck that never turns green and no other symptom.
+ARG PORT=3000
+ENV PORT=${PORT}
+EXPOSE ${PORT}
 
 # No entrypoint script: there is no database to prepare and no migration to
 # run. Puma reads config/puma.rb, which takes PORT from the environment.

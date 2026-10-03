@@ -109,6 +109,9 @@ from the same constants the controllers read, never from a hand-written literal.
 - [x] `/openapi.json` states the versioning and deprecation policy: the major
       version is the first path segment, breaking changes arrive as a new path,
       and a retiring version carries `Deprecation` and `Sunset` headers.
+- [x] Appending `.md` to a machine-readable document returns prose: `/api.md`
+      and `/api/llms.txt.md` serve the API guide, and `/openapi.json.md` renders
+      the description, the policy and an endpoint table from `OpenapiDocument`.
 - [x] `bin/ci` is green with 100% line and branch coverage.
 
 ## Open decisions

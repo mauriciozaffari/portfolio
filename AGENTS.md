@@ -10,27 +10,31 @@ Ruby on Rails tech lead / staff software engineer. One landing page, Rails 8 +
 Hotwire, all content authored as Markdown in `data/`. A grounded chatbot that
 answers questions about his background is the final planned feature.
 
-## Current state (2026-08-08)
+## Current state (2026-10-03)
 
-**Six features are built on `main`.** Five are `implemented`; `deployment` is
-`in-progress` because nothing has been deployed yet. `bin/ci` is green.
+**Seven features are built on `main`.** Six are `implemented`; `deployment` is
+`in-progress` because nothing has been deployed yet. `bin/ci` is green and
+enforces 100% line and branch coverage.
 
 ```
-.tool-versions   ruby 4.0.6, nodejs 26.7.0 — nothing in the build reads the Node pin
-.gitignore       session artifacts, secrets, Rails runtime; admits .opencode/skills only
+.tool-versions   ruby 4.0.6 — nothing in the build reads a Node pin
+.gitignore       session artifacts, secrets, Rails runtime, coverage reports
 .env.example     PORT, and the note that this file may never hold a real value
 AGENTS.md        this file
 DESIGN.md        the binding design contract — read before any UI change
 app/             Rails 8: no database, no Node, zero JavaScript shipped
 data/en/         34 curated English records across eight types
 data/pt-BR/      the same 34 records in Portuguese; machine-drafted, human-reviewed
-features/        the backlog: TODO.md index + seven SPEC.md files
+features/        the backlog: TODO.md index + eight SPEC.md files
 config/deploy.yml, Dockerfile, .kamal/   Kamal 2 config; never yet run against a host
 .opencode/       project skills (feature-spec, implement-feature)
 ```
 
 The site serves `/` and `/pt-BR` from the records, plus a Prawn resume PDF per
-locale.
+locale. It also serves the agent and search surfaces: `llms.txt`, the
+`/.well-known` discovery documents, an OpenAPI 3.1 description, a read-only JSON
+API at `/api/v1`, a stateless MCP server at `/mcp`, Markdown twins, and
+`/about`, `/contact` and `/privacy`.
 
 **`chatbot` is built but deliberately not on `main`.** It lives on the
 `chatbot` branch, complete with specs and an `IMPLEMENTATION.md`, and is not
@@ -113,16 +117,21 @@ Recorded so they are not relitigated every session.
 
 ## Known gaps
 
-- **Nothing has been deployed.** The Kamal configuration is complete and the
-  image builds and serves locally, but it has never run against a host. The
-  rollback is documented and **not yet exercised**, which is the one unmet
-  acceptance criterion in [deployment](features/deployment/SPEC.md) and the
-  reason that SPEC is `in-progress` rather than `implemented`. The repository
-  also has no git remote, so CI runs nowhere until it is pushed.
-- **Every response sets an unused `_portfolio_session` cookie.** Nothing reads
-  it. On a public site with no login it is not strictly necessary, which is
-  precisely the category that carries a consent obligation in the EU and UK.
-  Worth removing before launch.
+- **Nothing has been deployed, and the canonical host is wrong.** The Kamal
+  configuration is complete and the image builds and serves locally, but it has
+  never run against a host. The rollback is documented and **not yet
+  exercised**, which is the one unmet acceptance criterion in
+  [deployment](features/deployment/SPEC.md) and the reason that SPEC is
+  `in-progress` rather than `implemented`. Worse for discoverability:
+  `SiteMetadata::ORIGIN` points at `zaffari.casa`, and that apex currently
+  serves a different, `noindex` application while this site answers on a
+  subdomain — so every canonical URL, the sitemap, and every discovery
+  document point at a host that does not serve this site. Fix the host before
+  chasing any other SEO signal; it is a DNS and deployment decision, recorded in
+  [agent-discovery](features/agent-discovery/SPEC.md).
+- **The `_portfolio_session` cookie gap is closed.** The layout renders neither
+  `csrf_meta_tags` nor `csp_meta_tag`, and `spec/requests/session_cookie_spec.rb`
+  fails the build if any route sets a cookie.
 - **The Portuguese records are machine-drafted and human-approved**, not
   human-authored. They were translated in one pass and reviewed before
   publication. Figures carry Brazilian notation (`R$ 482.800`, `81,7%`) while

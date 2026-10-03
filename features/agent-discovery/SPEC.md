@@ -1,0 +1,139 @@
+---
+title: "Agent discovery - Spec"
+type: "feature-spec"
+status: "implemented"
+created: "2026-10-03"
+updated: "2026-10-03"
+origin: "operational need (a large share of readers now arrive through an AI assistant, and an assistant that cannot read the published source answers from a stale scrape or a guess)"
+---
+
+# Agent discovery
+
+- Status: implemented — see [IMPLEMENTATION.md](IMPLEMENTATION.md)
+- Created: 2026-10-03
+- Updated: 2026-10-03
+- Origin: operational need (a large share of readers now arrive through an AI
+  assistant, and an assistant that cannot read the published source answers from
+  a stale scrape or a guess)
+
+## Problem / motivation
+
+The site exists to be found. An increasing share of the people it is written for
+never open it: they ask an assistant a question about the person it describes,
+and the assistant answers from whatever it can reach — the rendered page, a
+scraped aggregator, or nothing. [Site metadata](../site-metadata/SPEC.md) covers
+the unfurl and the search crawler. It does not cover the surfaces an agent looks
+for when it is deciding what it can *do* with a site: a context index, a
+capability list, a machine-readable API, and a protocol it can call.
+
+Those surfaces are also the ones that go wrong quietly. A document that
+advertises an endpoint the application does not serve is worse than no document,
+because the agent reports a dead end that no human review would have caught.
+Every URL this feature publishes must therefore come from the routing table or
+from the same constants the controllers read, never from a hand-written literal.
+
+## Desired behavior
+
+- **A context index.** `/llms.txt` states what the site is, when an agent should
+  reach for this person, and where the machine-readable documents live.
+  `/llms-full.txt` carries every record in both locales in one document.
+- **Discovery documents** under `/.well-known/`, each generated from the
+  records and the routing table:
+  - an Agentic Resource Discovery catalog (`ard.json`, also served at the AI
+    Catalog alias `ai-catalog.json`) with a `urn:air` identifier per entry;
+  - an agent-skills index (`agent-skills/index.json`) whose every entry carries
+    a name, a description, a type, a URL, and a digest over the bytes it
+    advertises;
+  - an MCP server card listing the tools the server actually exposes;
+  - an A2A agent card;
+  - an RFC 9727 API catalog and RFC 9728 protected-resource metadata.
+- **A machine-readable API.** `/openapi.json` describes a read-only JSON API
+  under `/api/v1` over the same records the page renders. No key, no account, no
+  login: an agent that cannot complete a signup flow is the reader this exists
+  for. Errors are JSON in one shape.
+- **A callable protocol.** `/mcp` serves the Model Context Protocol over
+  Streamable HTTP, stateless, exposing the profile, the employment history, and
+  a keyword search as tools, plus the agent guide as a resource.
+- **Markdown on demand.** `/index.md` and `/pt-BR/index.md` serve the page as
+  Markdown; `Accept: text/markdown` negotiates the same document on `/`; and
+  `?mode=agent` returns a short machine-readable overview for a cold arrival.
+- **Link headers** advertising the sitemap, the Markdown twin, the API catalog,
+  and the ARD catalog.
+- **Richer structured data**: beyond the `Person` entity, a `WebSite`, a
+  `ProfilePage`, a `BreadcrumbList`, and an `FAQPage` whose answers are the
+  record's own words.
+- **Trust pages** at `/about`, `/contact`, and `/privacy`, each substantial and
+  each rendered from the records or from recorded policy, because these are the
+  pages an agent checks before it recommends a site.
+
+## Constraints
+
+- Everything stays within [app-foundation](../app-foundation/SPEC.md): no
+  database, no Node toolchain, no external service at runtime.
+- Every value is generated from `data/**` or from a constant. Nothing is
+  transcribed. The `Person`/`ProfilePage` JSON-LD remains asserted to carry no
+  contact field outside the approved allowlist.
+- The MCP server is read-only by construction. The site has nothing to write and
+  no accounts, so there is no authorization server to publish and no session to
+  keep.
+- New gems are justified the way the project already justifies them: pure Ruby,
+  no service, and named in the Gemfile comment. Two were added —
+  `mcp` (the official SDK, so the protocol is not hand-rolled) and
+  `ruby-structured-data` (schema.org's vocabulary, so a misspelled property is a
+  load-time error).
+
+## Acceptance criteria
+
+- [x] Every URL a discovery document publishes is served by this application,
+      proven by a spec that recognizes each path.
+- [x] `/llms.txt`, `/llms-full.txt`, `/api/llms.txt`, and
+      `/agent-skills/llms.txt` are served as text, not HTML.
+- [x] `/openapi.json` is served as an OpenAPI 3.1 document whose operations each
+      carry an id, a description, and a typed response.
+- [x] The JSON API answers every documented path, one JSON error shape for an
+      unknown type, and `304` for a matching `If-None-Match`.
+- [x] `/mcp` answers `initialize`, `tools/list`, and `tools/call` over
+      Streamable HTTP, refuses `GET`, and rejects an unknown tool with a
+      JSON-RPC error.
+- [x] The page is served as Markdown by negotiation and at a guessable `.md`
+      URL.
+- [x] The head carries a Link header set, a Markdown alternate, and the extended
+      JSON-LD graph.
+- [x] The trust pages exist in both locales and link only the approved contact
+      channels.
+- [x] `bin/ci` is green with 100% line and branch coverage.
+
+## Open decisions
+
+- **The canonical host is not settled.** `SiteMetadata::ORIGIN` is fixed and
+  overridable with `SITE_ORIGIN`, but the apex currently serves a different
+  application while the portfolio answers on a subdomain. Until that is decided,
+  the canonical URL and every document here point at a host that does not serve
+  this site — see the [deployment](../deployment/SPEC.md) SPEC and the open item
+  in [AGENTS.md](../../AGENTS.md).
+
+## Pending TODOs
+
+- [ ] Decide the canonical host (apex or subdomain) and point the other at it
+      with a real 301. This is a DNS and deployment decision, not a code one, and
+      it is the single largest remaining SEO defect.
+- [ ] Decide whether a `/pricing.md` is wanted. It was deliberately not added:
+      this site publishes no rate, and the publication policy forbids
+      compensation. A pricing document would either say nothing useful or
+      violate a hard rule.
+- [ ] Consider registering the MCP server in a public registry once the origin
+      above is settled, so the listing links back to the canonical host.
+- [ ] If the repository is pushed to a public remote, link it from `/llms.txt`
+      so the `agent-rules-repo` signal (an `AGENTS.md` in a discoverable repo)
+      resolves.
+
+## Dependencies
+
+- [app-foundation](../app-foundation/SPEC.md) — the test and CI harness the
+  coverage gate runs in.
+- [curated-content](../curated-content/SPEC.md) — every document is generated
+  from these records.
+- [site-metadata](../site-metadata/SPEC.md) — the origin, the canonical URL
+  helpers, and the `Person` entity this feature extends.
+- [landing-page](../landing-page/SPEC.md) — the page whose Markdown twin and
+  agent mode are rendered here.

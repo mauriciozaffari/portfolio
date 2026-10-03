@@ -51,13 +51,17 @@ flowchart LR
   F[app-foundation] --> C[curated-content] --> L[landing-page] --> D[deployment]
   D --> M[site-metadata]
   D --> R[resume-download]
-  M --> B[chatbot]
+  M --> A[agent-discovery]
+  R --> A
+  A --> B[chatbot]
   R --> B
 ```
 
 `deployment` sits early on purpose: `site-metadata` and `resume-download` both
 need a real canonical origin, and shipping continuously beats a big-bang
-release. `chatbot` is last by explicit request and because it is the only
+release. `agent-discovery` follows `site-metadata` because it reuses the origin,
+the canonical URL helpers, and the `Person` entity, and because it publishes
+absolute URLs. `chatbot` is last by explicit request and because it is the only
 feature that adds an external dependency, a running cost, and an abuse surface.
 
 ## Features
@@ -68,6 +72,7 @@ feature that adds an external dependency, a running cost, and an abuse surface.
 | [curated-content](curated-content/SPEC.md) | implemented | 2026-08-06 | 2026-08-06 | Bilingual Markdown content in `data/**` with an enforced front-matter schema, a publication allowlist, and a content-safety scanner that fails the build |
 | [landing-page](landing-page/SPEC.md) | implemented | 2026-08-06 | 2026-08-06 | One server-rendered locale-aware page at `/` and `/pt-BR`, built entirely from the content records; zero JavaScript, zero web fonts, 18.5 KB gzipped, design language recorded in [DESIGN.md](../DESIGN.md) |
 | [site-metadata](site-metadata/SPEC.md) | implemented | 2026-08-06 | 2026-08-06 | Canonical URLs, hreflang, OG/Twitter cards, `Person` JSON-LD asserted to carry no contact field, an app-served sitemap dated from record `updated` values, a robots policy that allows AI crawlers on purpose, and a share card and favicon built from `site_profile` by `bin/rails site:images` |
+| [agent-discovery](agent-discovery/SPEC.md) | implemented | 2026-10-03 | 2026-10-03 | The surfaces an AI agent looks for: `llms.txt`, `/.well-known` discovery documents (ARD, agent skills, MCP server card, A2A card, RFC 9727, RFC 9728), an OpenAPI 3.1 description, a read-only JSON API, a stateless MCP server over Streamable HTTP, Markdown twins, Link headers, richer JSON-LD, and `/about`, `/contact` and `/privacy` |
 | [resume-download](resume-download/SPEC.md) | implemented | 2026-08-06 | 2026-08-06 | A PDF per locale built with Prawn on request from the same records as the page — no phone, email, address or compensation in the text or in the document metadata, proven by scanning the extracted bytes and the information dictionary, with a failing fixture proving the scan fires |
 | [deployment](deployment/SPEC.md) | in-progress | 2026-08-06 | — | HTTPS at the canonical origin from a single stateless container, security headers, and CI that blocks deploy on a failing content scan. Kamal 2 config, production image, and headers are built and verified locally; nothing is deployed, because no server exists yet |
 | [chatbot](chatbot/SPEC.md) | spec'd | 2026-08-06 | — | Flag-gated grounded assistant over the published corpus only, with citations, explicit refusals, adversarial specs, rate limits, and no vector database |
@@ -121,6 +126,14 @@ Listed here in the order they block progress:
   is a key on the records, not a selection rule inside the feature), and the
   untagged-PDF accessibility gap Prawn leaves, whose mitigation today is that
   drawing order is reading order and the colophon links back to the HTML page.
+- [Agent discovery](agent-discovery/SPEC.md): **implemented** — see
+  [its IMPLEMENTATION.md](agent-discovery/IMPLEMENTATION.md). One open item
+  dominates every other SEO concern: **the canonical host is not settled.**
+  `SiteMetadata::ORIGIN` points at the apex, and the apex currently serves a
+  different application while the portfolio answers on a subdomain, so every
+  canonical URL and every discovery document points at a host that does not
+  serve this site. That is a DNS and deployment decision. A `/pricing.md` was
+  deliberately not added, because the publication policy forbids compensation.
 - [Chatbot](chatbot/SPEC.md): decide conversation logging and retention, and
   record the corpus-size threshold that would justify a vector database.
   Provider (Gemini) and the USD 20/month hard cap are decided.

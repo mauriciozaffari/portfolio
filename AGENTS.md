@@ -117,11 +117,14 @@ Recorded so they are not relitigated every session.
 
 ## Known gaps
 
-- **Nothing has been deployed.** The Kamal configuration is complete and the
-  image builds and serves locally, but it has never run against a host. The
-  rollback is documented and **not yet exercised**, which is the one unmet
-  acceptance criterion in [deployment](features/deployment/SPEC.md) and the
-  reason that SPEC is `in-progress` rather than `implemented`.
+- **The site is live, but the rollback has never been exercised.** It runs at
+  `https://mauricio.zaffari.casa` as a single stateless Docker container on the
+  house host `le-mans` (`192.168.1.253`), built where it runs and swapped by
+  [`bin/deploy`](bin/deploy) behind a health check. That is *not* the Kamal path
+  `config/deploy.yml` describes; that configuration is complete and has never
+  been run. The unmet acceptance criterion in
+  [deployment](features/deployment/SPEC.md) is unchanged: a rollback must be
+  performed once on purpose, which is why that SPEC stays `in-progress`.
 - **The apex is not this site.** `SiteMetadata::ORIGIN` is
   `https://mauricio.zaffari.casa`, and `config/deploy.yml` proxies that host.
   The apex `zaffari.casa` answers with a different, `noindex` application, so it

@@ -74,7 +74,7 @@ feature that adds an external dependency, a running cost, and an abuse surface.
 | [site-metadata](site-metadata/SPEC.md) | implemented | 2026-08-06 | 2026-08-06 | Canonical URLs, hreflang, OG/Twitter cards, `Person` JSON-LD asserted to carry no contact field, an app-served sitemap dated from record `updated` values, a robots policy that allows AI crawlers on purpose, and a share card and favicon built from `site_profile` by `bin/rails site:images` |
 | [agent-discovery](agent-discovery/SPEC.md) | implemented | 2026-10-03 | 2026-10-03 | The surfaces an AI agent looks for: `llms.txt`, `/.well-known` discovery documents (ARD, agent skills, MCP server card, A2A card, RFC 9727, RFC 9728), an OpenAPI 3.1 description, a read-only JSON API, a stateless MCP server over Streamable HTTP, Markdown twins, Link headers, richer JSON-LD, and `/about`, `/contact` and `/privacy` |
 | [resume-download](resume-download/SPEC.md) | implemented | 2026-08-06 | 2026-08-06 | A PDF per locale built with Prawn on request from the same records as the page — no phone, email, address or compensation in the text or in the document metadata, proven by scanning the extracted bytes and the information dictionary, with a failing fixture proving the scan fires |
-| [deployment](deployment/SPEC.md) | in-progress | 2026-08-06 | — | HTTPS at the canonical origin from a single stateless container, security headers, and CI that blocks deploy on a failing content scan. Kamal 2 config, production image, and headers are built and verified locally; nothing is deployed, because no server exists yet |
+| [deployment](deployment/SPEC.md) | in-progress | 2026-08-06 | — | Live over HTTPS at `mauricio.zaffari.casa` from one stateless container on the house host, built where it runs and swapped by `bin/deploy` behind a health check. Security headers and the full CI gate are in place. The one unmet criterion is the rollback exercise, which is why this stays in-progress |
 | [chatbot](chatbot/SPEC.md) | spec'd | 2026-08-06 | — | Flag-gated grounded assistant over the published corpus only, with citations, explicit refusals, adversarial specs, rate limits, and no vector database |
 
 ## Publication policy
@@ -97,14 +97,14 @@ Details and enforcement live in
 Concrete pending TODOs live in each feature's `SPEC.md` under "Pending TODOs".
 Listed here in the order they block progress:
 
-- [Deployment](deployment/SPEC.md): **in progress.** The Kamal 2 configuration,
-  the production image, the security headers, and the CI workflow exist and are
-  verified locally — see
-  [its IMPLEMENTATION.md](deployment/IMPLEMENTATION.md). What is left needs a
-  machine: provision the VPS, supply the four environment values, point DNS at
-  it, run `kamal setup`, and **exercise the rollback**, which this SPEC requires
-  and which cannot be proved without a host. The deploy trigger is still
-  undecided.
+- [Deployment](deployment/SPEC.md): **in progress.** The site is live at
+  `https://mauricio.zaffari.casa`, served by a Docker container on the house
+  host and deployed by [`bin/deploy`](../bin/deploy) — see
+  [its IMPLEMENTATION.md](deployment/IMPLEMENTATION.md) for the topology and the
+  runbook. What is left is to **exercise the rollback** on purpose, which this
+  SPEC requires; decide the deploy trigger; and decide what the apex
+  `zaffari.casa` does. The Kamal configuration is complete and unused: it is the
+  only route to a host that is not on the LAN.
 - [Curated content](curated-content/SPEC.md): **nothing pending.** Both locales
   are authored and published — 68 records, 34 in `en` and 34 in `pt-BR`. The
   fallback still covers the case of an English record authored ahead of its

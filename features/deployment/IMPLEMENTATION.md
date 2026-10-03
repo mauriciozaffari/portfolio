@@ -1,37 +1,69 @@
 ---
 title: "Deployment - Implementation"
 type: "feature-implementation"
-updated: "2026-08-08"
-commit: "74e613d"
+updated: "2026-10-03"
+commit: "1cfaddb"
 ---
 
 # Deployment — implementation
 
-- Updated: 2026-08-08
-- Code as of: repository commit `74e613d`, the commit this feature landed in
+- Updated: 2026-10-03
+- Code as of: repository commit `1cfaddb`
 - Spec: [SPEC.md](SPEC.md)
-- Status: **in-progress, and the status is the point.** The image, the Kamal
-  configuration, the security headers, and the CI workflow all exist and are
-  verified locally. Nothing has been deployed, because no server exists yet.
-  Everything in [What the operator must supply](#what-the-operator-must-supply)
-  is still outstanding, including the rollback exercise the SPEC requires.
+- Status: **in-progress.** The site is live over HTTPS at
+  `https://mauricio.zaffari.casa` from a single stateless container, and every
+  feature in this backlog is served from it. The one unmet acceptance criterion
+  is unchanged and is the reason this is not `implemented`: **the rollback has
+  never been exercised end to end.**
+
+## The live topology, and how it differs from `config/deploy.yml`
+
+This is the part the first version of this document got wrong, so it is stated
+first.
+
+`config/deploy.yml` describes a **Kamal deploy to a public VPS**. That
+configuration is complete and self-consistent, and **it has never been run.**
+
+What exists instead is a plain Docker container on the house host:
+
+| | |
+|---|---|
+| Host | `le-mans`, `192.168.1.253` on the LAN, x86_64, reachable as `ssh le-mans` |
+| Source | a checkout at `/home/mauricio/development/portfolio` on that host, pulling `main` from GitHub over HTTPS |
+| Image | `portfolio`, built on the host with `docker build` from `Dockerfile` |
+| Container | `portfolio`, `--restart unless-stopped`, `0.0.0.0:3100->3100/tcp`, no mounts, no accessories |
+| Runtime env | `RAILS_ENV=production`, `PORT=3100`, `RAILS_MASTER_KEY` |
+| TLS | a Let's Encrypt **wildcard** `*.zaffari.casa` certificate, obtained by DNS-01 on that host, terminating in front of the container |
+| DNS | `mauricio.zaffari.casa` and `zaffari.casa` both resolve to `192.168.1.253` |
+
+There is no container registry in the path, so there is nothing to push or pull:
+the image is built where it runs. That is possible because the host is ours and
+the source is public. A future move to a real VPS is what `config/deploy.yml`
+and the Kamal values under [Configuration](#configuration) are for.
+
+`git pull` on that host runs a `post-merge` hook that prints "Deployment
+complete!" — that hook belongs to the **dotfiles** repository, not to this one,
+and it does not touch this container. Do not read it as this app having
+deployed.
 
 ## Entry points / flow
 
 ```mermaid
 flowchart TD
-  DEV["workstation"] -->|kamal deploy| BUILD["docker build<br/>Dockerfile"]
-  BUILD --> ASSETS["assets:precompile<br/>tailwindcss:build, no Node"]
-  ASSETS --> PUSH["push to registry"]
-  PUSH --> PULL["VPS pulls the image"]
-  PULL --> NEW["new container<br/>RAILS_MASTER_KEY from env"]
-  NEW --> HC{"GET /up<br/>200?"}
-  HC -->|yes| SWAP["kamal-proxy switches traffic"]
-  HC -->|no| ABORT["deploy aborts,<br/>old container keeps serving"]
+  DEV["workstation"] -->|"bin/ci"| GATE["the gate"]
+  DEV -->|"git push origin main"| GH["GitHub"]
+  GH -->|"git fetch && merge --ff-only"| SRC["le-mans checkout"]
+  SRC --> BUILD["docker build<br/>assets precompiled at build time"]
+  BUILD --> PROBE["start on :3199<br/>RAILS_MASTER_KEY from the live container"]
+  PROBE --> HC{"GET /up 200,<br/>canonical host as expected?"}
+  HC -->|no| ABORT["abort,<br/>live traffic untouched"]
+  HC -->|yes| SWAP["stop + rename the live container,<br/>start the new one on :3100"]
   SWAP --> LIVE["https://mauricio.zaffari.casa"]
-  GH["push / pull request"] --> CI[".github/workflows/ci.yml<br/>bin/ci"]
-  CI --> GATE["content:validate<br/>content:scan<br/>content:paths"]
 ```
+
+`bin/deploy` is that flow. It is not Kamal, and it deliberately mirrors the
+manual procedure a human would run, so there is one description of the deploy
+rather than two.
 
 There is no `accessories:` block, no database container, and no volume. The
 running topology is one process: Puma, serving Markdown it read from its own
@@ -46,7 +78,8 @@ CI and deploy are deliberately not wired together — see
 |---|---|
 | [`Dockerfile`](../../Dockerfile) | Two-stage production image. Assets compiled at build time, non-root runtime, no Node in either stage. |
 | [`.dockerignore`](../../.dockerignore) | Excludes by default. This is the structural half of the SPEC's "no path to private source material" requirement. |
-| [`config/deploy.yml`](../../config/deploy.yml) | Kamal 2 configuration. One host, one role, no accessories. Every operator-specific value is read from the environment. |
+| [`bin/deploy`](../../bin/deploy) | The deploy. Blue/green on the house host: verify `portfolio:new` on a spare port, check the canonical host it serves, only then swap `:3100`. `bin/deploy --rollback` puts the previous container back. |
+| [`config/deploy.yml`](../../config/deploy.yml) | Kamal 2 configuration for a public VPS. Complete, and **never run** — see the live topology above. |
 | [`.kamal/secrets`](../../.kamal/secrets) | Reference-only secret map. Committed, and safe to commit, because it holds no values. |
 | [`config/application.rb`](../../config/application.rb) | Response headers, including the hand-written `Permissions-Policy`. |
 | [`config/initializers/content_security_policy.rb`](../../config/initializers/content_security_policy.rb) | The CSP: `default-src 'none'`, `script-src 'none'`. |
@@ -96,7 +129,8 @@ Everything below was run against the real image, not reasoned about.
 | Script tags in served HTML | 0 at the time of this measurement. [site-metadata](../site-metadata/IMPLEMENTATION.md) later added one `type="application/ld+json"` data block, which is never executed and raises no CSP violation — verified in Chromium |
 | Inline style attributes in served HTML | 0 |
 | `kamal config` | Resolves; writes nothing to the working tree |
-| `bin/ci` | Exit 0, **174 examples, 0 failures** at this commit. Later features add examples; `bin/rspec` reports the current count |
+| `bin/ci` | Exit 0, **445 examples, 0 failures**, 100% line and branch coverage at `1cfaddb`. Later features add examples; `bin/rspec` reports the current count |
+| Live over HTTPS | `https://mauricio.zaffari.casa/` serves the page, `/llms.txt`, `/openapi.json`, `/mcp` and the `/.well-known` documents from the container on `le-mans` |
 
 Headers observed on `GET /` from the production container:
 
@@ -175,68 +209,85 @@ Dockerfile's `WORKDIR`.
 
 ## Deploying
 
-Once the host exists:
-
 ```sh
-export KAMAL_REGISTRY_SERVER=...
-export KAMAL_REGISTRY_USERNAME=...
-export KAMAL_HOST=...
-export KAMAL_REGISTRY_PASSWORD=...
-export RAILS_MASTER_KEY=$(cat config/master.key)
-
-bin/ci                      # the gate that blocks a bad deploy
-bundle exec kamal setup     # first time only: installs Docker, starts the proxy
-bundle exec kamal deploy    # every time after
+bin/ci                       # the gate: never deploy a red tree
+git push origin main         # le-mans pulls from GitHub, not from this checkout
+bin/deploy                   # build on the host, verify on :3199, then swap :3100
 ```
 
-`kamal config` prints the fully resolved configuration and contacts no server;
-it is the safe thing to run when something looks wrong. **Its output includes
-resolved secrets — do not paste it into a public issue.**
+What `bin/deploy` does, in order, and why each step exists:
+
+1. **Fast-forwards the host's checkout** (`git fetch && git merge --ff-only`).
+   It refuses to continue if the host has diverged, rather than merging blind.
+2. **Builds `portfolio:new` on the host.** `assets:precompile` runs at build
+   time under `SECRET_KEY_BASE_DUMMY=1`, so `RAILS_MASTER_KEY` is never in a
+   layer. The build is the slow part — roughly two to four minutes on `le-mans`.
+3. **Starts the new image on `:3199`** with the runtime environment copied from
+   the live container (`PORT`, `RAILS_ENV`, and `RAILS_MASTER_KEY`). The master
+   key is read out of `docker inspect` on the host and passed through the shell;
+   it is never printed and never written to a file.
+4. **Verifies before it swaps.** `GET /up` must return 200, and `GET /` must
+   carry `<link rel="canonical" href="https://mauricio.zaffari.casa/">`. A build
+   that boots but serves the wrong origin is the exact regression this feature
+   exists to prevent, so it is checked, not assumed.
+5. **Swaps.** The live container is stopped and renamed `portfolio-previous`,
+   the new one takes `:3100`, and the image is retagged `portfolio:latest`. If
+   the new container does not answer `/up` within 30 seconds it is removed and
+   the previous container is started again, automatically.
+6. **Leaves the previous container in place.** It is stopped, not removed, so
+   the rollback is instant and needs no rebuild.
+
+Downtime is the second or two between stopping one container and starting the
+next. The site is one page on a LAN host; that is an accepted trade for having a
+rollback that does not depend on a registry.
+
+### Deploying somewhere else
+
+`bin/deploy` reads three optional variables, so the same script can target
+another host without being edited:
+
+```sh
+PORTFOLIO_HOST=some-host PORTFOLIO_DIR=/srv/portfolio \
+  PORTFOLIO_PORT=3100 PORTFOLIO_CANONICAL_HOST=example.test bin/deploy
+```
 
 ## Rolling back
 
 ```sh
-bundle exec kamal app versions      # list the versions still on the host
-bundle exec kamal rollback <VERSION>
+bin/deploy --rollback
 ```
 
-Kamal keeps the previous containers on the host (five by default), so a rollback
-is a container swap and takes seconds — no rebuild, no registry round trip. The
-new container must pass the same `/up` health check before traffic moves, so a
-rollback to a version that cannot boot fails safe.
+It removes the current container, renames `portfolio-previous` back to
+`portfolio`, starts it, and waits for `/up`. If that never goes green it exits
+non-zero and says so rather than leaving you guessing.
 
-**This procedure is documented and untested.** The SPEC requires it be exercised
-once, and that requires a host. It is the one acceptance criterion this work
-could not meet, and it is recorded as a pending TODO rather than quietly
-considered done.
+The image is also tagged: `portfolio:previous` is the image the last deploy
+replaced. To go further back, `docker tag portfolio:previous portfolio:latest`
+on the host and run `bin/deploy --no-build`.
 
-## What the operator must supply
+**Exercising this is still a pending TODO.** The SPEC requires a rollback to be
+run once, deliberately, with the site up. Everything needed for it exists and
+the path is exercised by construction on every deploy — the new container is
+never trusted before it is healthy — but a real rollback has not been performed
+on purpose, and this document does not claim otherwise.
 
-Nothing below can be inferred from the repository. This is the complete list.
+## What the environment already supplies
 
-**1. A server.** One small VPS, x86_64 (the builder targets `amd64`), with a
-public IP, SSH access for `KAMAL_SSH_USER`, and inbound TCP 22, 80, and 443
-open. 443 and 80 must both be reachable from the internet or the Let's Encrypt
-challenge cannot complete. Kamal installs Docker itself during `kamal setup`.
+Recorded because the previous version of this section listed these as
+outstanding, and none of them is.
 
-**2. A container registry.** An account and an access token with push rights.
-The image path will be `<KAMAL_REGISTRY_USERNAME>/zaffari-casa`; the repository
-must exist or the registry must create it on first push.
+| Requirement | State |
+|---|---|
+| A host, x86_64, with Docker and SSH | `le-mans` — `ssh le-mans` works with the operator's key, and `docker` is usable without `sudo` |
+| A source checkout on the host | `/home/mauricio/development/portfolio`, tracking `origin/main` over HTTPS |
+| DNS for the canonical host | `mauricio.zaffari.casa` → `192.168.1.253`, resolving |
+| TLS | a Let's Encrypt wildcard `*.zaffari.casa`, DNS-01, already served in front of the container |
+| A git remote | `origin` is `github.com:mauriciozaffari/portfolio`, and `main` is pushed |
+| A container registry | **not needed** — the image is built where it runs |
+| `RAILS_MASTER_KEY` | already in the live container's environment; `config/master.key` is not in this checkout |
+| The Kamal values | not needed for the live path; still required if the site ever moves to a VPS |
 
-**3. DNS.** An `A` record for `mauricio.zaffari.casa` pointing at the VPS IP,
-resolving *before* the first `kamal setup`, because kamal-proxy requests the
-certificate during that run. The apex `zaffari.casa` is a separate record and a
-separate decision: it currently serves a different application, and
-`config/deploy.yml` lists one host only.
-
-**4. A git remote.** The repository currently has none, so
-`.github/workflows/ci.yml` will not run anywhere until it is pushed to GitHub.
-
-**5. The four environment variables and two secrets** listed under
-[Configuration](#configuration), exported in the shell that runs the deploy.
-
-**6. One-time `kamal setup`,** then a verification pass over HTTPS, then the
-rollback exercise.
+The only thing a deployer needs is SSH access to `le-mans` as `mauricio`.
 
 ## Known limitations / pitfalls
 
@@ -273,9 +324,15 @@ rollback exercise.
   importmap pins them and Propshaft compiles them, but the layout renders no
   script tag, so nothing loads them and `script-src 'none'` blocks them anyway.
   They are dead weight in the image, not a hole.
-- **A session cookie is set on every visit.** `csrf_meta_tags` in the layout
-  touches the session. The site is stateless and does not need it. Out of scope
-  here; worth revisiting.
+- **The session cookie gap is closed.** The layout renders neither
+  `csrf_meta_tags` nor `csp_meta_tag`, and
+  `spec/requests/session_cookie_spec.rb` fails the build if any route sets a
+  cookie.
+- **The live container is not managed by Kamal or by a compose file.** It is a
+  `docker run` on `le-mans`, so nothing reconciles it: a change made by hand on
+  that host survives until the next `bin/deploy` replaces the container. That is
+  the price of the simple path, and it is why `bin/deploy` reads the runtime
+  environment from the container rather than from a committed file.
 - **Do not add an `accessories:` block.** It is the single most likely way this
   configuration acquires a database, which every other decision in this project
   was made to avoid.

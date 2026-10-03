@@ -1,0 +1,128 @@
+#!/usr/bin/env bash
+#
+# Deploy the portfolio to the house host, blue/green, with a health check and a
+# one-command rollback.
+#
+# This is not Kamal. config/deploy.yml describes a Kamal deploy to a public VPS
+# and has never been run; the site as it actually exists is a plain Docker
+# container on one machine on the LAN, addressed by the wildcard certificate
+# that machine already serves. See features/deployment/IMPLEMENTATION.md.
+#
+#   bin/deploy                  # build the working tree and swap traffic
+#   bin/deploy --no-build       # swap whatever portfolio:new already points at
+#   bin/deploy --rollback       # put the previous container back on 3100
+#
+# The live container is never replaced by an unverified image: the new one is
+# started on a spare port first and must answer GET /up with 200, and must
+# serve the expected canonical host, before it takes over.
+
+set -euo pipefail
+
+HOST="${PORTFOLIO_HOST:-le-mans}"
+APP_DIR="${PORTFOLIO_DIR:-/home/mauricio/development/portfolio}"
+LIVE_NAME="portfolio"
+BACKUP_NAME="portfolio-previous"
+PROBE_NAME="portfolio-probe"
+LIVE_PORT="${PORTFOLIO_PORT:-3100}"
+PROBE_PORT="${PORTFOLIO_PROBE_PORT:-3199}"
+CANONICAL_HOST="${PORTFOLIO_CANONICAL_HOST:-mauricio.zaffari.casa}"
+NEW_IMAGE="portfolio:new"
+
+BUILD=1
+ROLLBACK=0
+for arg in "$@"; do
+  case "$arg" in
+    --no-build) BUILD=0 ;;
+    --rollback) ROLLBACK=1 ;;
+    -h|--help) awk 'NR>1 && /^#/ { sub(/^# ?/, ""); print; next } NR>1 { exit }' "$0"; exit 0 ;;
+    *) echo "unknown argument: $arg" >&2; exit 2 ;;
+  esac
+done
+
+remote() { ssh -o BatchMode=yes "$HOST" "$@"; }
+
+if [ "$ROLLBACK" = "1" ]; then
+  echo "== rolling back: $BACKUP_NAME takes $LIVE_PORT"
+  remote "
+    set -euo pipefail
+    docker rm -f $LIVE_NAME >/dev/null 2>&1 || true
+    docker rename $BACKUP_NAME $LIVE_NAME
+    docker start $LIVE_NAME >/dev/null
+    for i in \$(seq 1 30); do
+      code=\$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:$LIVE_PORT/up || true)
+      [ \"\$code\" = 200 ] && { echo '   /up is 200 after '\${i}'s'; exit 0; }
+      sleep 1
+    done
+    echo '   rollback target never became healthy' >&2; exit 1
+  "
+  exit 0
+fi
+
+if [ "$BUILD" = "1" ]; then
+  echo "== the working tree must be pushed first: $HOST pulls from origin"
+  remote "git -C $APP_DIR fetch --quiet origin && git -C $APP_DIR merge --ff-only origin/main" \
+    || { echo "   $HOST is not fast-forwardable; resolve that before deploying" >&2; exit 1; }
+  remote "git -C $APP_DIR log --oneline -1"
+
+  echo "== building $NEW_IMAGE on $HOST"
+  remote "cd $APP_DIR && docker build -t $NEW_IMAGE ." >/dev/null
+  echo "   built"
+fi
+
+echo "== starting $NEW_IMAGE on $PROBE_PORT to verify it before it serves anyone"
+remote "
+  set -euo pipefail
+  # The live container is the source of truth for the runtime environment.
+  env_of() { docker inspect $LIVE_NAME --format '{{range .Config.Env}}{{println .}}{{end}}' | sed -n \"s/^\$1=//p\"; }
+  PORT_VALUE=\$(env_of PORT);            : \"\${PORT_VALUE:?no PORT in the live container}\"
+  MASTER_KEY=\$(env_of RAILS_MASTER_KEY); : \"\${MASTER_KEY:?no RAILS_MASTER_KEY in the live container}\"
+  RAILS_ENV_VALUE=\$(env_of RAILS_ENV)
+
+  docker rm -f $PROBE_NAME >/dev/null 2>&1 || true
+  docker run -d --name $PROBE_NAME -p $PROBE_PORT:\$PORT_VALUE \\
+    -e PORT=\$PORT_VALUE -e RAILS_ENV=\${RAILS_ENV_VALUE:-production} -e RAILS_MASTER_KEY=\$MASTER_KEY \\
+    $NEW_IMAGE >/dev/null
+
+  healthy=0
+  for i in \$(seq 1 30); do
+    [ \"\$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:$PROBE_PORT/up || true)\" = 200 ] && { healthy=1; echo '   /up 200 after '\${i}'s'; break; }
+    sleep 1
+  done
+  if [ \"\$healthy\" != 1 ]; then
+    echo '   the new image never became healthy; live traffic untouched. logs:' >&2
+    docker logs --tail 40 $PROBE_NAME >&2 || true
+    docker rm -f $PROBE_NAME >/dev/null
+    exit 1
+  fi
+
+  canonical=\$(curl -s http://127.0.0.1:$PROBE_PORT/ | grep -o '<link rel=\"canonical\"[^>]*>' | head -1)
+  echo \"   canonical: \$canonical\"
+  case \"\$canonical\" in
+    *\"$CANONICAL_HOST\"*) ;;
+    *) echo \"   unexpected canonical host; refusing to swap\" >&2; docker rm -f $PROBE_NAME >/dev/null; exit 1 ;;
+  esac
+  curl -s -o /dev/null -w '   /llms.txt -> %{http_code} %{content_type}\n' http://127.0.0.1:$PROBE_PORT/llms.txt
+  curl -s -o /dev/null -w '   /openapi.json -> %{http_code}\n' http://127.0.0.1:$PROBE_PORT/openapi.json
+
+  echo '== swapping traffic'
+  docker tag $LIVE_NAME:latest portfolio:previous 2>/dev/null || true
+  docker stop $LIVE_NAME >/dev/null
+  docker rename $LIVE_NAME $BACKUP_NAME >/dev/null
+  docker run -d --name $LIVE_NAME --restart unless-stopped -p $LIVE_PORT:\$PORT_VALUE \\
+    -e PORT=\$PORT_VALUE -e RAILS_ENV=\${RAILS_ENV_VALUE:-production} -e RAILS_MASTER_KEY=\$MASTER_KEY \\
+    $NEW_IMAGE >/dev/null
+  docker rm -f $PROBE_NAME >/dev/null
+
+  for i in \$(seq 1 30); do
+    [ \"\$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:$LIVE_PORT/up || true)\" = 200 ] && { echo '   live /up 200 after '\${i}'s'; exit 0; }
+    sleep 1
+  done
+  echo '   live container unhealthy; rolling back' >&2
+  docker rm -f $LIVE_NAME >/dev/null
+  docker rename $BACKUP_NAME $LIVE_NAME >/dev/null
+  docker start $LIVE_NAME >/dev/null
+  exit 1
+"
+
+remote "docker tag $NEW_IMAGE portfolio:latest"
+echo "== deployed. rollback with: bin/deploy --rollback"

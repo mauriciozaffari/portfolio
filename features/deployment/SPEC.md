@@ -3,7 +3,7 @@ title: "Deployment - Spec"
 type: "feature-spec"
 status: "in-progress"
 created: "2026-08-06"
-updated: "2026-08-06"
+updated: "2026-10-03"
 origin: "operational need (site must be publicly reachable before metadata and later features)"
 ---
 
@@ -11,7 +11,7 @@ origin: "operational need (site must be publicly reachable before metadata and l
 
 - Status: in-progress
 - Created: 2026-08-06
-- Updated: 2026-08-06
+- Updated: 2026-10-03
 - Origin: operational need (site must be publicly reachable before metadata and later features)
 
 ## Problem / motivation
@@ -71,36 +71,44 @@ forwarding alias on the approved contact allowlist, derive from this origin.
 The apex `zaffari.casa` is a separate concern: it currently answers with a
 different, `noindex` application, so it must either be repointed at this service
 or left alone. It must not be claimed as this site's origin until it does.
+
 ## Decisions
 
-- **Kamal 2 to a single small VPS.** Rails 8's own deployment path, no vendor
-  lock, and it matches the one-stateless-container topology this project's
-  no-database rule was chosen to produce. The trade accepted: the box is ours
-  to patch and monitor.
+- **Kamal 2 to a single small VPS, as the target that was configured but not
+  used.** Rails 8's own deployment path, no vendor lock, and it matches the
+  one-stateless-container topology this project's no-database rule was chosen to
+  produce. `config/deploy.yml` is complete and has never been run.
+- **In practice the site is a Docker container on the house host.** It is built
+  where it runs (`le-mans`, `192.168.1.253`), addressed by the wildcard
+  certificate that host already serves, and deployed by `bin/deploy` with a
+  health-gated swap and a one-command rollback. The trade accepted: no registry
+  round trip and an instant rollback, in exchange for a deploy that only works
+  from a machine that can reach that host. See
+  [IMPLEMENTATION.md](IMPLEMENTATION.md) for the topology and the runbook.
 
 ## Pending TODOs
 
-The configuration exists and the image is built and verified locally; see
-[IMPLEMENTATION.md](IMPLEMENTATION.md). Nothing has been deployed, because no
-server exists yet. What remains:
+The site is live at `https://mauricio.zaffari.casa` from one stateless container;
+see [IMPLEMENTATION.md](IMPLEMENTATION.md) for how it gets there. What remains:
 
+- [ ] **Exercise the rollback.** This SPEC requires it and it is the one
+      acceptance criterion still unmet. `bin/deploy --rollback` exists and is
+      exercised by construction on every deploy, but it has never been run on
+      purpose with the site up. Deploy twice, roll back, confirm the previous
+      version serves.
 - [ ] Decide whether deploys are triggered on merge to the default branch or
       manually. Deliberately still open: the CI workflow runs the gate and
       stops there.
-- [ ] Provision the VPS and supply the four values the configuration reads from
-      the environment. The full list is in IMPLEMENTATION.md.
-- [ ] Point `mauricio.zaffari.casa` at the host so kamal-proxy can complete the
-      Let's Encrypt challenge. Decide separately what the apex `zaffari.casa`
-      does: today it serves a different application, and until that changes it
-      must not be advertised as this site.
-- [ ] Run `kamal setup` once, then confirm the desired behavior over HTTPS.
-- [ ] **Exercise the rollback.** This SPEC requires it and it cannot be
-      satisfied without a running host, so it is the one acceptance criterion
-      the local work could not meet. Deploy twice, run `kamal rollback`, and
-      confirm the previous version serves.
-- [ ] Decide whether to enable `config.hosts` for DNS-rebinding protection
-      after the first successful deploy. It is off now on purpose — enabling it
-      blind is the classic way to make a first deploy return 403 on every
-      request.
+- [ ] Decide what the apex `zaffari.casa` does. It resolves to the same host and
+      serves a different, `noindex` application, so nothing in this repository
+      points at it. Repointing it at this service, or 301-ing it to the
+      canonical host, is a separate decision.
+- [ ] Decide whether to retire or pursue the Kamal path. It is the only route to
+      a host that is not on the LAN, and it is dead weight until that is wanted.
+- [ ] Decide whether to enable `config.hosts` for DNS-rebinding protection. It
+      is off, as the Rails generator leaves it. The live host serves one
+      vhost in front of the container, so this is defence in depth rather than
+      a gap; enabling it blind is the classic way to make every request return
+      403, including the proxy's health check.
 - [ ] Revisit HSTS preloading once the site has been live on HTTPS long enough
       to trust. `preload` is off; the header is otherwise complete.

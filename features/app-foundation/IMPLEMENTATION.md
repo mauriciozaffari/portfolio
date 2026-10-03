@@ -2,7 +2,7 @@
 title: "App Foundation - Implementation"
 type: "feature-implementation"
 updated: "2026-10-03"
-commit: "pending"
+commit: "e4f87cb"
 ---
 
 # App Foundation — implementation

@@ -16,6 +16,66 @@ en:
   # still the record's; only the sentence around them is chrome.
   metadata:
     image_alt: "A typographic card reading %{name}, %{headline}."
+    faq:
+      role:
+        question: "What does Mauricio Zaffari do?"
+      work:
+        question: "Where is Mauricio Zaffari based, and how does he work?"
+      skills:
+        question: "What are Mauricio Zaffari's main technical skills?"
+      contact:
+        question: "How can Mauricio Zaffari be contacted?"
+
+  # The prose pages an agent checks before it trusts a site with a
+  # recommendation. The about and contact pages render records; only their
+  # frame is worded here.
+  pages:
+    back: "Back to the profile"
+    about:
+      title: "About %{name}"
+      heading: "About"
+      profile: "The full profile, with case studies and figures"
+    contact:
+      title: "Contact %{name}"
+      heading: "Contact"
+      intro: "%{name} is reachable through the channels below. Email is the fastest route; LinkedIn is the right one for recruiters and hiring managers."
+      note: "There is no contact form on this site, and no phone number is published. Every channel here is one he chose to make public."
+      resume: "Download the resume as a PDF"
+    privacy:
+      title: "Privacy notice"
+      heading: "Privacy"
+      body_html: |
+        <p>This site publishes a curated professional profile. It is generated from
+        records kept in the public repository, and it is the only thing about its
+        subject that is published here.</p>
+
+        <p>Nothing collects information about you. There is no analytics script, no
+        tracking pixel, no third-party embed, and no advertising. The site ships no
+        JavaScript at all, so there is nothing on the page that could observe a
+        reader even if it wanted to.</p>
+
+        <p>You are not asked to accept a cookie because none is set. There is no
+        login, no account, no form, and no session; a reader is anonymous by
+        construction rather than by policy, and the test suite fails if a response
+        ever sets a cookie.</p>
+
+        <p>The publication policy is deliberately narrow. Names, figures, and
+        client names are published because they are the substance of the work.
+        Contact details, addresses, legal identifiers, family, medical, and
+        financial information are not, and the build fails if one is detected in a
+        record or in a rendered page. The records are curated by hand from private
+        source material that is never copied into this repository and never read by
+        the application.</p>
+
+        <p>Search engines and AI crawlers are welcome. robots.txt states that as a
+        decision rather than leaving it to a default, and the same records are
+        offered to agents as Markdown, JSON, and Model Context Protocol tools, so
+        an assistant can answer a question about this person from the published
+        source rather than from a stale scrape.</p>
+
+        <p>Questions about any of this can go to the email address listed on the
+        contact page.</p>
+
 
   # The downloadable resume. Every heading, label and entry inside the document
   # is borrowed from `landing` below, because the PDF and the page are the same

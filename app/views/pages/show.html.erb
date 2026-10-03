@@ -1,0 +1,24 @@
+<% content_for :title, t("pages.#{action_name}.title", name: @metadata.profile[:name]) %>
+<% content_for :head do %>
+  <%= render "site_metadata/head", metadata: @metadata %>
+<% end %>
+
+<main id="content" tabindex="-1" class="mx-auto max-w-page px-5 py-16 md:px-10 lg:px-16">
+  <p class="label"><%= link_to t("pages.back"), root_path, class: "link-quiet" %></p>
+
+  <h1 class="mt-6 text-4xl md:text-5xl"><%= t("pages.#{action_name}.heading") %></h1>
+
+  <div class="prose mt-10 max-w-measure">
+    <%= render "pages/#{action_name}" %>
+  </div>
+</main>
+
+<footer class="border-t border-rule-strong">
+  <div class="mx-auto max-w-page px-5 py-10 md:px-10 lg:px-16">
+    <ul class="middot-list text-ink-body">
+      <% Array(@metadata.profile[:links]).each do |link| %>
+        <li><%= link_to link[:label], link[:url], class: "link" %></li>
+      <% end %>
+    </ul>
+  </div>
+</footer>

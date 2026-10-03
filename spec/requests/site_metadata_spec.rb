@@ -21,7 +21,7 @@ RSpec.describe 'Site metadata' do
     ]
   end
 
-  let(:person_fields) { %w[@context @type @id name jobTitle url sameAs] }
+  let(:person_fields) { %w[@context @type @id name jobTitle description url sameAs] }
 
   let(:document) { response.parsed_body }
 
@@ -33,8 +33,14 @@ RSpec.describe 'Site metadata' do
 
   def json_ld = JSON.parse(document.at_css("script[type='application/ld+json']").text)
 
+  def extended_ld
+    JSON.parse(document.css("script[type='application/ld+json']").last.text)
+  end
+
+  # The markdown alternate is also rel=alternate, and this helper is about the
+  # hreflang set, so it selects on the attribute that makes one a language link.
   def alternates
-    document.css("link[rel='alternate']").to_h { |node| [node['hreflang'], node['href']] }
+    document.css("link[rel='alternate'][hreflang]").to_h { |node| [node['hreflang'], node['href']] }
   end
 
   # Every absolute URL any record publishes, so the allowlist below is derived
@@ -49,6 +55,32 @@ RSpec.describe 'Site metadata' do
     it 'names one absolute canonical URL, built from the fixed origin' do
       expect(document.at_css("link[rel='canonical']")['href']).to eq(SiteMetadata.url_for(locale))
       expect(document.css("link[rel='canonical']").size).to eq(1)
+    end
+
+    it 'advertises a markdown twin of the page an agent is reading' do
+      markdown = document.css("link[rel='alternate'][type='text/markdown']")
+
+      expect(markdown.size).to eq(1)
+      expect(markdown.first['href']).to eq(SiteMetadata.markdown_url_for(locale))
+    end
+
+    # Beyond the Person entity, which is the page's identity. WebSite and
+    # ProfilePage are what let an assistant place this page in a site, and the
+    # FAQ is answered from the records rather than written here.
+    it 'describes the site and the page around the person' do
+      types = extended_ld['@graph'].pluck('@type')
+
+      expect(types).to include('WebSite', 'ProfilePage', 'BreadcrumbList', 'FAQPage')
+      expect(extended_ld.dig('@graph', 1, 'url')).to eq(SiteMetadata.url_for(locale))
+    end
+
+    it 'answers the FAQ from the record rather than from prose in the view' do
+      questions = extended_ld['@graph'].last['mainEntity'].pluck('name')
+      answers = extended_ld['@graph'].last['mainEntity'].map { |entry| entry.dig('acceptedAnswer', 'text') }
+
+      expect(questions).to all(be_present)
+      expect(answers).to all(be_present)
+      expect(answers).to include(profile(locale)[:headline])
     end
 
     it 'advertises both locales and an x-default, reciprocally' do
@@ -104,6 +136,7 @@ RSpec.describe 'Site metadata' do
 
       forbidden_fields.each do |field|
         expect(json_ld.to_json).not_to match(/"#{field}"/i), "JSON-LD publishes a #{field}"
+        expect(extended_ld.to_json).not_to match(/"#{field}"/i), "JSON-LD publishes a #{field}"
       end
     end
 

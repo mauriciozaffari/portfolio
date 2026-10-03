@@ -1,0 +1,58 @@
+# Authentication
+
+There is nothing to authenticate with. Every surface this site publishes is
+public, read-only, and served without a key, a token, or an account.
+
+This document follows the [WorkOS `auth.md`](https://github.com/workos/auth.md)
+shape so an agent that looks for it finds a clear answer rather than a 404.
+
+## Discover
+
+- Protected-resource metadata (RFC 9728): `<%= SiteMetadata.origin %>/.well-known/oauth-protected-resource`
+- API catalog (RFC 9727): `<%= SiteMetadata.origin %>/.well-known/api-catalog`
+- OpenAPI 3.1 description: `<%= SiteMetadata.origin %>/openapi.json`
+
+The protected-resource document names an empty `authorization_servers` list.
+That is deliberate, not a missing field: there is no authorization server.
+
+## Pick a method
+
+- **Anonymous.** The correct method for every endpoint. Use it.
+- **OAuth 2.1.** Not supported, and not needed. No scope exists to request.
+- **`identity_assertion` / `service_auth`.** Not supported. Do not send an
+  id-jag; there is no token endpoint to accept it.
+
+## Register, Claim, Exchange
+
+Not applicable. There is no client registration, no consent screen, and no
+token endpoint, so there is no flow to walk.
+
+## Use the records
+
+- REST: `<%= SiteMetadata.origin %>/api/v1/profile`, `/experience`, `/skills`, and so on.
+- MCP (Streamable HTTP, stateless): `POST <%= SiteMetadata.origin %>/mcp`.
+- Markdown: `<%= SiteMetadata.origin %>/index.md`.
+
+Send no `Authorization` header. If you send one it will be ignored.
+
+## Errors
+
+An unknown path returns `404` with a JSON body:
+
+```json
+{ "error": { "code": "not_found", "message": "No such record type: widgets" } }
+```
+
+`POST /mcp` returns JSON-RPC 2.0 errors with the standard codes: `-32600`
+invalid request, `-32601` method not found, `-32602` invalid params.
+
+## Revocation
+
+Nothing to revoke. The site stores nothing about a caller — no session cookie,
+no account, no log of who asked.
+
+## See also
+
+- Agent instructions: `<%= SiteMetadata.origin %>/llms.txt`
+- API guide: `<%= SiteMetadata.origin %>/api/llms.txt`
+- MCP server card: `<%= SiteMetadata.origin %>/.well-known/mcp/server-card.json`

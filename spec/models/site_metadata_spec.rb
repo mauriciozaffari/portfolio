@@ -75,16 +75,17 @@ RSpec.describe SiteMetadata do
     end
   end
 
-  describe '#person' do
+  describe '#person_document' do
     it 'builds every field from the record and invents none of them' do
       write_profile(name: 'Example Person', headline: 'Example headline')
 
-      expect(metadata.person).to eq(
+      expect(metadata.person_document.to_h).to eq(
         '@context' => 'https://schema.org',
         '@type' => 'Person',
         '@id' => 'https://zaffari.casa/#person',
         'name' => 'Example Person',
         'jobTitle' => 'Example headline',
+        'description' => 'Example prose for site-profile.',
         'url' => 'https://zaffari.casa/',
         'sameAs' => ['https://github.com/example']
       )
@@ -99,15 +100,16 @@ RSpec.describe SiteMetadata do
                       { 'label' => 'Email', 'url' => 'mailto:someone@example.com' }
                     ])
 
-      expect(metadata.person['sameAs']).to eq(['https://github.com/example'])
-      expect(metadata.person_json).not_to include('mailto')
+      expect(metadata.person_document.to_h['sameAs']).to eq(['https://github.com/example'])
+      expect(metadata.person_document.to_h.to_json).not_to include('mailto')
     end
 
     it 'escapes a closing script tag hidden in a record value' do
       write_profile(name: 'Example </script><script>alert(1)</script>')
+      rendered = StructuredData::Serializer.dump(metadata.person_document)
 
-      expect(metadata.person_json).not_to include('</script>')
-      expect(JSON.parse(metadata.person_json)['name']).to include('</script>')
+      expect(rendered).not_to include('</script>')
+      expect(JSON.parse(rendered)['name']).to include('</script>')
     end
   end
 

@@ -21,12 +21,14 @@ module Localized
 
   private
 
-  # Not user input, and so deliberately not validated: every locale-aware route
-  # is static and supplies `locale` as a default, and Rails merges path
-  # parameters over the query string, so `/?locale=pt-BR` cannot reach here.
-  # A spec holds that behaviour down.
+  # Not user input, and so deliberately not validated. The two page routes
+  # supply `locale` as a route default, which wins over the query string, so
+  # `/?locale=pt-BR` cannot switch the English URL. The API routes supply no
+  # default, because there the query string is the intended way to ask, so a
+  # request without one falls back to the default locale. A spec holds both
+  # behaviours down.
   def locale
-    params[:locale]
+    params[:locale].presence || Content::Schema::DEFAULT_LOCALE
   end
 
   # Scoped rather than assigned, so a request cannot leave the process on a

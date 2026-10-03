@@ -1,0 +1,13 @@
+<%= @page.profile.record.html %>
+
+<div class="mt-10">
+  <h2 class="label section-label"><%= @page.leadership.record[:title] %></h2>
+
+  <div class="mt-5">
+    <%= @page.leadership.record.html %>
+  </div>
+</div>
+
+<p class="mt-10">
+  <%= link_to t("pages.about.profile"), root_path, class: "link" %>
+</p>

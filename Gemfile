@@ -31,6 +31,14 @@ gem 'tailwindcss-rails', '~> 4.6'
 # Vendors the Tailwind standalone binary, so no Node toolchain is needed. Pinned
 # explicitly because this gem's version *is* the Tailwind CLI version.
 gem 'tailwindcss-ruby', '~> 4.3', '>= 4.3.3'
+# The official Model Context Protocol Ruby SDK: an agent calls the profile as
+# tools over Streamable HTTP instead of scraping the page. Pure Ruby, no
+# database and no session, so it fits the stateless container.
+gem 'mcp', '~> 0.25'
+# Authors, validates, and serialises the JSON-LD in the page head, so the
+# structured data is built from schema.org's vocabulary rather than from a hash
+# literal that nothing checks. Pure Ruby.
+gem 'ruby-structured-data', '~> 0.1.1'
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: %i[windows jruby]

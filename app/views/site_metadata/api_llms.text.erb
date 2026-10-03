@@ -1,0 +1,45 @@
+# API guide
+
+> Read-only JSON over the curated profile records. No key, no account, no
+> authentication. `<%= SiteMetadata.origin %>/openapi.json` is the normative
+> description; this page is the human-readable guide.
+
+## Base URL
+
+```
+<%= SiteMetadata.origin %>/api/v1
+```
+
+## Endpoints
+
+| Method | Path | Returns |
+|---|---|---|
+| GET | `/api/v1/profile` | Identity, headline, region, working mode, and profile links. |
+| GET | `/api/v1/experience` | Roles, organizations, dates, and descriptions. |
+| GET | `/api/v1/case-studies` | Selected work with technologies and outcomes. |
+| GET | `/api/v1/projects` | Open-source projects with repository URLs. |
+| GET | `/api/v1/skills` | Competency groups and their items. |
+| GET | `/api/v1/education` | Credentials and institutions. |
+| GET | `/api/v1/metrics` | Impact figures with their context. |
+| GET | `/api/v1/records` | Every published record, all types. |
+
+Every endpoint accepts `?locale=pt-BR` and defaults to `en`.
+
+## Errors
+
+Errors are JSON, never HTML:
+
+```json
+{ "error": { "code": "not_found", "message": "No such record type: widgets" } }
+```
+
+A rejected parameter returns `422` with the same shape and a `details` array.
+
+## Rate limits and caching
+
+One request per second is plenty. Responses carry a weak `ETag` and
+`Cache-Control: public, max-age=300`; send `If-None-Match` to get a `304`.
+
+## Contact
+
+`<%= SiteMetadata.origin %>/llms.txt` names the maintainer and the profile links.

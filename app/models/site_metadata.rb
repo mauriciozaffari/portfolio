@@ -68,15 +68,17 @@ class SiteMetadata
   SENTENCE_BOUNDARY = /(?<=\.)\s+/
 
   class << self
-    def origin = ORIGIN
+    def origin = ENV.fetch('SITE_ORIGIN', ORIGIN)
 
-    def host = URI.parse(ORIGIN).host
+    def host = URI.parse(origin).host
 
-    def image_url = "#{ORIGIN}#{Image::IMAGE_PATH}"
+    def image_url = "#{origin}#{Image::IMAGE_PATH}"
 
     def sitemap_url = url_for_path(Rails.application.routes.url_helpers.sitemap_path)
 
     def url_for(locale) = url_for_path(path_for(locale))
+
+    def markdown_url_for(locale) = url_for_path(markdown_path_for(locale))
 
     # The routing table stays the single source of both locale paths, so a route
     # rename cannot leave the canonical URL, the sitemap and the page's own
@@ -85,6 +87,10 @@ class SiteMetadata
       routes = Rails.application.routes.url_helpers
 
       locale.to_s == 'pt-BR' ? routes.portuguese_root_path : routes.root_path
+    end
+
+    def markdown_path_for(locale)
+      locale.to_s == 'pt-BR' ? '/pt-BR/index.md' : '/index.md'
     end
 
     # Reciprocal and complete: both pages advertise both locales plus the
@@ -98,13 +104,16 @@ class SiteMetadata
 
     private
 
-    def url_for_path(path) = "#{ORIGIN}#{path}"
+    def url_for_path(path) = "#{origin}#{path}"
   end
 
-  attr_reader :page
+  attr_reader :page, :path
 
-  def initialize(page:)
+  # `path` names the page when it is not the locale root — /about, /privacy —
+  # so the canonical URL an agent follows is the one it actually fetched.
+  def initialize(page:, path: nil)
     @page = page
+    @path = path
   end
 
   def_delegator :page, :locale
@@ -131,7 +140,11 @@ class SiteMetadata
     I18n.t('metadata.image_alt', name: profile[:name], headline: profile[:headline])
   end
 
-  def canonical_url = self.class.url_for(locale)
+  def canonical_url
+    klass = self.class
+
+    path ? "#{klass.origin}#{path}" : klass.url_for(locale)
+  end
 
   def open_graph_locale = OPEN_GRAPH_LOCALES.fetch(locale)
 
@@ -139,33 +152,28 @@ class SiteMetadata
     OPEN_GRAPH_LOCALES.except(locale).values
   end
 
+  # Only the two landing pages have a Markdown twin of their own. A prose page
+  # names the site's Markdown entry point rather than claiming a twin it does
+  # not have.
+  def markdown_url
+    klass = self.class
+
+    path ? "#{klass.origin}/index.md" : klass.markdown_url_for(locale)
+  end
+
   def profile_urls
     Array(profile[:links]).pluck(:url).select { |url| url.to_s.start_with?(*PROFILE_SCHEMES) }
   end
 
-  # `og:type` is `profile` rather than `website`, but without
-  # `profile:first_name` and `profile:last_name`: splitting a person's name into
-  # given and family parts is a guess, and this project does not publish guesses
-  # about a person as structured data.
-  def person
-    {
-      '@context' => 'https://schema.org',
-      '@type' => 'Person',
-      # Stable across both locales, so the two pages describe one person rather
-      # than two who happen to share a name.
-      '@id' => "#{ORIGIN}/#person",
-      'name' => profile[:name],
-      'jobTitle' => profile[:headline],
-      'url' => canonical_url,
-      'sameAs' => profile_urls
-    }
-  end
+  # The JSON-LD documents. The builder lives in StructuredData::Pages::Profile,
+  # which owns schema.org's vocabulary; these readers keep the page and its spec
+  # speaking to SiteMetadata.
+  # Forwardable is already extended for the `delegate`-style readers elsewhere
+  # in this file, so the delegations use its method rather than ActiveSupport's
+  # same-named one, which would otherwise be shadowed.
+  def_delegators :structured_data, :person_document, :graph_document
 
-  # Encoded through ActiveSupport rather than JSON.generate because
-  # `escape_html_entities_in_json` turns `<`, `>` and `&` into their \u escapes,
-  # which makes a `</script>` inside a record value impossible to write by
-  # accident. The view marks the result safe on that basis and no other.
-  def person_json = ActiveSupport::JSON.encode(person)
+  def structured_data = StructuredData::Pages::Profile.new(metadata: self)
 
   private
 

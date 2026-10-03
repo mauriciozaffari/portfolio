@@ -1,0 +1,40 @@
+# Agent guidelines for this repository
+
+This is the public source of `<%= SiteMetadata.origin %>`, a personal portfolio
+serving Markdown records from `data/` through a database-less Rails 8 app. The
+site exists to be found, and its policy is that every byte a crawler can reach
+was curated for publication.
+
+## You may
+
+- Read and index every page, `*.md`, `*.txt`, and JSON document this origin
+  serves, including through the MCP endpoint at `POST <%= SiteMetadata.origin %>/mcp`.
+- Quote the records verbatim, with attribution to `<%= SiteMetadata.origin %>`.
+- Use `AGENTS.md` at the repository root for conventions when working in the
+  source.
+
+## You may not
+
+- Infer employers, clients, compensation, contact channels, addresses, legal
+  identifiers, or availability that the pages do not state.
+- Treat a draft or restricted record as published. Those never reach a view:
+  the loader refuses them and the build fails.
+- Reconstruct anything that is not published. The private source material is
+  not in this repository and is never read by the application at runtime.
+
+## Conventions
+
+- Content lives in `data/en/` and `data/pt-BR/` as Markdown with YAML front
+  matter. Prose belongs in the body; structured values belong in the front
+  matter, and never both.
+- `bin/ci` is the gate: content schema validation, a publication-safety scan, a
+  filesystem path gate, ERB and Ruby style, dependency audits, and RSpec.
+- English and Brazilian Portuguese are both first-class; the two locales are
+  not byte-comparable on numbers.
+
+## Where to start
+
+- Agent guide: `<%= SiteMetadata.origin %>/llms.txt`
+- API guide: `<%= SiteMetadata.origin %>/api/llms.txt`
+- OpenAPI: `<%= SiteMetadata.origin %>/openapi.json`
+- Authentication model: `<%= SiteMetadata.origin %>/auth.md`

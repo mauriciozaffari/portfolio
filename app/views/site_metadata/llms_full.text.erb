@@ -1,0 +1,13 @@
+# Full text dossier
+
+> Every curated record on <%= SiteMetadata.origin %>, in both locales, as one
+> document. Generated from the site's records at request time; nothing here is
+> written by hand.
+
+<% @documents.each do |document| %>
+---
+
+## Locale: <%= document[:locale] %>
+
+<%= document[:markdown] %>
+<% end %>

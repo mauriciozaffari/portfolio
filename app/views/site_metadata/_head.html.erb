@@ -1,6 +1,7 @@
 <meta name="description" content="<%= metadata.description %>">
 
 <link rel="canonical" href="<%= metadata.canonical_url %>">
+<link rel="alternate" type="text/markdown" href="<%= metadata.markdown_url %>">
 <% metadata.alternates.each do |alternate| %>
   <link rel="alternate" hreflang="<%= alternate[:hreflang] %>" href="<%= alternate[:href] %>">
 <% end %>
@@ -28,9 +29,9 @@
 <meta name="twitter:image" content="<%= SiteMetadata.image_url %>">
 <meta name="twitter:image:alt" content="<%= metadata.image_alt %>">
 
-<%# A data block, not a program: the type is not a JavaScript MIME type, so %>
+<%# Two data blocks, not programs: the type is not a JavaScript MIME type, so %>
 <%# HTML's prepare-the-script-element algorithm returns before the CSP check %>
-<%# and `script-src 'none'` has nothing to execute. Marked safe because %>
-<%# SiteMetadata#person_json escapes `<`, `>` and `&`, which is what makes a %>
-<%# `</script>` inside a record value unwritable. %>
-<script type="application/ld+json"><%= metadata.person_json.html_safe %></script>
+<%# and `script-src 'none'` has nothing to execute. Both are serialised by %>
+<%# ruby-structured-data, which escapes `</script>` inside a record value. %>
+<%= structured_data_tag(metadata.person_document) %>
+<%= structured_data_tag(metadata.graph_document) %>

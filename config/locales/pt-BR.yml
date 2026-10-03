@@ -67,6 +67,61 @@ pt-BR:
 
   metadata:
     image_alt: "Um cartão tipográfico com %{name}, %{headline}."
+    faq:
+      role:
+        question: "O que Mauricio Zaffari faz?"
+      work:
+        question: "Onde Mauricio Zaffari mora e como ele trabalha?"
+      skills:
+        question: "Quais são as principais competências técnicas de Mauricio Zaffari?"
+      contact:
+        question: "Como entrar em contato com Mauricio Zaffari?"
+
+  pages:
+    back: "Voltar ao perfil"
+    about:
+      title: "Sobre %{name}"
+      heading: "Sobre"
+      profile: "O perfil completo, com estudos de caso e números"
+    contact:
+      title: "Contato com %{name}"
+      heading: "Contato"
+      intro: "%{name} pode ser contatado pelos canais abaixo. O e-mail é o caminho mais rápido; o LinkedIn é o mais indicado para recrutadores e gestores."
+      note: "Este site não tem formulário de contato e não publica telefone. Cada canal listado aqui foi escolhido por ele para ser público."
+      resume: "Baixar o currículo em PDF"
+    privacy:
+      title: "Aviso de privacidade"
+      heading: "Privacidade"
+      body_html: |
+        <p>Este site publica um perfil profissional curado. Ele é gerado a partir de
+        registros mantidos no repositório público, e é a única coisa sobre o seu
+        titular que se publica aqui.</p>
+
+        <p>Nada coleta informações sobre você. Não há script de análise, pixel de
+        rastreamento, incorporação de terceiros nem publicidade. O site não envia
+        JavaScript algum, então não há na página nada capaz de observar um leitor,
+        mesmo que quisesse.</p>
+
+        <p>Você não precisa aceitar cookie porque nenhum é definido. Não há login,
+        conta, formulário nem sessão; quem lê é anônimo por construção, e não por
+        política, e a bateria de testes falha se alguma resposta passar a definir um
+        cookie.</p>
+
+        <p>A política de publicação é estreita de propósito. Nomes, números e nomes
+        de clientes são publicados porque são a substância do trabalho. Dados de
+        contato, endereços, identificadores legais, informações de família, médicas e
+        financeiras não são, e a build falha se algum for detectado em um registro ou
+        em uma página renderizada. Os registros são curados à mão a partir de material
+        privado que nunca é copiado para este repositório nem lido pela aplicação.</p>
+
+        <p>Buscadores e crawlers de IA são bem-vindos. O robots.txt registra isso como
+        uma decisão, em vez de deixar por conta de um padrão, e os mesmos registros são
+        oferecidos a agentes como Markdown, JSON e ferramentas do Model Context
+        Protocol, para que um assistente responda a uma pergunta sobre esta pessoa a
+        partir da fonte publicada, e não de uma cópia desatualizada.</p>
+
+        <p>Dúvidas sobre qualquer um desses pontos podem ser enviadas ao e-mail
+        indicado na página de contato.</p>
 
   resume:
     filename: "curriculo"

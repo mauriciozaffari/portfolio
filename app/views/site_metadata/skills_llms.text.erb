@@ -1,0 +1,25 @@
+# Agent skills guide
+
+> Four skills, each backed by records the site already publishes. The index is
+> at `<%= SiteMetadata.origin %>/.well-known/agent-skills/index.json`.
+
+<% Discovery.new(page: LandingPage.new(repository: Content.repository, locale: locale)).skills.each do |skill| %>
+## `<%= skill["name"] %>`
+
+<%= skill["description"] %>
+
+- Artifact: `<%= skill["url"] %>`
+- Digest: `<%= skill["digest"] %>`
+<% end %>
+
+## How to use these
+
+Fetch the skill artifact for the Markdown form, or call the JSON API directly
+for the structured form. Both read the same curated records, so they cannot
+disagree about a value.
+
+## Related
+
+- OpenAPI description: `<%= SiteMetadata.origin %>/openapi.json`
+- API guide: `<%= SiteMetadata.origin %>/api/llms.txt`
+- MCP server card: `<%= SiteMetadata.origin %>/.well-known/mcp/server-card.json`

@@ -124,14 +124,11 @@ from the same constants the controllers read, never from a hand-written literal.
 
 ## Pending TODOs
 
-- [ ] **Unblock GPTBot and ClaudeBot at the edge.** The application answers
-      every real AI crawler User-Agent with 200 — verified against the origin —
-      but the public path returns **403** for GPTBot and ClaudeBot while
-      allowing OAI-SearchBot, PerplexityBot and ordinary clients. The public
-      `A` records are Cloudflare's, so this is Cloudflare's AI-bot control, not
-      the app. Allow the two there, or narrow the rule to every host in the zone
-      except this one. This is the single largest remaining agentic defect and
-      it cannot be fixed from this repository.
+- [x] **GPTBot and ClaudeBot are unblocked at the edge (2026-10-03).** The
+      application always answered every real AI crawler User-Agent with 200; the
+      403s came from Cloudflare's zone-level AI-bot protection, which is not
+      reachable from this repository. It is now resolved — see the change and
+      the trade in [deployment](../deployment/IMPLEMENTATION.md).
 - [ ] Decide what the apex `zaffari.casa` does. It currently answers with a
       different application, so nothing here points at it. Repointing it at this
       service (or 301-ing it to the canonical host) is a DNS and deployment

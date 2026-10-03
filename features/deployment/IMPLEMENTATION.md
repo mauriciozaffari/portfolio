@@ -328,15 +328,29 @@ The only thing a deployer needs is SSH access to `le-mans` as `mauricio`.
   `csrf_meta_tags` nor `csp_meta_tag`, and
   `spec/requests/session_cookie_spec.rb` fails the build if any route sets a
   cookie.
-- **Cloudflare blocks GPTBot and ClaudeBot in front of the origin.** The public
-  `A` records for `zaffari.casa` are Cloudflare's, and the edge answers **403**
-  to GPTBot and ClaudeBot while the origin answers 200 to the same
-  User-Agents — verified both ways. OAI-SearchBot and PerplexityBot are allowed.
-  Nothing in this repository can change it: the Cloudflare token available on
-  the host is scoped for the DNS-01 challenge and cannot read, let alone edit,
-  the bot settings. Fix it in the Cloudflare dashboard, or narrow the rule to
-  the other hosts in the zone. See
-  [agent-discovery](../agent-discovery/SPEC.md).
+- **Cloudflare's AI-bot protection was blocking GPTBot and ClaudeBot, and the
+  fix is zone-wide (2026-10-03).** The public `A` records for `zaffari.casa` are
+  Cloudflare's, and the edge answered **403** to GPTBot and ClaudeBot while the
+  origin answered 200 to the same User-Agents. The cause was the zone's
+  `bot_management` setting `ai_bots_protection: block`, set from the **Casa
+  Zaffari** Cloudflare account (`mauricio.shakur@gmail.com` — a different login
+  from the one holding `develoz.com`). It is now `disabled`, which the Cloudflare
+  API only accepts at zone level: there is no per-host or per-crawler lever, so
+  this also unblocks AI crawlers on the apex, which serves a different
+  application.
+
+  Revert, from a `cf` profile attached to that account:
+
+  ```sh
+  cf auth create zaffari --no-browser --device     # approve as mauricio.shakur@gmail.com
+  # then, against the zone id 503391f99e9293cd0100060dbacf2653:
+  #   PUT /zones/<id>/bot_management {"ai_bots_protection": "block"}
+  ```
+
+  A side effect worth knowing: the same update moved `ai_training` from
+  `disallow` to `disabled`. That is *toward* this site's stated policy — its
+  robots.txt allows AI on purpose — but it is a zone-level declaration, so it
+  also applies to the apex.
 - **The live container is not managed by Kamal or by a compose file.** It is a
   `docker run` on `le-mans`, so nothing reconciles it: a change made by hand on
   that host survives until the next `bin/deploy` replaces the container. That is

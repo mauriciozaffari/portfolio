@@ -101,6 +101,14 @@ from the same constants the controllers read, never from a hand-written literal.
       JSON-LD graph.
 - [x] The trust pages exist in both locales and link only the approved contact
       channels.
+- [x] `/api` serves the API guide at the URL a developer or an agent guesses,
+      and the homepage links to it.
+- [x] An unknown path answers `Accept: text/markdown` with a Markdown body that
+      points at the index, the agent guide and the sitemap, rather than an HTML
+      dead end.
+- [x] `/openapi.json` states the versioning and deprecation policy: the major
+      version is the first path segment, breaking changes arrive as a new path,
+      and a retiring version carries `Deprecation` and `Sunset` headers.
 - [x] `bin/ci` is green with 100% line and branch coverage.
 
 ## Open decisions

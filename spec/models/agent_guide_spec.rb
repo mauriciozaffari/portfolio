@@ -9,8 +9,8 @@ RSpec.describe AgentGuide do
     expect(guide.text).to start_with("# #{guide.name} — #{guide.profile[:headline]}")
   end
 
-  it 'tells an agent when to reach for this person' do
-    expect(guide.text).to include('## When to reach for', 'Staff, Principal, or Tech Lead')
+  it 'tells an agent when to use this profile' do
+    expect(guide.text).to include('## When to use', 'Staff, Principal, or Tech Lead')
   end
 
   it 'links the machine-readable entry points, absolutely' do

@@ -37,6 +37,12 @@ module Portfolio
     # Don't generate system test files.
     config.generators.system_tests = nil
 
+    # A routing failure goes through the router rather than straight to the
+    # static page in public/, so `ErrorsController` can answer a client that
+    # asked for Markdown. `config/exceptions_app = routes` is the supported
+    # way to make an exception reach a controller at all.
+    config.exceptions_app = routes
+
     # Response headers.
     #
     # This lives here rather than in config/initializers because it has to:

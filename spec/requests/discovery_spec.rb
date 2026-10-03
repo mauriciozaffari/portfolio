@@ -148,7 +148,7 @@ RSpec.describe 'Agent discovery documents' do
 
       expect(response).to have_http_status(:ok)
       expect(response.media_type).to eq('text/plain')
-      expect(response.body).to include('When to reach for')
+      expect(response.body).to include('## When to use')
       expect(response.body).to include("#{SiteMetadata.origin}/index.md")
     end
 

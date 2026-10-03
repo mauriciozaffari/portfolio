@@ -179,3 +179,4 @@ pt-BR:
       top: "Voltar ao topo"
       reviewed: "Conteúdo revisado em %{date}"
       resume: "Baixar esta página em PDF"
+      api: "API e dados legíveis por máquina"

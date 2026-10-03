@@ -9,6 +9,11 @@ Rails.application.routes.draw do
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
+  # Rails resolves a routing failure through `config.exceptions_app`, which is
+  # pointed at the router, so the 404 has to be a route. See ErrorsController.
+  match '/404', to: 'errors#not_found', via: :all, as: :not_found
+  match '/500', to: 'errors#server_error', via: :all
+
   # One canonical, static URL per locale — a path prefix rather than a
   # subdomain or content negotiation, so site-metadata has something stable to
   # point hreflang at. Both are `landing#show`; the locale arrives as a route
@@ -39,6 +44,10 @@ Rails.application.routes.draw do
   get 'llms.txt' => 'site_metadata#llms', as: :llms, format: false
   get 'llms-full.txt' => 'site_metadata#llms_full', as: :llms_full, format: false
   get 'api/llms.txt' => 'site_metadata#api_llms', as: :api_llms, format: false
+
+  # The discoverable spelling of the same guide: `/api` is the URL an agent or a
+  # developer guesses, and a footer link to it is what the homepage was missing.
+  get 'api' => 'site_metadata#api_llms', as: :api_root, format: false
   get 'agent-skills/llms.txt' => 'site_metadata#skills_llms', as: :skills_llms, format: false
 
   get '.well-known/ard.json' => 'discovery#ai_catalog', as: :ard_catalog, format: false

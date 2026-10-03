@@ -62,9 +62,10 @@ RSpec.describe 'Landing page' do
     end
 
     # Split in two once the footer gained a same-origin link. The first half
-    # still holds the guarantee that matters — every off-site destination in the
+    # holds the guarantee that matters — every off-site destination in the
     # contact block is on the allowlist — and the second pins the same-origin
-    # set to exactly one, so a second internal link cannot slip past either.
+    # set to the resume and the API guide, so a third internal link cannot slip
+    # past either.
     it 'publishes only the approved contact links' do
       offsite = page_document.css('footer a[href]').map { |anchor| anchor['href'] }
                              .reject { |href| href.start_with?('#', '/') }
@@ -72,11 +73,11 @@ RSpec.describe 'Landing page' do
       expect(offsite).to match_array(profile(locale)[:links].pluck(:url))
     end
 
-    it 'offers the resume for the locale it is serving, and nothing else from this origin' do
+    it 'offers the resume and the machine-readable copy, and nothing else from this origin' do
       locale = page_document.at_css('html')['lang']
 
       expect(page_document.css("footer a[href^='/']").pluck('href'))
-        .to contain_exactly(Resume.path_for(locale))
+        .to contain_exactly(Resume.path_for(locale), api_root_path)
     end
 
     it 'offers both canonical locale URLs and marks the current one' do

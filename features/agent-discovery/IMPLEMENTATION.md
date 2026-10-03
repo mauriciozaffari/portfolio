@@ -84,6 +84,13 @@ environment only — with `ActionDispatch::RequestEncoder`, so
 `TestResponse#parsed_body` parses them instead of returning a raw String. The
 alternative was `JSON.parse(response.body)` with a cop suppression.
 
+**The 404 is a controller, not a file.** `config.exceptions_app = routes` plus
+`/404` and `/500` routes let `ErrorsController` answer the client's `Accept`
+header: Rails' static page for a browser, and a Markdown body naming the index,
+the agent guide and the sitemap for an agent. A direct `GET /404` still gets
+`public/404.html` — Rack::Static is ahead of the router — which is correct: only
+an actual exception should reach the controller.
+
 **The coverage gate drove the shape of the code.** `bin/ci` enforces 100% line
 and branch coverage, so defensive branches that nothing could reach were
 removed rather than tested: the leadership `nil` guard (the schema guarantees

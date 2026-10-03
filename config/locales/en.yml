@@ -141,3 +141,4 @@ en:
       top: "Back to top"
       reviewed: "Content last reviewed %{date}"
       resume: "Download this page as a PDF"
+      api: "API and machine-readable data"

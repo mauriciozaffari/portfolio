@@ -33,7 +33,15 @@ class OpenapiDocument
         'title' => 'mauricio.zaffari.casa profile API',
         'version' => VERSION,
         'description' => 'Read-only JSON over the curated professional profile. No authentication: this API ' \
-                         'serves the same publication-safe content the site renders.',
+                         'serves the same publication-safe content the site renders.\n\n' \
+                         '**Versioning.** The major version is the first path segment, so this document ' \
+                         'describes `/api/v1` and nothing else. A breaking change — removing a field, ' \
+                         'renaming a type, changing an error code — arrives as a new `/api/v2` alongside it ' \
+                         'rather than inside it. Additive changes (a new field, a new record type) ship in ' \
+                         '`v1` without notice. Before a version is retired its responses carry a `Deprecation` ' \
+                         'header with the date the decision was made and a `Sunset` header with the date it ' \
+                         'stops answering, both in HTTP-date form, and this document keeps describing it ' \
+                         'until it is gone. Nothing is deprecated today.',
         'license' => { 'name' => 'MIT', 'identifier' => 'MIT' }
       },
       'servers' => [{ 'url' => "#{origin}/api/v1", 'description' => 'Production' }],

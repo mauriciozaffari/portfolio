@@ -67,7 +67,7 @@ RSpec.describe Mcp::Tools do
       contents = described_class.contents
 
       expect(contents.mime_type).to eq('text/markdown')
-      expect(contents.text).to include('## When to reach for')
+      expect(contents.text).to include('## When to use')
     end
   end
 end

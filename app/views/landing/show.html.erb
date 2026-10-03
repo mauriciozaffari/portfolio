@@ -107,6 +107,13 @@
           <a class="link" href="<%= resume_path_for(@page.locale) %>"><%= t("landing.contact.resume") %></a>
         </p>
 
+        <%# One quiet same-origin link for the machine-readable copy of this page.
+            An agent that lands here has a route to the API without scraping it
+            out of a Link header, and a human can ignore it. %>
+        <p class="mt-3 text-sm">
+          <a class="label link-quiet" href="<%= api_root_path %>"><%= t("landing.contact.api") %></a>
+        </p>
+
         <p class="mt-8 font-mono text-sm text-ink-faint">
           <%= t("landing.contact.reviewed", date: content_date(@page.profile.record[:updated])) %>
         </p>

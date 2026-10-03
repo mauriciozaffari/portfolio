@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Resume
   # A hairline in the second ink under a link, drawn per text fragment.
   #

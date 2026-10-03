@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # The landing page's content, composed for one locale.
 #
 # Content::Repository owns what is publishable. This owns the order a reader
@@ -8,7 +10,7 @@
 # where a record has a date, by magnitude where it has one, and by id — which is
 # what the repository already returns — otherwise.
 class LandingPage
-  PROMINENT = "primary".freeze
+  PROMINENT = 'primary'
   MONTHS_IN_YEAR = 12
 
   # Matches both shapes `start_date` uses: a full month (`2018-07`) and a bare
@@ -23,11 +25,11 @@ class LandingPage
   end
 
   def profile
-    @profile ||= repository.site_profile(locale: locale)
+    @profile ||= repository.site_profile(locale:)
   end
 
   def leadership
-    @leadership ||= repository.leadership(locale: locale)
+    @leadership ||= repository.leadership(locale:)
   end
 
   def metrics
@@ -50,15 +52,15 @@ class LandingPage
   end
 
   def case_studies
-    @case_studies ||= of_type(:case_study).sort_by { |entry| [ -months(entry.record[:period]), entry.record.id ] }
+    @case_studies ||= newest_first(of_type(:case_study)) { |record| months(record[:period]) }
   end
 
   def projects
-    @projects ||= of_type(:open_source).sort_by { |entry| [ -entry.record[:downloads].to_i, entry.record.id ] }
+    @projects ||= newest_first(of_type(:open_source)) { |record| record[:downloads].to_i }
   end
 
   def education
-    @education ||= of_type(:education).sort_by { |entry| [ -entry.record[:year].to_i, entry.record.id ] }
+    @education ||= newest_first(of_type(:education)) { |record| record[:year].to_i }
   end
 
   # True when any record on the page came from a locale the reader did not ask
@@ -76,36 +78,45 @@ class LandingPage
   end
 
   def entries
-    @entries ||= [ profile, leadership, *metrics, *roles, *case_studies, *projects, *skill_groups, *education ].compact
+    @entries ||= [profile, leadership, *metrics, *roles, *case_studies, *projects, *skill_groups, *education].compact
   end
 
   private
-    def of_type(type)
-      repository.of_type(type, locale: locale)
-    end
 
-    def roles
-      @roles ||= of_type(:experience).sort_by { |entry| [ -months(entry.record[:start_date]), entry.record.id ] }
-    end
+  def of_type(type)
+    repository.of_type(type, locale:)
+  end
 
-    def prominent?(entry)
-      entry.record[:prominence] == PROMINENT
-    end
+  def roles
+    @roles ||= newest_first(of_type(:experience)) { |record| months(record[:start_date]) }
+  end
 
-    # `updated` is a required key, so a nil here means a record was hand-edited
-    # into a shape the loader admits and a reader cannot use.
-    def date(value)
-      Date.parse(value.to_s)
-    rescue Date::Error
-      nil
+  # Largest key first, ties broken by id so the order is stable across runs.
+  def newest_first(entries)
+    entries.sort_by do |entry|
+      record = entry.record
+      [-yield(record), record.id]
     end
+  end
 
-    # A single integer for a date that may or may not name a month, so that
-    # `2018-07` sorts after `2018` rather than beside it as a string would.
-    def months(value)
-      match = YEAR_MONTH.match(value.to_s)
-      return 0 if match.nil?
+  def prominent?(entry)
+    entry.record[:prominence] == PROMINENT
+  end
 
-      match[:year].to_i * MONTHS_IN_YEAR + match[:month].to_i
-    end
+  # `updated` is a required key, so a nil here means a record was hand-edited
+  # into a shape the loader admits and a reader cannot use.
+  def date(value)
+    Date.parse(value.to_s)
+  rescue Date::Error
+    nil
+  end
+
+  # A single integer for a date that may or may not name a month, so that
+  # `2018-07` sorts after `2018` rather than beside it as a string would.
+  def months(value)
+    match = YEAR_MONTH.match(value.to_s)
+    return 0 unless match
+
+    (match[:year].to_i * MONTHS_IN_YEAR) + match[:month].to_i
+  end
 end

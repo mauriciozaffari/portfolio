@@ -1,15 +1,16 @@
 ---
 title: "App Foundation - Implementation"
 type: "feature-implementation"
-updated: "2026-08-08"
-commit: "e35b4a7"
+updated: "2026-10-03"
+commit: "pending"
 ---
 
 # App Foundation — implementation
 
-- Updated: 2026-08-08
+- Updated: 2026-10-03
 - Code as of: repository commit `e35b4a7`, the commit this feature landed in and
-  the first to contain application code
+  the first to contain application code. The quality-assurance kit and the
+  coverage gate were added later; that commit is named in the front matter.
 - Spec: [SPEC.md](SPEC.md)
 
 ## Entry points / flow
@@ -61,10 +62,12 @@ would duplicate the version pin that `.tool-versions` already owns.
 | `app/views/home/show.html.erb` | Placeholder markup. Exists to prove Tailwind classes compile. |
 | `app/assets/tailwind/application.css` | Tailwind entry point; compiled to `app/assets/builds/tailwind.css`. |
 | `config/importmap.rb` | Pins Turbo and Stimulus. No bundler, no `package.json`. |
-| `bin/ci` + `config/ci.rb` | The single quality gate. |
-| `.rubocop.yml` | Inherits `rubocop-rails-omakase`. |
-| `spec/rails_helper.rb` | `config.use_active_record = false`. |
-| `spec/requests/home_spec.rb` | Asserts `GET /` returns 200. |
+| `bin/ci` + `config/ci.rb` | The single quality gate, run through the kit's `CI.run do ... end` harness. |
+| `.rubocop.yml` | Inherits `rails-quality-assurance`'s `rubocop.yml`. No local exclusions. |
+| `.simplecov` | `cover_views`, so rendered templates count toward coverage. |
+| `spec/spec_helper.rb` | One line: `require 'rails_quality_assurance/all'`. |
+| `spec/rails_helper.rb` | `require 'rails_quality_assurance/rails_helper'` plus `config.use_active_record = false`. |
+| `.githooks/pre-commit` | Installed by the kit's pre-commit generator; RuboCop, Reek, and RSpec before a commit. |
 
 ## Configuration
 
@@ -79,13 +82,20 @@ There is no `config/database.yml` and there must never be one.
 
 **Linter set** (resolves the SPEC's first pending TODO):
 
-- **RuboCop with `rubocop-rails-omakase`**, unmodified. It is the Rails 8
-  default, it is the ruleset the framework's own generated code already
-  satisfies, and it is deliberately permissive about formatting so review
-  attention goes to design rather than style. `.rubocop.yml` carries no
-  overrides and no `rubocop:disable` comments exist anywhere in the app. A
-  stricter ruleset would have meant hand-editing generated files on day one to
-  satisfy rules nobody had chosen.
+- **RuboCop with the shared `rails-quality-assurance` ruleset**, inherited
+  through `inherit_gem` in `.rubocop.yml`. `rubocop-rails-omakase` was removed
+  when the kit arrived; the kit's baseline is the Develoz house style and is
+  what every other project uses. `.rubocop.yml` carries file-type exclusions
+  only (generated ERB, `vendor/`), never a `rubocop:disable`, and every
+  finding is fixed at the source.
+- **Reek, Flay, and Brakeman** run from the kit's `qa:*` rake tasks. Reek uses
+  the kit's default `config/reek.yml` (there is deliberately no local
+  `.reek.yml`); its strict defaults — one repeated call per method, three
+  parameters, five constants, four instance variables — shaped several of the
+  refactors below rather than being turned off. Flay's threshold is the task
+  default and the app scores zero. Brakeman reports no warnings.
+- **Bundler-audit** stays the plain `check` without `--update`, for the reason
+  recorded in the `Gemfile`.
 - **ERB/HTML checked by `herb analyze`**, not `herb lint`. `herb lint` shells
   out to `npx @herb-tools/linter`, which would introduce a Node toolchain and
   violate a hard rule in [AGENTS.md](../../AGENTS.md). `herb analyze` runs on
@@ -102,7 +112,18 @@ There is no `config/database.yml` and there must never be one.
   front-matter schema and the content-safety scanner specified by
   [curated-content](../curated-content/SPEC.md) are the right gate, and they
   belong to that feature.
-- **No `rubocop-rspec`.** One spec file does not justify a second ruleset.
+- **`rubocop-rspec` arrives with the kit**, so specs are linted too.
+
+**Coverage gate** (resolves the SPEC's second pending TODO): the kit's single
+`require 'rails_quality_assurance/all'` at the top of `spec/spec_helper.rb`
+starts SimpleCov before application code loads, and the gem defaults
+`minimum_coverage` to 100% line and branch. `.simplecov` adds `cover_views`, so
+the ERB templates are measured alongside the Ruby. The suite is at 100% line
+and 100% branch with no `nocov` comments and no relaxed threshold; the refactors
+that made the strict Reek and RuboCop rules pass also removed most defensive
+branches, and the remainder — a case study with no technologies, a profile with
+no paragraph, a sitemap with no readable date — are covered by fixtures or
+direct unit specs.
 
 **Tailwind pinning** (resolves the SPEC's second pending TODO): `tailwindcss-rails`
 4.x no longer downloads a binary at install time — it depends on
@@ -123,9 +144,17 @@ deliberately rather than inherited.
 
 ## Testing
 
-- `spec/requests/home_spec.rb` — `GET /` returns 200. This is also the boot
-  test: it fails if any railtie removal broke the app.
-- Run everything with `bin/ci`, or the suite alone with `bin/rspec`.
+- Run the whole gate with `bin/ci`. Its steps, in order: `bin/setup
+  --skip-server`, `bin/rubocop`, `bin/rails qa:reek`, `bin/rails qa:flay`,
+  `bin/herb analyze app/views`, `content:validate`, `content:scan`,
+  `content:paths`, `bin/importmap audit`, `bin/bundle-audit check`, `bin/rails
+  qa:brakeman`, then `bin/rspec`. There is no biome, stylelint, markdownlint,
+  yamllint, or npm-audit step: this app has no `package.json` and no Node.
+- The suite alone is `bin/rspec`; SimpleCov fails the run if line or branch
+  coverage drops below 100%.
+- A pre-commit hook (`.githooks/pre-commit`, installed by the kit) runs
+  RuboCop, Reek, and RSpec on staged Ruby and spec files. No `core.hooksPath`
+  is set.
 
 ## Known limitations / pitfalls
 

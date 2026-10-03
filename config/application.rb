@@ -1,14 +1,16 @@
-require_relative "boot"
+# frozen_string_literal: true
 
-require "rails"
+require_relative 'boot'
+
+require 'rails'
 # Only these railties are loaded. Active Record, Active Job, Active Storage,
 # Action Mailer, Action Mailbox, Action Text, and Action Cable are deliberately
 # absent: this site renders Markdown from the repository, stores nothing, and
 # deploys as one stateless container. Adding any of them back supersedes
 # features/app-foundation/SPEC.md.
-require "active_model/railtie"
-require "action_controller/railtie"
-require "action_view/railtie"
+require 'active_model/railtie'
+require 'action_controller/railtie'
+require 'action_view/railtie'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -50,23 +52,23 @@ module Portfolio
     # cannot quietly relax this site, and so that
     # spec/requests/security_headers_spec.rb has one place to point at.
     config.action_dispatch.default_headers = {
-      "X-Content-Type-Options" => "nosniff",
+      'X-Content-Type-Options' => 'nosniff',
 
       # Bare origin cross-origin, nothing at all when leaving HTTPS. The
       # footer's outbound profile links are the only navigations this affects.
-      "Referrer-Policy" => "strict-origin-when-cross-origin",
+      'Referrer-Policy' => 'strict-origin-when-cross-origin',
 
       # Stricter than the Rails default of SAMEORIGIN, because nothing here is
       # ever framed. `frame-ancestors 'none'` in the CSP is the modern
       # spelling; this is what browsers too old to read it still honour.
-      "X-Frame-Options" => "DENY",
+      'X-Frame-Options' => 'DENY',
 
-      "X-Permitted-Cross-Domain-Policies" => "none",
+      'X-Permitted-Cross-Domain-Policies' => 'none',
 
       # Rails' own default. The legacy XSS auditor is disabled rather than set
       # to block mode: it is gone from current browsers and was itself an
       # information-disclosure vector. The CSP is its replacement.
-      "X-XSS-Protection" => "0",
+      'X-XSS-Protection' => '0',
 
       # Features this site does not use, denied outright. `()` is an empty
       # allowlist: not this origin, not an embedded frame, nobody.
@@ -78,7 +80,7 @@ module Portfolio
       # action_dispatch/http/permissions_policy.rb:26. No current browser reads
       # that header, and its value is not valid in a `Permissions-Policy`.
       # Revisit when Rails ships the renamed implementation.
-      "Permissions-Policy" => %w[
+      'Permissions-Policy' => %w[
         accelerometer
         ambient-light-sensor
         autoplay
@@ -103,7 +105,7 @@ module Portfolio
         serial
         usb
         xr-spatial-tracking
-      ].map { |feature| "#{feature}=()" }.join(", ")
+      ].map { |feature| "#{feature}=()" }.join(', ')
     }
   end
 end

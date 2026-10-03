@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ResumeController < ApplicationController
   include Localized
 
@@ -16,7 +18,7 @@ class ResumeController < ApplicationController
   # copy that goes stale — which on a document that cannot be withdrawn once
   # fetched is the failure worth avoiding.
   def show
-    resume = Resume.new(page: LandingPage.new(repository: Content.repository, locale: locale))
+    resume = Resume.new(page: LandingPage.new(repository: Content.repository, locale:))
 
     send_data resume.pdf, filename: resume.filename, type: Resume::MEDIA_TYPE, disposition: :attachment
   end

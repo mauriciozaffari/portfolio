@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Demotes the headings inside a rendered record body so the record composes into
 # a page without claiming the page's outline.
 #
@@ -27,7 +29,7 @@ module HeadingLevels
   end
 
   def self.demote(level, by)
-    [ level.to_i + by, DEEPEST ].min
+    [level.to_i + by, DEEPEST].min
   end
   private_class_method :demote
 end

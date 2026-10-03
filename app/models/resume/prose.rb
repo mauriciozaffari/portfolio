@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Resume
   # A record body, converted from HTML into the blocks Prawn draws.
   #
@@ -20,23 +22,35 @@ class Resume
     # today, and inventing a pull-quote treatment for a case that does not exist
     # is the abstraction this project's style rules out.
     KINDS = {
-      "h2" => :heading, "h3" => :heading, "h4" => :heading,
-      "p" => :paragraph, "pre" => :code, "li" => :item
+      'h2' => :heading, 'h3' => :heading, 'h4' => :heading,
+      'p' => :paragraph, 'pre' => :code, 'li' => :item
     }.freeze
 
-    SELECTOR = KINDS.keys.join(", ").freeze
+    SELECTOR = KINDS.keys.join(', ').freeze
+
+    # The inline elements Prawn can set, each as the opening and closing tag
+    # that wraps the converted children. `a` and `br` are handled separately
+    # because one depends on an attribute and the other has no children.
+    WRAPPERS = {
+      'strong' => %w[<b> </b>], 'b' => %w[<b> </b>],
+      'em' => %w[<i> </i>], 'i' => %w[<i> </i>],
+      'code' => [%(<font name="#{Resume::Theme::MONO}" size="#{Resume::Theme::SIZE_SM}">), '</font>']
+    }.freeze
 
     # kramdown emits `<li>text</li>` for a tight list and `<li><p>text</p></li>`
     # for a loose one. Without this the second shape would be collected twice,
     # once as the item and once as the paragraph inside it.
     def self.blocks(html)
-      Nokogiri::HTML5.fragment(html.to_s).css(SELECTOR).filter_map do |node|
-        next if node.ancestors.any? { |ancestor| KINDS.key?(ancestor.name) }
+      nodes = Nokogiri::HTML5.fragment(html.to_s).css(SELECTOR).reject { |node| nested?(node) }
+      blocks = nodes.map { |node| Block.new(kind: KINDS.fetch(node.name), text: inline(node).strip) }
 
-        text = inline(node).strip
-        Block.new(kind: KINDS.fetch(node.name), text: text) if text.present?
-      end
+      blocks.select { |block| block.text.present? }
     end
+
+    def self.nested?(node)
+      node.ancestors.any? { |ancestor| KINDS.key?(ancestor.name) }
+    end
+    private_class_method :nested?
 
     def self.inline(node)
       node.children.map { |child| markup(child) }.join
@@ -44,24 +58,27 @@ class Resume
 
     def self.markup(node)
       return escape(node.text) if node.text?
-      return "" unless node.element?
+      return '' unless node.element?
 
-      case node.name
-      when "strong", "b" then "<b>#{inline(node)}</b>"
-      when "em", "i" then "<i>#{inline(node)}</i>"
-      when "code" then %(<font name="#{Theme::MONO}" size="#{Theme::SIZE_SM}">#{inline(node)}</font>)
-      when "br" then "\n"
-      when "a" then link(node)
-      else inline(node)
-      end
+      element(node)
     end
     private_class_method :markup
+
+    def self.element(node)
+      name = node.name
+      return "\n" if name == 'br'
+      return link(node) if name == 'a'
+
+      opening, closing = WRAPPERS.fetch(name, ['', ''])
+      "#{opening}#{inline(node)}#{closing}"
+    end
+    private_class_method :element
 
     # Left in the ink of the text around it, exactly as `.prose a` sets it. The
     # accent belongs on the underline rather than on the words, and that line is
     # drawn per fragment by Resume::AccentUnderline.
     def self.link(node)
-      href = node["href"].to_s
+      href = node['href'].to_s
       text = inline(node)
       return text if href.blank?
 
@@ -73,7 +90,7 @@ class Resume
     # newline is a hard break to Prawn. Collapsed rather than squished, so the
     # single space between a `<strong>` and the word after it survives.
     def self.escape(text)
-      Prawn::Text::Formatted::Parser.escape(text.gsub(/\s+/, " "))
+      Prawn::Text::Formatted::Parser.escape(text.gsub(/\s+/, ' '))
     end
     private_class_method :escape
   end

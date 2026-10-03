@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # The curated Markdown corpus under data/<locale>/**/*.md, and the gates that
 # keep it publishable. See features/curated-content/SPEC.md.
 module Content
@@ -8,7 +10,7 @@ module Content
 
   class << self
     def root
-      Rails.root.join("data")
+      Rails.root.join('data')
     end
 
     # Every file under `root`, dotfiles included, in path order.
@@ -24,7 +26,7 @@ module Content
     # subdirectory; `select(&:file?)` drops those along with the directories
     # themselves, which is why no explicit `.`/`..` rejection is needed.
     def files_under(root)
-      Pathname(root).glob("**/*", File::FNM_DOTMATCH).select(&:file?).sort
+      Pathname(root).glob('**/*', File::FNM_DOTMATCH).select(&:file?).sort
     end
 
     # Memoized in production, rebuilt per call in development so that editing a
@@ -34,9 +36,15 @@ module Content
     # The memo is primed during boot by config/initializers/content.rb, so the
     # first reader is never the first thing to discover a broken corpus.
     def repository
-      return Repository.load(root) if Rails.application.config.enable_reloading
+      return load_repository if Rails.application.config.enable_reloading
 
-      @repository ||= Repository.load(root)
+      @repository ||= load_repository
+    end
+
+    private
+
+    def load_repository
+      Repository.load(root)
     end
   end
 end

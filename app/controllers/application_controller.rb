@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ApplicationController < ActionController::Base
   # `allow_browser` is deliberately *not* here, where the Rails generator put
   # it. It gates on the User-Agent, and robots.txt and sitemap.xml have no

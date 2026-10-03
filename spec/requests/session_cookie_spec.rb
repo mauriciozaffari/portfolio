@@ -1,4 +1,6 @@
-require "rails_helper"
+# frozen_string_literal: true
+
+require 'rails_helper'
 
 # This site stores nothing about a reader, and the layout says so in a comment.
 # The claim needs a gate, because the way it was broken was invisible: a
@@ -9,7 +11,7 @@ require "rails_helper"
 # sets allow_forgery_protection = false, which makes csrf_meta_tags render
 # nothing and the cookie disappear — so a spec written against the default test
 # configuration would have passed against the bug it exists to catch.
-RSpec.describe "Session cookies", type: :request do
+RSpec.describe 'Session cookies' do
   around do |example|
     original = ActionController::Base.allow_forgery_protection
     ActionController::Base.allow_forgery_protection = true
@@ -23,43 +25,43 @@ RSpec.describe "Session cookies", type: :request do
   def reachable_paths
     Rails.application.routes.routes.filter_map do |route|
       next if route.internal
-      next unless route.verb.include?("GET")
+      next unless route.verb.include?('GET')
       next unless route.path.required_names.empty?
 
-      route.path.spec.to_s.sub(/\(\.:format\)\z/, "")
+      route.path.spec.to_s.delete_suffix('(.:format)')
     end.uniq
   end
 
-  it "has pages to check" do
-    expect(reachable_paths).to include("/", "/pt-BR")
+  it 'has pages to check' do
+    expect(reachable_paths).to include('/', '/pt-BR')
   end
 
-  it "is off by default in the test environment, which is why the block above turns it on" do
+  it 'is off by default in the test environment, which is why the block above turns it on' do
     expect(Rails.application.config.action_controller.allow_forgery_protection).to be(false)
     expect(ActionController::Base.allow_forgery_protection).to be(true)
   end
 
-  it "sets no cookie on any page" do
+  it 'sets no cookie on any page' do
     cookies_set = reachable_paths.to_h do |path|
       get path
-      [ path, response.headers["Set-Cookie"] ]
+      [path, response.headers['Set-Cookie']]
     end
 
     expect(cookies_set.compact).to be_empty
   end
 
-  it "starts no session at all" do
+  it 'starts no session at all' do
     get root_path
 
     expect(response.cookies).to be_empty
     expect(session.to_hash).to be_empty
   end
 
-  it "renders no CSRF token, because there is no form to protect" do
+  it 'renders no CSRF token, because there is no form to protect' do
     get root_path
-    document = Nokogiri::HTML5(response.body)
+    document = response.parsed_body
 
-    expect(document.css("form")).to be_empty
+    expect(document.css('form')).to be_empty
     expect(document.css("meta[name='csrf-token'], meta[name='csrf-param']")).to be_empty
   end
 
@@ -67,9 +69,9 @@ RSpec.describe "Session cookies", type: :request do
   # browser nothing, because no nonce generator is configured and none is wanted:
   # nonces exist to permit inline script and inline style, and the policy in
   # config/initializers/content_security_policy.rb permits neither.
-  it "renders no empty CSP nonce" do
+  it 'renders no empty CSP nonce' do
     get root_path
 
-    expect(Nokogiri::HTML5(response.body).css("meta[name='csp-nonce']")).to be_empty
+    expect(response.parsed_body.css("meta[name='csp-nonce']")).to be_empty
   end
 end

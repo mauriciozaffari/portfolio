@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # The two canonical URLs and when the content behind each of them last changed.
 #
 # `lastmod` is derived from the records the page actually renders, never from
@@ -19,11 +21,12 @@ class Sitemap
   end
 
   private
-    # LandingPage rather than the repository directly, so "the content behind
-    # this URL" means the same set of records here as it does in the browser —
-    # including the locale fallback, which is why /pt-BR currently reports the
-    # English records' dates rather than nothing at all. `updated` moved onto
-    # LandingPage when the resume became its second caller; omitting the element
-    # on a nil beats publishing a date that is not one.
-    def page_for(locale) = LandingPage.new(repository: repository, locale: locale)
+
+  # LandingPage rather than the repository directly, so "the content behind
+  # this URL" means the same set of records here as it does in the browser —
+  # including the locale fallback, which is why /pt-BR currently reports the
+  # English records' dates rather than nothing at all. `updated` moved onto
+  # LandingPage when the resume became its second caller; omitting the element
+  # on a nil beats publishing a date that is not one.
+  def page_for(locale) = LandingPage.new(repository:, locale:)
 end

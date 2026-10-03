@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 module LandingHelper
   # An en dash with spaces around it. A bare hyphen between two four-digit years
   # is indistinguishable from a Brazilian landline, and Content::SafetyScanner is
   # right to refuse it — see features/curated-content/IMPLEMENTATION.md.
-  RANGE_SEPARATOR = " – ".freeze
+  RANGE_SEPARATOR = ' – '
 
   # A `start_date` or `end_date` that names a month. A record omits the month
   # when it is not worth claiming, and the page does not invent one.
@@ -21,13 +23,13 @@ module LandingHelper
   # arrive in another language.
   def landing_sections
     [
-      [ "impact", t("landing.impact.heading") ],
-      [ "experience", t("landing.experience.heading") ],
-      [ "work", t("landing.work.heading") ],
-      [ "leadership", t("landing.leadership.heading") ],
-      [ "projects", t("landing.projects.heading") ],
-      [ "skills", t("landing.skills.heading") ],
-      [ "contact", t("landing.contact.heading") ]
+      ['impact', t('landing.impact.heading')],
+      ['experience', t('landing.experience.heading')],
+      ['work', t('landing.work.heading')],
+      ['leadership', t('landing.leadership.heading')],
+      ['projects', t('landing.projects.heading')],
+      ['skills', t('landing.skills.heading')],
+      ['contact', t('landing.contact.heading')]
     ]
   end
 
@@ -54,8 +56,9 @@ module LandingHelper
   end
 
   def calendar_month(value)
-    match = MONTH.match(value.to_s)
-    return value.to_s if match.nil?
+    text = value.to_s
+    match = MONTH.match(text)
+    return text unless match
 
     l(Date.new(match[:year].to_i, match[:month].to_i, 1), format: :month_year)
   end
@@ -64,10 +67,16 @@ module LandingHelper
   # one undated year reads as that year alone, not "2016 – 2016".
   def role_period(record)
     start = calendar_month(record[:start_date])
-    finish = record[:end_date].present? ? calendar_month(record[:end_date]) : t("landing.experience.present")
+    finish = role_end(record[:end_date])
     return start if start == finish
 
-    [ start, finish ].join(RANGE_SEPARATOR)
+    [start, finish].join(RANGE_SEPARATOR)
+  end
+
+  def role_end(end_date)
+    return t('landing.experience.present') if end_date.blank?
+
+    calendar_month(end_date)
   end
 
   def content_date(value)

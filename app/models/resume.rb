@@ -1,3 +1,7 @@
+# frozen_string_literal: true
+
+require 'forwardable'
+
 # The downloadable resume for one locale.
 #
 # A PDF is the least retractable thing this site publishes. A page can be
@@ -9,7 +13,9 @@
 # The content is LandingPage's, unchanged. See Resume::Document for what that
 # buys and features/resume-download/SPEC.md for the trade it accepts.
 class Resume
-  MEDIA_TYPE = "application/pdf".freeze
+  extend Forwardable
+
+  MEDIA_TYPE = 'application/pdf'
 
   # A contact address as a reader should see it: no scheme, no `mailto:`, no
   # `www.`, no trailing slash. The resume shows the addresses themselves rather
@@ -22,13 +28,13 @@ class Resume
     def path_for(locale)
       routes = Rails.application.routes.url_helpers
 
-      locale.to_s == "pt-BR" ? routes.portuguese_resume_path : routes.resume_path
+      locale.to_s == 'pt-BR' ? routes.portuguese_resume_path : routes.resume_path
     end
 
     def url_for(locale) = "#{SiteMetadata::ORIGIN}#{path_for(locale)}"
 
     def display_address(url)
-      url.to_s.sub(SCHEME, "").sub(SUBDOMAIN, "").chomp("/")
+      url.to_s.sub(SCHEME, '').sub(SUBDOMAIN, '').chomp('/')
     end
   end
 
@@ -38,7 +44,7 @@ class Resume
     @page = page
   end
 
-  def locale = page.locale
+  def_delegator :page, :locale
 
   def profile = page.profile.record
 
@@ -46,7 +52,7 @@ class Resume
   # record and the noun from the locale file, so the file a recruiter saves is
   # named after the person rather than after the route that served it.
   def filename
-    "#{profile[:name].to_s.parameterize}-#{I18n.t("resume.filename")}.pdf"
+    "#{profile[:name].to_s.parameterize}-#{I18n.t('resume.filename')}.pdf"
   end
 
   # The document information dictionary, set in full rather than left to
@@ -65,29 +71,35 @@ class Resume
   # `Subject` come from the `site_profile` record, which the content-safety
   # scanner already gates.
   def info
+    person = profile
+    name = person[:name]
+    headline = person[:headline]
+    host = SiteMetadata.host
+
     {
-      Title: I18n.t("landing.document_title", name: profile[:name], headline: profile[:headline]),
-      Author: profile[:name],
-      Subject: profile[:headline],
-      Creator: SiteMetadata.host,
-      Producer: SiteMetadata.host
+      Title: I18n.t('landing.document_title', name:, headline:),
+      Author: name,
+      Subject: headline,
+      Creator: host,
+      Producer: host
     }.merge(dates)
   end
 
   def pdf
-    @pdf ||= Document.new(page: page, info: info).render
+    @pdf ||= Document.new(page:, info:).render
   end
 
   private
-    # Absent rather than invented when no record carries a readable date, on
-    # the same reasoning as Sitemap's `lastmod`: a missing field beats a field
-    # holding a value that is not a date.
-    def dates
-      date = page.updated
-      return {} if date.nil?
 
-      stamp = Time.utc(date.year, date.month, date.day)
+  # Absent rather than invented when no record carries a readable date, on
+  # the same reasoning as Sitemap's `lastmod`: a missing field beats a field
+  # holding a value that is not a date.
+  def dates
+    date = page.updated
+    return {} unless date
 
-      { CreationDate: stamp, ModDate: stamp }
-    end
+    stamp = Time.utc(date.year, date.month, date.day)
+
+    { CreationDate: stamp, ModDate: stamp }
+  end
 end

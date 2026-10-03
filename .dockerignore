@@ -67,3 +67,6 @@ Dockerfile
 # the container.
 /config/deploy.yml
 /.kamal/
+
+# Generated reports include application source; never ship them through public/.
+/public/coverage/

@@ -1,4 +1,6 @@
-require "pdf-reader"
+# frozen_string_literal: true
+
+require 'pdf-reader'
 
 # Reads a generated PDF the way everything downstream of a download does.
 #
@@ -32,14 +34,14 @@ module PdfText
   # not fire on two values that only touch because a gutter label happens to
   # precede a paragraph.
   def pdf_flowed(bytes)
-    pdf_reader(bytes).pages.flat_map { |page| positioned_lines(page) }.join(" ").squish
+    pdf_reader(bytes).pages.flat_map { |page| positioned_lines(page) }.join(' ').squish
   end
 
   def positioned_lines(page)
     receiver = PDF::Reader::PageTextReceiver.new
     page.walk(receiver)
 
-    receiver.runs.sort_by { |run| [ -run.y, run.x ] }.map(&:text)
+    receiver.runs.sort_by { |run| [-run.y, run.x] }.map(&:text)
   end
 
   def pdf_info(bytes)

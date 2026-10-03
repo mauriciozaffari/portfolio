@@ -48,6 +48,13 @@ Rails.application.routes.draw do
   # The discoverable spelling of the same guide: `/api` is the URL an agent or a
   # developer guesses, and a footer link to it is what the homepage was missing.
   get 'api' => 'site_metadata#api_llms', as: :api_root, format: false
+
+  # The `.md` twin of any machine-readable document, for the agent that appends
+  # `.md` to a URL it already knows. The landing twins are declared above with
+  # the pages they belong to; these are the two Ora samples.
+  get 'api.md' => 'markdown_twins#api_guide', as: :api_markdown, format: false
+  get 'api/llms.txt.md' => 'markdown_twins#api_guide', as: :api_llms_markdown, format: false
+  get 'openapi.json.md' => 'markdown_twins#openapi', as: :openapi_markdown, format: false
   get 'agent-skills/llms.txt' => 'site_metadata#skills_llms', as: :skills_llms, format: false
 
   get '.well-known/ard.json' => 'discovery#ai_catalog', as: :ard_catalog, format: false

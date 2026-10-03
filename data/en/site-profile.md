@@ -4,9 +4,9 @@ type: site_profile
 locale: en
 status: published
 confidentiality: public
-updated: "2026-08-06"
+updated: "2026-10-03"
 name: Mauricio Zaffari
-headline: Ruby on Rails tech lead
+headline: Lead / Staff Software Engineer | Ruby on Rails
 region: Brazil
 timezone: UTC-3
 work_mode: Remote, with daily overlap across UK and US business hours
@@ -18,13 +18,14 @@ links:
   - label: RubyGems
     url: https://rubygems.org/profiles/mauriciozaffari
   - label: Email
-    url: mailto:mauricio@zaffari.casa
+    url: mailto:mauriciozaffari@gmail.com
 ---
 
 Eighteen years building Ruby on Rails systems, and still choosing Rails on
-purpose. I lead engineering for a SaaS analytics platform used by Disney,
-Warner Bros, Sony and NBCUniversal, where I am the top all-time contributor to
-the core codebase.
+purpose. Until September 2026 I led engineering for a SaaS analytics platform
+used by Disney, Warner Bros, Sony and NBCUniversal, where I finished as the top
+all-time contributor to the core codebase. I am now open to lead and staff
+engineering roles.
 
 Most of my work looks like one of three things: making a slow system fast
 enough that people stop working around it, breaking a monolith apart without
@@ -33,7 +34,8 @@ is going to be and then living with that decision. I have taken Rails
 applications from version 2 through version 8, which means I have migrated
 most of the mistakes the framework has since fixed.
 
-I also build and run my own product. Inscripto is a multi-tenant sports event
+I also build and run my own product, on my own. Inscripto is a multi-tenant
+sports event
 platform that handles real signups and real payments for karting and tennis
 leagues, which keeps me honest about the difference between a system that
 demos well and a system that survives a Saturday morning.

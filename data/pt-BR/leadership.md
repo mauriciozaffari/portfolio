@@ -4,16 +4,16 @@ type: leadership
 locale: pt-BR
 status: published
 confidentiality: public
-updated: "2026-08-06"
+updated: "2026-10-03"
 title: Como eu trabalho
 ---
 
-Lidero um time pequeno de engenharia e nunca parei de escrever código. Continuo
-sendo o maior contribuidor da base de código que lidero, e essa combinação é
-deliberada, não uma falha em delegar: reviso código que eu mesmo poderia ter
-escrito, e não imponho uma arquitetura que eu não esteja disposto a construir.
-A alavancagem funciona nas duas direções — pelas decisões que as outras pessoas
-herdam e pelo trabalho que eu entrego.
+Liderei um time pequeno de engenharia e nunca parei de escrever código.
+Permaneci o maior contribuidor da base de código que liderei, e essa combinação
+foi deliberada, não uma falha em delegar: revisava código que eu mesmo poderia
+ter escrito, e não impunha uma arquitetura que eu não estivesse disposto a
+construir. A alavancagem funcionou nas duas direções — pelas decisões que as
+outras pessoas herdam e pelo trabalho que eu entrego.
 
 **Encontro a causa antes de escrever a correção.** Uma página lenta normalmente
 tem mais de um motivo para ser lenta, e o primeiro que você encontra raramente
@@ -41,7 +41,7 @@ correspondente é um mau sinal, porque uma mudança de estado em um registro é
 quase sempre o `update` daquele registro, e não um controller novo.
 
 **Releases precisam de um plano de rollback que alguém realmente pensou.** Eu
-cuido dos checklists de release: reversibilidade das migrações, drenagem das
+cuidava dos checklists de release: reversibilidade das migrações, drenagem das
 filas, uma referência registrada do último estado bom conhecido. Quando nossa
 ferramenta de release encontrou um padrão de merge que tornava o rebase
 inseguro, corrigi a ferramenta e escrevi o motivo, para que a próxima pessoa
@@ -49,5 +49,5 @@ encontre um modo de falha documentado em vez de um mistério.
 
 **Eu registro as coisas por escrito.** Decisões de arquitetura, notas de
 domínio sobre os subsistemas que surpreendem as pessoas e os padrões de agentes
-de IA que nossa organização segue hoje. Uma decisão que vive apenas em uma
+de IA que as organizações que liderei seguem. Uma decisão que vive apenas em uma
 thread do Slack precisa ser rediscutida cada vez que alguém novo pergunta.

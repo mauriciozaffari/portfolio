@@ -30,7 +30,11 @@ RSpec.describe Content::SafetyScanner do
   end
 
   describe 'the contact allowlist' do
-    it 'admits the one approved address' do
+    it 'admits the approved primary address' do
+      expect(scanner.scan('Write to mauriciozaffari@gmail.com.', source: 'x')).to be_empty
+    end
+
+    it 'admits the forwarding alias on the owner domain' do
       expect(scanner.scan('Write to mauricio@zaffari.casa.', source: 'x')).to be_empty
     end
 
@@ -38,8 +42,12 @@ RSpec.describe Content::SafetyScanner do
       expect(scanner.scan('Write to someone.else@zaffari.casa.', source: 'x')).not_to be_empty
     end
 
+    it 'rejects another gmail address with the same local part shape' do
+      expect(scanner.scan('Write to mauricio.zaffari@gmail.com.', source: 'x')).not_to be_empty
+    end
+
     it 'rejects a second address sharing a line with the approved one' do
-      line = 'mauricio@zaffari.casa and nobody@example.invalid'
+      line = 'mauriciozaffari@gmail.com and nobody@example.invalid'
 
       expect(scanner.scan(line, source: 'x')).not_to be_empty
     end

@@ -4,16 +4,16 @@ type: leadership
 locale: en
 status: published
 confidentiality: public
-updated: "2026-08-06"
+updated: "2026-10-03"
 title: How I work
 ---
 
-I lead a small engineering team and I never stopped writing the code. I am
-still the top contributor to the codebase I lead, and that combination is
-deliberate rather than a failure to delegate: I review code I could have
-written myself, and I do not hand down an architecture I am not willing to
-build. The leverage runs both ways — through the decisions other people
-inherit, and through the work I ship.
+I led a small engineering team and never stopped writing the code. I remained
+the top contributor to the codebase I led, and that combination was
+deliberate rather than a failure to delegate: I reviewed code I could have
+written myself, and I did not hand down an architecture I was not willing to
+build. The leverage ran both ways — through the decisions other people
+inherit, and through the work I shipped.
 
 **I find the cause before I write the fix.** A slow page usually has more than
 one reason for being slow, and the first one you find is rarely the expensive
@@ -39,13 +39,13 @@ principle I keep returning to: a controller with no matching model is a smell,
 because a state change on a record is almost always that record's `update`, not
 a new controller.
 
-**Releases need a rollback plan you have actually thought about.** I own release
-checklists: migration reversibility, queue drain, a recorded last-known-good
-reference. When our release tooling hit a merge pattern that made rebasing
-unsafe, I fixed the tool and wrote down why, so the next person meets a
-documented failure mode instead of a mystery.
+**Releases need a rollback plan you have actually thought about.** I owned
+release checklists: migration reversibility, queue drain, a recorded
+last-known-good reference. When our release tooling hit a merge pattern that
+made rebasing unsafe, I fixed the tool and wrote down why, so the next person
+meets a documented failure mode instead of a mystery.
 
 **I write things down.** Architecture decisions, domain notes on the subsystems
-that surprise people, and the AI agent standards our organisation now works to.
-A decision that lives only in a Slack thread has to be re-litigated every time
-someone new asks.
+that surprise people, and the AI agent standards the organisations I have led
+work to. A decision that lives only in a Slack thread has to be re-litigated
+every time someone new asks.

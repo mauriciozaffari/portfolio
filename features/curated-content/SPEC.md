@@ -175,6 +175,19 @@ pairing is what lets a record be located from a citation alone, which
       [deployment](../deployment/SPEC.md). The same address is set as this
       repository's local `user.email`, so commit metadata — itself a published
       surface on a public repo — stays inside the contact allowlist.
+- [x] 2026-10-03 repositioning: the public contact address is now
+      `mauriciozaffari@gmail.com` (owner decision — the crawler/spam concern
+      that motivated the alias was dropped, and gmail is already the commit
+      identity). The alias `mauricio@zaffari.casa` stays in the scanner's
+      allowlist as a second approved address on the owner's own domain. The
+      headline is now `Lead / Staff Software Engineer | Ruby on Rails` in both
+      locales — job titles stay untranslated, so the pt-BR judgement call now
+      covers *Lead Software Engineer* and *Lead Engineer* as well as
+      *Tech Lead*. Looper gained `end_date: "2026-09"` (the employment ended
+      2026-09-30) and its record, the leadership record and the profile prose
+      moved to past tense; the coverage metric is 99.1% *at departure*, which
+      keeps the case study's 72%→80% replatform delta as the only home for that
+      number.
 - [x] Confirm the Webstores 2.0 test-coverage figure. Resolved: both numbers
       are real but describe different things. The replatforming moved coverage
       from 72% to 80%; 98.6% is the codebase's current figure, which the resume

@@ -46,7 +46,7 @@ RSpec.describe 'Resume download' do
     it 'carries the approved contact surface and nothing beside it' do
       text = pdf_text(bytes)
 
-      expect(text).to include('mauricio@zaffari.casa')
+      expect(text).to include('mauriciozaffari@gmail.com')
       expect(text).not_to match(/\btel:/i)
       expect(text).to include(*Content.repository.site_profile(locale: 'en').record[:links]
         .map { |link| Resume.display_address(link[:url]) })

@@ -9,9 +9,10 @@ module Content
   # fixture in spec/fixtures, and that spec fails if a rule is added here
   # without one.
   class SafetyScanner
-    # The one contact address the SPEC's allowlist admits. It is deliberately
-    # public, and it is also this repository's commit identity.
-    ALLOWED = ['mauricio@zaffari.casa'].freeze
+    # The contact addresses the SPEC's allowlist admits: the primary public
+    # address (also this repository's commit identity), and the forwarding
+    # alias on the owner's own domain. Both are deliberately public.
+    ALLOWED = ['mauriciozaffari@gmail.com', 'mauricio@zaffari.casa'].freeze
 
     Rule = Data.define(:name, :pattern)
 

@@ -4,10 +4,10 @@ type: metric
 locale: pt-BR
 status: published
 confidentiality: public
-updated: "2026-08-06"
+updated: "2026-10-03"
 label: Cobertura de testes
-value: 98,6%
+value: 99,1%
 context: >-
-  cobertura atual do código principal de analytics da Looper Insights que eu
-  lidero, aproximadamente 244.000 linhas de Ruby
+  cobertura final do código principal de analytics da Looper Insights quando eu
+  saí em setembro de 2026, aproximadamente 244.000 linhas de Ruby
 ---

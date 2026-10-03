@@ -105,24 +105,24 @@ from the same constants the controllers read, never from a hand-written literal.
 
 ## Open decisions
 
-- **The canonical host is not settled.** `SiteMetadata::ORIGIN` is fixed and
-  overridable with `SITE_ORIGIN`, but the apex currently serves a different
-  application while the portfolio answers on a subdomain. Until that is decided,
-  the canonical URL and every document here point at a host that does not serve
-  this site — see the [deployment](../deployment/SPEC.md) SPEC and the open item
-  in [AGENTS.md](../../AGENTS.md).
+- **The canonical host is settled.** `SiteMetadata::ORIGIN` is
+  `https://mauricio.zaffari.casa` — the host that actually serves this site —
+  and it stays overridable with `SITE_ORIGIN` for a staging origin. The apex
+  `zaffari.casa` serves a different application and is therefore *not* used
+  anywhere; see the [deployment](../deployment/SPEC.md) SPEC.
 
 ## Pending TODOs
 
-- [ ] Decide the canonical host (apex or subdomain) and point the other at it
-      with a real 301. This is a DNS and deployment decision, not a code one, and
-      it is the single largest remaining SEO defect.
+- [ ] Decide what the apex `zaffari.casa` does. It currently answers with a
+      different application, so nothing here points at it. Repointing it at this
+      service (or 301-ing it to the canonical host) is a DNS and deployment
+      decision, recorded in the deployment SPEC.
 - [ ] Decide whether a `/pricing.md` is wanted. It was deliberately not added:
       this site publishes no rate, and the publication policy forbids
       compensation. A pricing document would either say nothing useful or
       violate a hard rule.
-- [ ] Consider registering the MCP server in a public registry once the origin
-      above is settled, so the listing links back to the canonical host.
+- [ ] Register the MCP server in a public registry so the listing links back to
+      the canonical host.
 - [ ] If the repository is pushed to a public remote, link it from `/llms.txt`
       so the `agent-rules-repo` signal (an `AGENTS.md` in a discoverable repo)
       resolves.

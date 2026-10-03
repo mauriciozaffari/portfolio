@@ -1,4 +1,4 @@
-# zaffari.casa
+# mauricio.zaffari.casa
 
 Personal portfolio and professional showcase site for Mauricio Zaffari.
 

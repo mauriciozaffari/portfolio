@@ -15,9 +15,9 @@ RSpec.describe SiteMetadata do
 
   describe 'the canonical origin' do
     it 'is fixed rather than taken from whichever host answered' do
-      expect(described_class.origin).to eq('https://zaffari.casa')
-      expect(described_class.url_for('en')).to eq('https://zaffari.casa/')
-      expect(described_class.url_for('pt-BR')).to eq('https://zaffari.casa/pt-BR')
+      expect(described_class.origin).to eq('https://mauricio.zaffari.casa')
+      expect(described_class.url_for('en')).to eq('https://mauricio.zaffari.casa/')
+      expect(described_class.url_for('pt-BR')).to eq('https://mauricio.zaffari.casa/pt-BR')
     end
 
     it 'takes both locale paths from the routing table, so the switcher cannot disagree with the canonical' do
@@ -29,9 +29,9 @@ RSpec.describe SiteMetadata do
   describe 'alternates' do
     it 'advertises every locale reciprocally plus an x-default, whichever page is being rendered' do
       expect(described_class.alternates).to eq([
-                                                 { hreflang: 'en', href: 'https://zaffari.casa/' },
-                                                 { hreflang: 'pt-BR', href: 'https://zaffari.casa/pt-BR' },
-                                                 { hreflang: 'x-default', href: 'https://zaffari.casa/' }
+                                                 { hreflang: 'en', href: 'https://mauricio.zaffari.casa/' },
+                                                 { hreflang: 'pt-BR', href: 'https://mauricio.zaffari.casa/pt-BR' },
+                                                 { hreflang: 'x-default', href: 'https://mauricio.zaffari.casa/' }
                                                ])
     end
 
@@ -82,11 +82,11 @@ RSpec.describe SiteMetadata do
       expect(metadata.person_document.to_h).to eq(
         '@context' => 'https://schema.org',
         '@type' => 'Person',
-        '@id' => 'https://zaffari.casa/#person',
+        '@id' => 'https://mauricio.zaffari.casa/#person',
         'name' => 'Example Person',
         'jobTitle' => 'Example headline',
         'description' => 'Example prose for site-profile.',
-        'url' => 'https://zaffari.casa/',
+        'url' => 'https://mauricio.zaffari.casa/',
         'sameAs' => ['https://github.com/example']
       )
     end

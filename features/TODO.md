@@ -127,13 +127,12 @@ Listed here in the order they block progress:
   untagged-PDF accessibility gap Prawn leaves, whose mitigation today is that
   drawing order is reading order and the colophon links back to the HTML page.
 - [Agent discovery](agent-discovery/SPEC.md): **implemented** — see
-  [its IMPLEMENTATION.md](agent-discovery/IMPLEMENTATION.md). One open item
-  dominates every other SEO concern: **the canonical host is not settled.**
-  `SiteMetadata::ORIGIN` points at the apex, and the apex currently serves a
-  different application while the portfolio answers on a subdomain, so every
-  canonical URL and every discovery document points at a host that does not
-  serve this site. That is a DNS and deployment decision. A `/pricing.md` was
-  deliberately not added, because the publication policy forbids compensation.
+  [its IMPLEMENTATION.md](agent-discovery/IMPLEMENTATION.md). The canonical
+  origin is `https://mauricio.zaffari.casa`, the host that actually serves the
+  site. The remaining item is the apex `zaffari.casa`, which currently answers
+  with a different application: repointing it or 301-ing it to the canonical
+  host is a DNS and deployment decision. A `/pricing.md` was deliberately not
+  added, because the publication policy forbids compensation.
 - [Chatbot](chatbot/SPEC.md): decide conversation logging and retention, and
   record the corpus-size threshold that would justify a vector database.
   Provider (Gemini) and the USD 20/month hard cap are decided.

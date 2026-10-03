@@ -149,7 +149,7 @@ RSpec.describe 'Security headers' do
 
     let(:strict_transport_security) do
       ssl = ActionDispatch::SSL.new(->(_env) { [200, {}, ['']] }, **production.ssl_options)
-      _status, headers, _body = ssl.call(Rack::MockRequest.env_for('https://zaffari.casa/'))
+      _status, headers, _body = ssl.call(Rack::MockRequest.env_for('https://mauricio.zaffari.casa/'))
       headers['strict-transport-security']
     end
 

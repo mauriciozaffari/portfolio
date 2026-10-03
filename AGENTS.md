@@ -117,18 +117,16 @@ Recorded so they are not relitigated every session.
 
 ## Known gaps
 
-- **Nothing has been deployed, and the canonical host is wrong.** The Kamal
-  configuration is complete and the image builds and serves locally, but it has
-  never run against a host. The rollback is documented and **not yet
-  exercised**, which is the one unmet acceptance criterion in
-  [deployment](features/deployment/SPEC.md) and the reason that SPEC is
-  `in-progress` rather than `implemented`. Worse for discoverability:
-  `SiteMetadata::ORIGIN` points at `zaffari.casa`, and that apex currently
-  serves a different, `noindex` application while this site answers on a
-  subdomain — so every canonical URL, the sitemap, and every discovery
-  document point at a host that does not serve this site. Fix the host before
-  chasing any other SEO signal; it is a DNS and deployment decision, recorded in
-  [agent-discovery](features/agent-discovery/SPEC.md).
+- **Nothing has been deployed.** The Kamal configuration is complete and the
+  image builds and serves locally, but it has never run against a host. The
+  rollback is documented and **not yet exercised**, which is the one unmet
+  acceptance criterion in [deployment](features/deployment/SPEC.md) and the
+  reason that SPEC is `in-progress` rather than `implemented`.
+- **The apex is not this site.** `SiteMetadata::ORIGIN` is
+  `https://mauricio.zaffari.casa`, and `config/deploy.yml` proxies that host.
+  The apex `zaffari.casa` answers with a different, `noindex` application, so it
+  must not be advertised as this site's origin and must not be repointed at this
+  service without deciding what happens to whatever lives there now.
 - **The `_portfolio_session` cookie gap is closed.** The layout renders neither
   `csrf_meta_tags` nor `csp_meta_tag`, and `spec/requests/session_cookie_spec.rb`
   fails the build if any route sets a cookie.

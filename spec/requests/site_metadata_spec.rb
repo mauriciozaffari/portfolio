@@ -85,9 +85,9 @@ RSpec.describe 'Site metadata' do
 
     it 'advertises both locales and an x-default, reciprocally' do
       expect(alternates).to eq(
-        'en' => 'https://zaffari.casa/',
-        'pt-BR' => 'https://zaffari.casa/pt-BR',
-        'x-default' => 'https://zaffari.casa/'
+        'en' => 'https://mauricio.zaffari.casa/',
+        'pt-BR' => 'https://mauricio.zaffari.casa/pt-BR',
+        'x-default' => 'https://mauricio.zaffari.casa/'
       )
     end
 

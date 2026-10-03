@@ -30,8 +30,10 @@ Rails.application.configure do
   config.force_ssl = true
 
   # Rails' own defaults, pinned so they are a decision rather than an
-  # inheritance. `subdomains: true` is the part with teeth: it commits every
-  # future *.zaffari.casa to HTTPS for two years from a visitor's last request.
+  # inheritance. `subdomains: true` is the part with teeth: a header sent from
+  # the canonical host commits it and everything beneath it to HTTPS for two
+  # years from a visitor's last request. It does not reach the apex, which this
+  # service does not serve — see features/deployment/SPEC.md.
   #
   # `preload: false` deliberately. Preloading is a one-way door — removal from
   # the browser-shipped list takes months — and it should be opted into from

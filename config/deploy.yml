@@ -1,4 +1,4 @@
-# Kamal 2 deployment for https://zaffari.casa
+# Kamal 2 deployment for https://mauricio.zaffari.casa
 #
 # One stateless web container on one small VPS. There is no `accessories:`
 # block and there must never be one: this application has no database, no cache
@@ -39,7 +39,7 @@ proxy:
   # redirects HTTP to HTTPS automatically. Both require port 80 and port 443 to
   # be reachable from the internet and this name to already resolve to the host.
   ssl: true
-  host: zaffari.casa
+  host: mauricio.zaffari.casa
 
   # Where Puma is listening inside the container; kamal-proxy defaults to 80 on
   # the outside. Read from the same PORT variable the image is built with, so

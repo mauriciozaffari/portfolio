@@ -1,6 +1,6 @@
 # Design
 
-The visual language of [zaffari.casa](README.md). One page consumes it, so it
+The visual language of [mauricio.zaffari.casa](README.md). One page consumes it, so it
 lives here as a decision record rather than as an extracted component library —
 see [features/landing-page/SPEC.md](features/landing-page/SPEC.md) for why.
 

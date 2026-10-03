@@ -37,7 +37,7 @@ flowchart TD
   PAGE2 --> REPO
   PAGE --> REPO["Content.repository<br/>site_profile"]
 
-  ORIGIN["SiteMetadata::ORIGIN<br/>https://zaffari.casa"] --> SM
+  ORIGIN["SiteMetadata::ORIGIN<br/>https://mauricio.zaffari.casa"] --> SM
   ORIGIN --> SITEMAP
   ROUTES["config/routes.rb<br/>url_helpers"] --> SM
 ```

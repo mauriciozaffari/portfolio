@@ -25,7 +25,7 @@ class SiteMetadata
   # responder is not a canonical URL. This is the same value as `proxy.host` in
   # config/deploy.yml, and those two are the only places the origin is written
   # down.
-  ORIGIN = 'https://zaffari.casa'
+  ORIGIN = 'https://mauricio.zaffari.casa'
 
   # A static file rather than a generated response: a scraper fetches it once
   # and caches it for a long time, and an unfingerprinted path is what lets that

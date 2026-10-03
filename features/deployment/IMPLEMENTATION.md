@@ -28,7 +28,7 @@ flowchart TD
   NEW --> HC{"GET /up<br/>200?"}
   HC -->|yes| SWAP["kamal-proxy switches traffic"]
   HC -->|no| ABORT["deploy aborts,<br/>old container keeps serving"]
-  SWAP --> LIVE["https://zaffari.casa"]
+  SWAP --> LIVE["https://mauricio.zaffari.casa"]
   GH["push / pull request"] --> CI[".github/workflows/ci.yml<br/>bin/ci"]
   CI --> GATE["content:validate<br/>content:scan<br/>content:paths"]
 ```
@@ -145,7 +145,7 @@ an initializer first and watching the header not appear. The CSP is the
 exception and does live in an initializer, because it is read per request.
 
 **HSTS does not preload.** `includeSubDomains` is on and already has teeth: it
-commits every future `*.zaffari.casa` to HTTPS. `preload` is a further, much
+commits the canonical host and everything beneath it to HTTPS. `preload` is a further, much
 slower-to-reverse commitment and belongs to a site that has been up for a while,
 not to a first deploy.
 
@@ -223,10 +223,11 @@ challenge cannot complete. Kamal installs Docker itself during `kamal setup`.
 The image path will be `<KAMAL_REGISTRY_USERNAME>/zaffari-casa`; the repository
 must exist or the registry must create it on first push.
 
-**3. DNS.** An `A` record for `zaffari.casa` pointing at the VPS IP, resolving
-*before* the first `kamal setup`, because kamal-proxy requests the certificate
-during that run. Decide separately whether `www.zaffari.casa` gets a record —
-today it is not served, and `config/deploy.yml` lists one host only.
+**3. DNS.** An `A` record for `mauricio.zaffari.casa` pointing at the VPS IP,
+resolving *before* the first `kamal setup`, because kamal-proxy requests the
+certificate during that run. The apex `zaffari.casa` is a separate record and a
+separate decision: it currently serves a different application, and
+`config/deploy.yml` lists one host only.
 
 **4. A git remote.** The repository currently has none, so
 `.github/workflows/ci.yml` will not run anywhere until it is pushed to GitHub.

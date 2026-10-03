@@ -30,7 +30,7 @@ class OpenapiDocument
     {
       'openapi' => '3.1.0',
       'info' => {
-        'title' => 'zaffari.casa profile API',
+        'title' => 'mauricio.zaffari.casa profile API',
         'version' => VERSION,
         'description' => 'Read-only JSON over the curated professional profile. No authentication: this API ' \
                          'serves the same publication-safe content the site renders.',

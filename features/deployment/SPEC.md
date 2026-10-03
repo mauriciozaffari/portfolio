@@ -63,9 +63,14 @@ The domain is already owned, which removes the highest-variance item.
 
 ## Canonical origin
 
-`https://zaffari.casa` — owned. Every absolute URL in
-[site-metadata](../site-metadata/SPEC.md), and the `mauricio@zaffari.casa`
+`https://mauricio.zaffari.casa` — owned. Every absolute URL in
+[site-metadata](../site-metadata/SPEC.md) and
+[agent-discovery](../agent-discovery/SPEC.md), and the `mauricio@zaffari.casa`
 forwarding alias on the approved contact allowlist, derive from this origin.
+
+The apex `zaffari.casa` is a separate concern: it currently answers with a
+different, `noindex` application, so it must either be repointed at this service
+or left alone. It must not be claimed as this site's origin until it does.
 ## Decisions
 
 - **Kamal 2 to a single small VPS.** Rails 8's own deployment path, no vendor
@@ -84,9 +89,10 @@ server exists yet. What remains:
       stops there.
 - [ ] Provision the VPS and supply the four values the configuration reads from
       the environment. The full list is in IMPLEMENTATION.md.
-- [ ] Point `zaffari.casa` at the host so kamal-proxy can complete the Let's
-      Encrypt challenge, and decide whether `www.zaffari.casa` is served,
-      redirected, or left unresolved. It is currently unserved.
+- [ ] Point `mauricio.zaffari.casa` at the host so kamal-proxy can complete the
+      Let's Encrypt challenge. Decide separately what the apex `zaffari.casa`
+      does: today it serves a different application, and until that changes it
+      must not be advertised as this site.
 - [ ] Run `kamal setup` once, then confirm the desired behavior over HTTPS.
 - [ ] **Exercise the rollback.** This SPEC requires it and it cannot be
       satisfied without a running host, so it is the one acceptance criterion

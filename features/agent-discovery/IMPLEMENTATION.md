@@ -113,6 +113,8 @@ nor served in production.
 
 ## Deferred
 
-- The canonical host is unsettled; see the SPEC's open decisions.
+- What the apex `zaffari.casa` does. The canonical origin is
+  `https://mauricio.zaffari.casa` and the apex serves a different application,
+  so nothing here points at it; see the SPEC's open decisions.
 - No `/pricing.md`: the publication policy forbids compensation, so the document
   would be empty or a violation.

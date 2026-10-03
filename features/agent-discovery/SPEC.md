@@ -113,10 +113,24 @@ from the same constants the controllers read, never from a hand-written literal.
 
 ## Pending TODOs
 
+- [ ] **Unblock GPTBot and ClaudeBot at the edge.** The application answers
+      every real AI crawler User-Agent with 200 — verified against the origin —
+      but the public path returns **403** for GPTBot and ClaudeBot while
+      allowing OAI-SearchBot, PerplexityBot and ordinary clients. The public
+      `A` records are Cloudflare's, so this is Cloudflare's AI-bot control, not
+      the app. Allow the two there, or narrow the rule to every host in the zone
+      except this one. This is the single largest remaining agentic defect and
+      it cannot be fixed from this repository.
 - [ ] Decide what the apex `zaffari.casa` does. It currently answers with a
       different application, so nothing here points at it. Repointing it at this
       service (or 301-ing it to the canonical host) is a DNS and deployment
       decision, recorded in the deployment SPEC.
+- [ ] Decide whether to accept the cost of the two checks that are deliberately
+      not satisfied. `webmcp` and `pricing-info` both ask for something this
+      project has ruled out on purpose: in-page tools need JavaScript, and the
+      page ships none with `script-src 'none'`; pricing needs a rate, and the
+      publication policy forbids compensation. They are recorded as accepted
+      losses rather than pending work.
 - [ ] Decide whether a `/pricing.md` is wanted. It was deliberately not added:
       this site publishes no rate, and the publication policy forbids
       compensation. A pricing document would either say nothing useful or

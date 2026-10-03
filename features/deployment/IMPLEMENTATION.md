@@ -328,6 +328,15 @@ The only thing a deployer needs is SSH access to `le-mans` as `mauricio`.
   `csrf_meta_tags` nor `csp_meta_tag`, and
   `spec/requests/session_cookie_spec.rb` fails the build if any route sets a
   cookie.
+- **Cloudflare blocks GPTBot and ClaudeBot in front of the origin.** The public
+  `A` records for `zaffari.casa` are Cloudflare's, and the edge answers **403**
+  to GPTBot and ClaudeBot while the origin answers 200 to the same
+  User-Agents — verified both ways. OAI-SearchBot and PerplexityBot are allowed.
+  Nothing in this repository can change it: the Cloudflare token available on
+  the host is scoped for the DNS-01 challenge and cannot read, let alone edit,
+  the bot settings. Fix it in the Cloudflare dashboard, or narrow the rule to
+  the other hosts in the zone. See
+  [agent-discovery](../agent-discovery/SPEC.md).
 - **The live container is not managed by Kamal or by a compose file.** It is a
   `docker run` on `le-mans`, so nothing reconciles it: a change made by hand on
   that host survives until the next `bin/deploy` replaces the container. That is

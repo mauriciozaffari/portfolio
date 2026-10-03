@@ -73,3 +73,6 @@ id_rsa*
 .DS_Store
 *.swp
 *~
+
+# Coverage reports are local test artifacts, never publication content.
+/public/coverage

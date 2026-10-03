@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Locale handling for controllers that render a locale-aware representation of
 # the same records — the page, the resume PDF, and the assistant.
 #
@@ -18,17 +20,18 @@ module Localized
   end
 
   private
-    # Not user input, and so deliberately not validated: every locale-aware route
-    # is static and supplies `locale` as a default, and Rails merges path
-    # parameters over the query string, so `/?locale=pt-BR` cannot reach here.
-    # A spec holds that behaviour down.
-    def locale
-      params[:locale]
-    end
 
-    # Scoped rather than assigned, so a request cannot leave the process on a
-    # locale the next one did not ask for.
-    def with_locale
-      I18n.with_locale(locale) { yield }
-    end
+  # Not user input, and so deliberately not validated: every locale-aware route
+  # is static and supplies `locale` as a default, and Rails merges path
+  # parameters over the query string, so `/?locale=pt-BR` cannot reach here.
+  # A spec holds that behaviour down.
+  def locale
+    params[:locale]
+  end
+
+  # Scoped rather than assigned, so a request cannot leave the process on a
+  # locale the next one did not ask for.
+  def with_locale(&)
+    I18n.with_locale(locale, &)
+  end
 end

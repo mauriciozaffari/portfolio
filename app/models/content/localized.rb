@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Content
   # A record chosen for a requested locale, together with whether it had to be
   # borrowed from another one.

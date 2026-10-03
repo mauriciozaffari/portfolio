@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class LandingController < ApplicationController
   include Localized
 
@@ -7,7 +9,9 @@ class LandingController < ApplicationController
   allow_browser versions: :modern
 
   def show
-    @page = LandingPage.new(repository: Content.repository, locale: locale)
-    @metadata = SiteMetadata.new(page: @page)
+    page = LandingPage.new(repository: Content.repository, locale:)
+
+    @page = page
+    @metadata = SiteMetadata.new(page:)
   end
 end

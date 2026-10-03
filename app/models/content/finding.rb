@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Content
   # Where a gate fired, and why.
   #

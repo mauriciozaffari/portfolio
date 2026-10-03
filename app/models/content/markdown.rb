@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Content
   # Turns a record body into HTML that is safe to embed.
   #
@@ -7,8 +9,9 @@ module Content
   module Markdown
     # Prose only. No embedded media, no tables, no ids or classes — a record
     # describes what it says, and the page decides how it looks.
-    TAGS = [ "p", "br", "hr", "h2", "h3", "h4", "ul", "ol", "li", "strong", "em", "code", "pre", "blockquote", "a" ].freeze
-    ATTRIBUTES = [ "href", "title" ].freeze
+    TAGS = %w[p br hr h2 h3 h4 ul ol li strong em code pre blockquote
+              a].freeze
+    ATTRIBUTES = %w[href title].freeze
 
     # Heading ids are off because several case studies share "## Problem"; a
     # page composing them would emit duplicate ids.
@@ -23,9 +26,10 @@ module Content
       end
 
       private
-        def sanitizer
-          @sanitizer ||= Rails::HTML5::SafeListSanitizer.new
-        end
+
+      def sanitizer
+        @sanitizer ||= Rails::HTML5::SafeListSanitizer.new
+      end
     end
   end
 end

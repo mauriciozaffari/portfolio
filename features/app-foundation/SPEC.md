@@ -3,7 +3,7 @@ title: "App Foundation - Spec"
 type: "feature-spec"
 status: "implemented"
 created: "2026-08-06"
-updated: "2026-08-06"
+updated: "2026-10-03"
 origin: "user request (Rails 8 + Hotwire showcase of my work)"
 ---
 
@@ -11,7 +11,7 @@ origin: "user request (Rails 8 + Hotwire showcase of my work)"
 
 - Status: implemented
 - Created: 2026-08-06
-- Updated: 2026-08-06
+- Updated: 2026-10-03
 - Origin: user request (Rails 8 + Hotwire showcase of my work)
 - Implementation: [IMPLEMENTATION.md](IMPLEMENTATION.md)
 
@@ -80,11 +80,16 @@ are not mistaken for a violation of hard rule 5.
 ## Pending TODOs
 
 - [x] Decide the linter set (RuboCop configuration, ERB lint, and whether a
-      Markdown linter is worth it for `data/**`). Resolved: `rubocop-rails-omakase`
-      unmodified, `herb analyze` for ERB and HTML, no Markdown linter —
-      `data/**` is gated by the content-safety scanner in
-      [curated-content](../curated-content/SPEC.md) instead. Reasoning in
-      [IMPLEMENTATION.md](IMPLEMENTATION.md).
+      Markdown linter is worth it for `data/**`). Resolved: the shared
+      `rails-quality-assurance` kit (RuboCop inheriting the kit's ruleset, Reek,
+      Flay, Brakeman, bundler-audit, importmap audit), `herb analyze` for ERB
+      and HTML, no Markdown linter — `data/**` is gated by the content-safety
+      scanner in [curated-content](../curated-content/SPEC.md) instead.
+      Reasoning in [IMPLEMENTATION.md](IMPLEMENTATION.md).
+- [x] Enforce line and branch coverage as a build gate. Resolved: SimpleCov is
+      started by the kit's single require in `spec/spec_helper.rb`,
+      `cover_views` is enabled in `.simplecov`, and the suite holds at 100% line
+      and 100% branch with no `nocov` suppressions. A drop fails `bin/ci`.
 - [x] Confirm Tailwind standalone binary versioning and how it is pinned.
       Resolved: the binary ships inside the `tailwindcss-ruby` gem, whose
       version is the Tailwind CLI version. Pinned in the `Gemfile` and locked

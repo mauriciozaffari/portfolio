@@ -64,7 +64,7 @@ feature that adds an external dependency, a running cost, and an abuse surface.
 
 | Feature | Status | Created | Implemented | Summary |
 | ------- | ------ | ------- | ----------- | ------- |
-| [app-foundation](app-foundation/SPEC.md) | implemented | 2026-08-06 | 2026-08-06 | Rails 8 + Hotwire app that boots with no database, no Node toolchain, and no Solid adapters; RSpec and linters behind one CI entry point |
+| [app-foundation](app-foundation/SPEC.md) | implemented | 2026-08-06 | 2026-10-03 | Rails 8 + Hotwire app that boots with no database, no Node toolchain, and no Solid adapters; the shared `rails-quality-assurance` kit (RuboCop, Reek, Flay, Brakeman, bundler-audit) and RSpec behind one `CI.run` entry point, with SimpleCov enforcing 100% line and branch coverage |
 | [curated-content](curated-content/SPEC.md) | implemented | 2026-08-06 | 2026-08-06 | Bilingual Markdown content in `data/**` with an enforced front-matter schema, a publication allowlist, and a content-safety scanner that fails the build |
 | [landing-page](landing-page/SPEC.md) | implemented | 2026-08-06 | 2026-08-06 | One server-rendered locale-aware page at `/` and `/pt-BR`, built entirely from the content records; zero JavaScript, zero web fonts, 18.5 KB gzipped, design language recorded in [DESIGN.md](../DESIGN.md) |
 | [site-metadata](site-metadata/SPEC.md) | implemented | 2026-08-06 | 2026-08-06 | Canonical URLs, hreflang, OG/Twitter cards, `Person` JSON-LD asserted to carry no contact field, an app-served sitemap dated from record `updated` values, a robots policy that allows AI crawlers on purpose, and a share card and favicon built from `site_profile` by `bin/rails site:images` |

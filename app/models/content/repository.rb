@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Content
   # Every record on disk, validated as a set.
   #
@@ -9,7 +11,7 @@ module Content
 
     def self.load(root)
       root = Pathname(root)
-      new(root: root, records: paths(root).map { |path| Record.load(path, root: root) })
+      new(root:, records: paths(root).map { |path| Record.load(path, root:) })
     end
 
     # data/ is a corpus, not a directory anyone drops files into. A PDF or a
@@ -18,18 +20,18 @@ module Content
     # production.
     def self.paths(root)
       files = Content.files_under(root)
-      strays = files.reject { |file| file.extname == ".md" }
+      strays = files.reject { |file| file.extname == '.md' }
       return files if strays.empty?
 
       names = strays.map { |file| file.relative_path_from(root).to_s }
-      raise InvalidRecord, "#{root.basename}: holds Markdown records and nothing else, but found #{names.join(", ")}"
+      raise InvalidRecord, "#{root.basename}: holds Markdown records and nothing else, but found #{names.join(', ')}"
     end
     private_class_method :paths
 
     def initialize(root:, records:)
       @root = root
       @records = records.freeze
-      enforce_cardinality!
+      ensure_cardinality
     end
 
     def locales
@@ -52,29 +54,34 @@ module Content
     end
 
     def site_profile(locale:)
-      of_type(:site_profile, locale: locale).first
+      of_type(:site_profile, locale:).first
     end
 
     def leadership(locale:)
-      of_type(:leadership, locale: locale).first
+      of_type(:leadership, locale:).first
     end
 
     private
-      def preferred(versions, locale)
-        versions.find { |record| record.locale == locale } ||
-          versions.find { |record| record.locale == Schema::DEFAULT_LOCALE } ||
-          versions.min_by(&:locale)
-      end
 
-      def enforce_cardinality!
-        records.group_by(&:locale).each do |locale, group|
-          Schema::SINGULAR_NAMES.each do |name|
-            found = group.count { |record| record.type == name }
-            next if found == 1
+    def preferred(versions, locale)
+      by_locale = versions.index_by(&:locale)
 
-            raise InvalidRecord, "#{root.basename}/#{locale}: needs exactly one #{name} record, found #{found}"
-          end
-        end
+      by_locale[locale] || by_locale[Schema::DEFAULT_LOCALE] || versions.min_by(&:locale)
+    end
+
+    def ensure_cardinality
+      records.group_by(&:locale).each { |locale, group| ensure_singulars(locale, group) }
+    end
+
+    def ensure_singulars(locale, group)
+      counts = group.map(&:type).tally
+
+      Schema::SINGULAR_NAMES.each do |name|
+        found = counts.fetch(name, 0)
+        next if found == 1
+
+        raise InvalidRecord, "#{root.basename}/#{locale}: needs exactly one #{name} record, found #{found}"
       end
+    end
   end
 end

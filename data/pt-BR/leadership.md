@@ -4,7 +4,7 @@ type: leadership
 locale: pt-BR
 status: published
 confidentiality: public
-updated: "2026-10-03"
+updated: "2026-10-04"
 title: Como eu trabalho
 ---
 
@@ -51,3 +51,9 @@ encontre um modo de falha documentado em vez de um mistério.
 domínio sobre os subsistemas que surpreendem as pessoas e os padrões de agentes
 de IA que as organizações que liderei seguem. Uma decisão que vive apenas em uma
 thread do Slack precisa ser rediscutida cada vez que alguém novo pergunta.
+
+**Eu ensino o sistema que lidero.** Construí um currículo interno de
+treinamento e conduzi as sessões "Webstores Unlocked" que percorrem com o time
+como cada parte da plataforma funciona. Essas sessões gravadas se tornaram o
+material de onboarding para os novos engenheiros — os que eu contratei,
+integrei e avaliei.

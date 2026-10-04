@@ -106,7 +106,7 @@ Listed here in the order they block progress:
   `zaffari.casa` does. The Kamal configuration is complete and unused: it is the
   only route to a host that is not on the LAN.
 - [Curated content](curated-content/SPEC.md): **nothing pending.** Both locales
-  are authored and published — 68 records, 34 in `en` and 34 in `pt-BR`. The
+  are authored and published — 72 records, 36 in `en` and 36 in `pt-BR`. The
   fallback still covers the case of an English record authored ahead of its
   translation, and is now proven by fixtures rather than by the corpus happening
   to be incomplete.

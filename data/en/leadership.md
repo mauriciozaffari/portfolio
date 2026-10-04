@@ -4,7 +4,7 @@ type: leadership
 locale: en
 status: published
 confidentiality: public
-updated: "2026-10-03"
+updated: "2026-10-04"
 title: How I work
 ---
 
@@ -49,3 +49,8 @@ meets a documented failure mode instead of a mystery.
 that surprise people, and the AI agent standards the organisations I have led
 work to. A decision that lives only in a Slack thread has to be re-litigated
 every time someone new asks.
+
+**I teach the system I lead.** I built an internal training curriculum and
+ran the "Webstores Unlocked" sessions that walk the team through how each
+part of the platform works. Those recorded sessions became the onboarding
+material for new engineers — the ones I hired, onboarded and assessed.

@@ -4,8 +4,8 @@ type: education
 locale: en
 status: published
 confidentiality: public
-updated: "2026-08-06"
+updated: "2026-10-04"
 institution: Faculdade Dom Bosco
-credential: "Bachelor's Degree in Internet Systems Engineering"
+credential: "Technologist Degree in Internet Systems"
 year: "2011"
 ---

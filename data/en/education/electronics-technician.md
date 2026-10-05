@@ -4,8 +4,8 @@ type: education
 locale: en
 status: published
 confidentiality: public
-updated: "2026-08-06"
-institution: "Colégio Anglicano Barão do Rio Branco"
+updated: "2026-10-04"
+institution: "Instituto Anglicano Barão do Rio Branco"
 credential: Electronics Technician
-year: "2008"
+year: "2005"
 ---

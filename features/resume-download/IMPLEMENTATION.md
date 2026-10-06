@@ -1,14 +1,15 @@
 ---
 title: "Resume Download - Implementation"
 type: "feature-implementation"
-updated: "2026-08-08"
-commit: "e37eb26"
+updated: "2026-10-06"
+commit: "37cd50d"
 ---
 
 # Resume Download — implementation
 
-- Updated: 2026-08-08
-- Code as of: repository commit `e37eb26`, the commit this feature landed in
+- Updated: 2026-10-06
+- Code as of: repository commit `37cd50d`, the update that added the concise
+  resume and the drawing fixes; the feature itself landed in `e37eb26`
 - Spec: [SPEC.md](SPEC.md) · Visual language: [DESIGN.md](../../DESIGN.md)
 
 Two PDFs, built on request from the records that render the page, and the gates
@@ -18,6 +19,65 @@ A page can be corrected. A downloaded file circulates uncorrected forever, so
 the disclosure rules are applied twice: once to the words, and once to the
 document information dictionary — the surface no reader looks at and every PDF
 tool reads.
+
+## Concise resume update — 2026-10-06
+
+This update adds `/resume-short.pdf` through
+`ResumeController#authored`. It serves the reviewed committed file at
+[downloads/mauricio-zaffari-resume.pdf](../../downloads/mauricio-zaffari-resume.pdf)
+as an attachment. Production needs no authoring tools. Existing generated
+URLs and filenames remain unchanged, now labelled as complete profiles.
+
+Both locale landing and contact pages offer the English two-page resume first;
+Portuguese labels identify its language. Markdown twins and the agent guide
+also list both options. The concise PDF uses Letter paper, a single column and
+10pt body type. Its metadata identifies the person and canonical host rather
+than the authoring software. Private contact and award details are omitted.
+
+[The update instructions](../../downloads/README.md) describe the accepted
+second-source trade: CI checks selected facts, not every sentence. Human review
+is required when records change, particularly for names the scanner cannot
+recognize. This supersedes the original one-source decision for the concise
+resume only; the complete profile still comes directly from records.
+
+[spec/requests/authored_resume_spec.rb](../../spec/requests/authored_resume_spec.rb)
+checks actual response bytes, attachment headers, two Letter pages, extracted
+text and metadata safety, selected record facts, legacy clients and link order
+on all four HTML pages. The existing synthetic PDF fixture still proves the
+scanner survives PDF extraction. The landing link allowlist now admits exactly
+two PDFs and the API guide.
+
+Verification: `bin/ci` passed with 466 examples and 100% line and branch
+coverage. Both concise pages were rendered and visually inspected: no clipping
+or stranded headings; page 1 is dense but readable, page 2 has spare space.
+A subsequent targeted run passed all six concise-download examples.
+
+## Rendering fixes — 2026-10-06
+
+Two drawing defects in the generated PDF, both reported by the owner against
+the live document and both fixed in [Resume::Sheet](../../app/models/resume/sheet.rb).
+
+**The paper did not reach the top and right margins.** `fill_paper` read
+`pdf.bounds` *before* entering `pdf.canvas` and drew from those numbers inside
+it. Outside the canvas those bounds are the margin box, whose `left` and `top`
+are relative to itself — 0 and 739.89 — so the rectangle landed on the page
+origin at margin-box size, leaving a 102pt white band across the top and 96pt
+down the right edge. The bounds are now read inside the canvas, where they are
+the page: `[0, 841.89]` at 595.28 × 841.89. Verified by decoding the corner
+pixels of rendered pages 1, 5 and 10 — all four corners tinted on each.
+
+**The section ordinals were struck through by their own rule.** `section`
+captured `cursor` before drawing the rule and handed that same y to
+`gutter_label`; `text_box` treats the y it is given as the top of the box, so
+the ordinal's ink began on the rule. The label now receives the post-gap
+cursor, clearing the rule by the same `SPACE_CLOSE` the content beside it gets.
+Verified against the vector geometry: the clearance between the nearest rule
+and each ordinal's glyph box is 6.17pt, uniformly across all six sections, where
+it was 0.
+
+Neither defect was visible to any test, because neither was asserted. Both are
+appearance rather than content, so a spec would have had to pin geometry — see
+the note under Testing.
 
 ## Entry points / flow
 
@@ -203,6 +263,7 @@ each.
 | [spec/support/pdf_text.rb](../../spec/support/pdf_text.rb) | Not a spec, but load-bearing. The scan runs over **two** extractions concatenated: `PDF::Reader::Page#text`, which rebuilds a character grid and silently merges lines set closer than the page's median font size, and the positioned drawing runs, which never merge but split at formatting boundaries. Each hides what the other shows, so a gate over one alone has a blind spot. |
 | [spec/requests/landing_spec.rb](../../spec/requests/landing_spec.rb) | The contact-link assertion split in two: off-site destinations still have to match the allowlist exactly, and the same-origin set is now pinned to exactly one — the resume for the locale being served. A second internal link fails either way. |
 | [spec/requests/rendered_html_safety_spec.rb](../../spec/requests/rendered_html_safety_spec.rb) | Unchanged. It is driven by the routing table, so it sees the two new routes and skips them on media type; their content is scanned above instead. |
+| *(nothing)* | **No spec pins the document's geometry.** The suite asserts what the PDF says — extracted text, information dictionary, page count — and not where it draws it. Both defects in the rendering-fixes section above shipped with every gate green, and a regression in `fill_paper` or in the gutter offsets would again. Asserting ink positions is possible (the page's drawn lines and text boxes are readable in the test group's `pdf-reader`) and was not done, so the honest position is that appearance rests on inspection. This is the same class of gap as the stale `og-image.png` recorded in [AGENTS.md](../../AGENTS.md). |
 
 ## Known limitations / pitfalls
 

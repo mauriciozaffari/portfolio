@@ -70,7 +70,8 @@ class AgentGuide
       "- [Full profile and background](#{origin}/index.md): the site in English, as Markdown.",
       "- [Perfil completo](#{origin}/pt-BR/index.md): the same in Brazilian Portuguese.",
       "- [Full text dossier](#{origin}/llms-full.txt): every role, case study, metric, and skill.",
-      "- [Resume (PDF)](#{origin}/resume.pdf) and [currículo (PDF)](#{origin}/pt-BR/resume.pdf).",
+      "- [Two-page resume in English (PDF)](#{origin}/resume-short.pdf).",
+      "- Complete profiles: [English (PDF)](#{origin}/resume.pdf) and [Portuguese (PDF)](#{origin}/pt-BR/resume.pdf).",
       "- [About](#{origin}/about), [contact](#{origin}/contact), and [privacy](#{origin}/privacy).",
       "- [Sitemap](#{origin}/sitemap.xml)."
     ].join("\n")

@@ -113,6 +113,7 @@ Rails.application.routes.draw do
   #
   # The `.pdf` is a literal, as above: `format: false` means `/resume.pdf.json`
   # is a 404 rather than a second URL for the same document.
+  get 'resume-short.pdf' => 'resume#authored', as: :authored_resume, format: false, defaults: { locale: 'en' }
   get 'resume.pdf' => 'resume#show', as: :resume, format: false, defaults: { locale: 'en' }
   get 'pt-BR/resume.pdf' => 'resume#show', as: :portuguese_resume, format: false, defaults: { locale: 'pt-BR' }
 end

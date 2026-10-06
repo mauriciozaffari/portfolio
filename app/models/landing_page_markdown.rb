@@ -146,7 +146,9 @@ class LandingPageMarkdown
 
   def contact_section
     links = Array(profile[:links]).map { |link| "- [#{link[:label]}](#{link[:url]})" }
-    links << "- #{I18n.t('landing.contact.resume', locale:)}: #{SiteMetadata.origin}#{Resume.path_for(locale)}"
+    origin = SiteMetadata.origin
+    links << "- #{I18n.t('resume.concise', locale:)}: #{origin}/resume-short.pdf"
+    links << "- #{I18n.t('landing.contact.resume', locale:)}: #{origin}#{Resume.path_for(locale)}"
 
     section(heading('contact'), [links.join("\n")])
   end

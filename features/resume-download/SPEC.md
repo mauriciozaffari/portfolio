@@ -3,90 +3,65 @@ title: "Resume Download - Spec"
 type: "feature-spec"
 status: "implemented"
 created: "2026-08-06"
-updated: "2026-08-06"
-origin: "user request (downloadable resume, publication-safe build)"
+updated: "2026-10-05"
+origin: "user request (concise resume plus complete profile download)"
 ---
 
 # Resume Download
 
 - Status: implemented
 - Created: 2026-08-06
-- Updated: 2026-08-06
-- Origin: user request (downloadable resume, publication-safe build)
+- Updated: 2026-10-05
 - Built: see [IMPLEMENTATION.md](IMPLEMENTATION.md)
 
 ## Problem / motivation
 
-Recruiters and hiring managers ask for a file. Sending them to a URL and hoping
-they copy-paste it into their ATS loses candidates.
-
-The existing resume documents cannot be uploaded as they are: they carry a
-direct phone number, a personal email, and a home city. A public download is a
-permanent, uncontrolled artifact — once it is fetched, it circulates. It needs
-its own publication-safe build rather than a copy of the private original.
-
-Building it from the same content records as the page also removes the classic
-portfolio failure where the site and the PDF quietly disagree about dates,
-titles, and numbers.
+The complete record-derived PDF is a dossier, not a recruiting resume. Offer
+Mauricio's edited two-page resume first, while retaining the complete profile
+for readers who want the case studies and career detail.
 
 ## Desired behavior
 
-- A downloadable resume is offered from the landing page, per locale (`en` and
-  `pt-BR`).
-- The document is generated from the same `published` + `public` records that
-  render the page. There is no separately maintained resume source.
-- The contact block contains only the approved professional-profile allowlist.
-  **No phone number, no personal email, no street address.**
-- No compensation details in any form.
-- The generated file passes the same content-safety scanner as `data/**` and
-  the rendered HTML, including a check of the extracted PDF text — not just the
-  source markup.
-- Document metadata (title, author, producer fields) is set deliberately and
-  contains nothing outside the allowlist.
-- The filename is stable and professional.
-- Regenerating after a content change requires no manual editing step.
+- Both landing pages and contact pages offer the concise English resume first.
+  Portuguese labels explicitly say that this document is in English.
+- `/resume-short.pdf` serves the reviewed English PDF as an attachment, with a
+  professional filename and the site's hardened response headers. Legacy
+  browsers and applicant tracking systems can download it.
+- `/resume.pdf` and `/pt-BR/resume.pdf` remain unchanged: complete profiles
+  generated on request from the published, public records in their own locale.
+- Link labels distinguish the two-page resume from the complete profile.
+- The concise PDF has exactly two US Letter pages with readable body type
+  (at least 10pt), a single column and selectable text.
+- Both downloads carry only allowlisted contact channels. No phone, street
+  address, private-individual name or personal compensation is published.
+- CI scans the actual concise PDF's extracted text and readable metadata with
+  `Content::SafetyScanner`, checks its page count, and checks selected facts
+  against the published records. The existing generated-PDF guards remain.
+- Metadata contains no private path or contact field. Authoring tools are not
+  needed in the production image.
+- Markdown twins and the agent guide identify both downloads.
 
 ## Constraints
 
-- The original private resume documents are reference material only. They are
-  never published, and their contact block is never carried over.
-- The artifact is public and permanent once fetched. Treat every field as
-  non-retractable.
+- The private source tree stays ignored. Only the reviewed publication-safe
+  PDF is committed, outside `public/`, and served by the controller.
+- Human review remains necessary for names and factual accuracy. Scanner-clean
+  does not mean publication-safe, and selected fact checks cannot prove all
+  prose agrees with the records.
+- The authored resume is a second editorial source, accepted by the owner on
+  2026-10-05. Updating records requires reviewing the concise resume for drift.
+- The full profile remains single-source: generated from records without
+  manual editing or production persistence.
+- Existing complete-profile URLs and filenames remain stable.
 
 ## Out of scope
 
-- A cover letter download.
-- Gating the download behind a form or an email capture. No contact form is
-  planned.
-- Preserving the exact visual design of the existing resume documents.
-
-## Decisions
-
-- **Prawn, pure Ruby.** No headless Chrome in the production image and no Node,
-  so the container stays slim and no live request depends on a browser
-  rendering.
-- **The layout is deliberately distinct from the page**, which is the cost of
-  the Prawn choice. The mitigation is that layout is the *only* thing that can
-  diverge: both surfaces read the same `published` + `public` records, so the
-  facts, dates, and figures cannot drift apart. A spec asserts the PDF's
-  content is derived from those records rather than restated.
-- **The document is the whole corpus, not a shortlist.** Falls straight out of
-  the rule above: choosing which records belong on a resume would be a second
-  editorial rule, and a second editorial rule is what drifts. The consequence is
-  a multi-page dossier rather than a one-page CV, recorded in
-  [IMPLEMENTATION.md](IMPLEMENTATION.md).
+- Cover letter download or signup gate.
+- A Portuguese translation of the concise resume in this change.
+- Automated inference of which records belong in the concise resume.
 
 ## Pending TODOs
 
-- [x] Build it. Done: two locale routes generating from `Content::Repository`
-      through `LandingPage`, with both the extracted PDF text and the document
-      information dictionary scanned by `Content::SafetyScanner`, and a failing
-      fixture proving that scan fires. See
-      [IMPLEMENTATION.md](IMPLEMENTATION.md).
-- [ ] Decide whether a one-page variant is worth having. Nothing blocks on it,
-      and the honest way to build one is a key on the records rather than a
-      selection rule inside this feature.
-- [ ] Revisit the untagged-PDF accessibility gap if a reader reports it. Prawn
-      emits no structure tree and no `/Lang`; the accessible surface is the HTML
-      page, which the document's colophon links back to.
-
+- [x] Ship the concise public PDF and both download links with CI guards.
+- [ ] Revisit tagged-PDF accessibility if a reader reports a problem. The HTML
+      profile remains the accessible alternative.

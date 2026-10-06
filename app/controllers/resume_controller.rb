@@ -13,10 +13,12 @@ class ResumeController < ApplicationController
   # behind a conditional, and a conditional is a weaker guarantee than a class
   # that simply never declares it.
 
-  # Built per request rather than cached to disk. The container is stateless,
-  # the corpus is a few dozen small files, and a cached artifact is a second
-  # copy that goes stale — which on a document that cannot be withdrawn once
-  # fetched is the failure worth avoiding.
+  def authored
+    send_file Rails.root.join('downloads/mauricio-zaffari-resume.pdf'),
+              filename: 'mauricio-zaffari-resume.pdf', type: Resume::MEDIA_TYPE, disposition: :attachment
+  end
+
+  # The complete profile stays current without a second stored copy.
   def show
     resume = Resume.new(page: LandingPage.new(repository: Content.repository, locale:))
 

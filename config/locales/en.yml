@@ -40,7 +40,7 @@ en:
       heading: "Contact"
       intro: "%{name} is reachable through the channels below. Email is the fastest route; LinkedIn is the right one for recruiters and hiring managers."
       note: "There is no contact form on this site, and no phone number is published. Every channel here is one he chose to make public."
-      resume: "Download the resume as a PDF"
+      resume: "Download the complete profile (PDF)"
     privacy:
       title: "Privacy notice"
       heading: "Privacy"
@@ -81,6 +81,7 @@ en:
   # is borrowed from `landing` below, because the PDF and the page are the same
   # content in two layouts. What is here is the wording only a file needs.
   resume:
+    concise: "Download the resume (PDF, 2 pages)"
     # The noun in the saved filename. The stem is the record's `name`.
     filename: "resume"
     page: "Page %{number} of %{total}"
@@ -140,5 +141,5 @@ en:
       heading: "Contact"
       top: "Back to top"
       reviewed: "Content last reviewed %{date}"
-      resume: "Download this page as a PDF"
+      resume: "Download the complete profile (PDF)"
       api: "API and machine-readable data"

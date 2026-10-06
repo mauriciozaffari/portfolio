@@ -4,9 +4,9 @@ type: site_profile
 locale: en
 status: published
 confidentiality: public
-updated: "2026-10-03"
+updated: "2026-10-05"
 name: Mauricio Zaffari
-headline: Lead / Staff Software Engineer | Ruby on Rails
+headline: Lead / Staff Software Engineer | Rails & AI Systems
 region: Brazil
 timezone: UTC-3
 work_mode: Remote, with daily overlap across UK and US business hours

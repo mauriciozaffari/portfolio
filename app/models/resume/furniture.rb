@@ -15,8 +15,13 @@ class Resume
       @ordinal = 0
     end
 
-    def gutter_label(title, top)
+    # Drawn at whatever cursor the caller has already positioned, which is the
+    # only y that cannot disagree with the rule the caller drew. `text_box`
+    # treats the y it is given as the top of the box, not the first baseline, so
+    # a caller handing over the rule's own y would strike the ordinal through.
+    def gutter_label(title)
       @ordinal += 1
+      top = pdf.cursor
 
       pdf.font(Theme::MONO, style: :bold) do
         pdf.fill_color Theme::INK_FAINT

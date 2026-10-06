@@ -86,7 +86,7 @@ class Resume
       pdf.start_new_page if cursor < Theme::SECTION_ORPHAN
       rule Theme::RULE_STRONG, Theme::HAIRLINE_STRONG
       gap Theme::SPACE_CLOSE
-      gutter_label(title, cursor)
+      gutter_label(title)
 
       pdf.indent(Theme::GUTTER_WIDTH + Theme::GUTTER_GAP, &)
     end
@@ -210,13 +210,18 @@ class Resume
     # DESIGN.md 7: the document is one sheet of paper from the first pixel to
     # the last. Drawn at page creation rather than afterwards, because a
     # rectangle painted later would cover the text it is meant to sit behind.
+    #
+    # The bounds are read inside the canvas, where they are the page: outside
+    # it they are the margin box, and its `left` and `top` are relative to
+    # itself — a rectangle built from those lands on the page origin at
+    # margin-box size, leaving the top and right margins as bare white paper.
     def fill_paper
-      bounds = pdf.bounds
       previous = pdf.fill_color
 
       pdf.canvas do
+        page = pdf.bounds
         pdf.fill_color Theme::PAPER
-        pdf.fill_rectangle [bounds.left, bounds.top], bounds.width, bounds.height
+        pdf.fill_rectangle [page.left, page.top], page.width, page.height
       end
 
       pdf.fill_color previous
